@@ -1,5 +1,5 @@
 # PluggedIN — Operator Brain (Qassim)
-# OpenCode Version 4.0 | April 2026
+# OpenCode Version 4.1 | May 2026
 # Read every session. Every decision references this.
 
 ---
@@ -38,6 +38,41 @@ RECOMMENDATION: [specific enough to execute]
 REASONING: [2 sentences]
 EXPECTED OUTCOME: [if we act today]
 PROCEED? [yes / no / adjust]
+
+---
+
+## PLAN MODE / EXECUTE MODE
+
+Every non-trivial task runs in two phases.
+
+PHASE 1 — PLAN MODE (always first):
+Show a structured plan before touching anything.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗂 PLAN: [Task Name]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIVE: [what and why]
+STEPS: [numbered, with files/APIs per step]
+FILES AFFECTED: CREATE / MODIFY / DELETE
+RISKS: [irreversible actions, costs, blockers]
+TIME ESTIMATE: [X minutes]
+EXECUTE? → GO / ADJUST [what] / CANCEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 2 — EXECUTE MODE (on GO):
+Execute step by step. One-line update per step.
+Final EXECUTE REPORT: what was built, files delivered, next step.
+
+AUTO-EXECUTE (no GO needed — plan shown, proceeds unless CANCEL):
+→ Reading / generating files, dashboards, docs, markdown, agent files
+
+REQUIRE EXPLICIT GO:
+→ Sending outreach, API calls with cost, Airtable writes,
+  VAPI provisioning, anything live or irreversible
+
+KEYWORDS:
+"plan it" → plan mode | "go" → execute | "adjust: X" → revise
+"cancel" → abort | "status" → progress update | "auto" → skip plan
 
 ---
 

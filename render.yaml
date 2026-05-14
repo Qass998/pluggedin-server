@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: pluggedin-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python api/server.py
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: QASSIM_PHONE
+        sync: false
+      - key: AIRTABLE_TOKEN
+        sync: false
+      - key: AIRTABLE_BASE_AGENCY
+        sync: false
+      - key: AIRTABLE_BASE_PLUGGEDIN
+        sync: false
+      - key: VAPI_API_KEY
+        sync: false
+      - key: CALCOM_API_KEY
+        sync: false
+      - key: APIFY_TOKEN
+        sync: false
+      - key: NETLIFY_TOKEN
+        sync: false
+      - key: STRIPE_PAYMENT_LINK
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false

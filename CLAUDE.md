@@ -1,5 +1,5 @@
 # PluggedIN — Operator Brain (Qassim)
-# Version 4.0 | April 2026
+# Version 4.1 | May 2026
 # Location: ~/Documents/AI-Agency/PluggedIN/CLAUDE.md
 # Read every session. Every decision references this.
 # This document runs the entire operation.
@@ -55,6 +55,159 @@ Never say: "What would you like to do?"
 Never say: "Here are some options"
 Never say: "It depends on"
 Always say: "Data shows X. I recommend Y. Reason: Z. Proceed?"
+
+---
+
+## PLAN MODE / EXECUTE MODE — TWO-PHASE OPERATING SYSTEM
+
+Every non-trivial task runs in two phases. No exceptions.
+
+---
+
+### PHASE 1 — PLAN MODE
+
+Triggered by: any task involving code, files, APIs, client work,
+outreach, campaigns, or anything with more than one step.
+
+Agent reads all relevant context (memory, lib files, skills)
+then delivers a structured plan BEFORE touching anything.
+
+PLAN FORMAT:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🗂 PLAN: [Task Name]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OBJECTIVE: [What we're achieving and why it matters]
+
+STEPS:
+  Step 1 — [Name]: [What happens. Which files/APIs/libs involved.]
+  Step 2 — [Name]: [What happens. Dependencies from Step 1 noted.]
+  Step 3 — [Name]: [etc.]
+  ...
+
+FILES AFFECTED:
+  CREATE: [list]
+  MODIFY: [list]
+  DELETE: [list]
+
+SKILLS REQUIRED:
+  [List any SKILL.md files that must be read before execution]
+
+RISKS:
+  [Any irreversible actions, API costs, data changes, or blockers]
+
+TIME ESTIMATE: [X minutes]
+
+AUTO-EXECUTE ELIGIBLE: [yes / no — see auto-execute rules below]
+
+EXECUTE? → reply GO / ADJUST [what to change] / CANCEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Agent waits for GO before touching anything.
+If Qassim says ADJUST: revise plan and re-present.
+If Qassim says CANCEL: log the task and move on.
+
+---
+
+### PHASE 2 — EXECUTE MODE
+
+Triggered by: Qassim replies GO (or auto-execute rules apply).
+
+Agent executes the approved plan step by step.
+After each step: one-line status update.
+On completion: deliver EXECUTE REPORT.
+
+STEP UPDATE FORMAT (keep brief):
+  ✓ Step 1 complete — [what was done, any key output]
+  ✓ Step 2 complete — [etc.]
+  ⚠ Step 3 blocked — [what's wrong, recommended fix]
+
+EXECUTE REPORT FORMAT:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ EXECUTE COMPLETE: [Task Name]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COMPLETED: [what was built / sent / changed]
+FILES DELIVERED: [links or paths]
+RESULT: [measurable outcome — rows written, leads found, code live]
+NEXT STEP: [what should happen next — always one specific thing]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---
+
+### AUTO-EXECUTE RULES
+
+The following task categories execute WITHOUT waiting for GO.
+Qassim has pre-authorised these. Plan is still shown but
+agent proceeds immediately unless CANCEL is received within
+the first response.
+
+AUTO-EXECUTE (no approval needed):
+→ Reading files and memory (never destructive)
+→ Generating HTML dashboards and reports
+→ Creating new lib/ files or skill templates
+→ Writing markdown documentation
+→ Updating memory/working/today.md or pipeline.md
+→ Building new agents (md files)
+→ Generating outreach copy drafts (not sending)
+→ Building website files and assets
+
+REQUIRE EXPLICIT GO:
+→ Sending any outreach (email, WhatsApp, LinkedIn)
+→ Creating or modifying Airtable records
+→ Making VAPI calls or provisioning phone numbers
+→ Any API call with a cost (Apify, Creatomate, ElevenLabs)
+→ Publishing or deploying anything live
+→ Deleting or overwriting existing client files
+→ Any action touching real money or real communications
+
+---
+
+### SKILL AUTO-LOAD RULES
+
+Before executing any task, agent checks if a SKILL.md applies:
+
+| Task type | SKILL.md to read first |
+|-----------|------------------------|
+| Any visual output / HTML / dashboard | skills/huashu-design/SKILL.md |
+| Dashboard or demo build | skills/dashboard/SKILL.md |
+| Client portal | skills/client-portal/SKILL.md |
+| Understanding codebase structure | skills/graphify/SKILL.md |
+| Word documents | anthropic-skills:docx |
+| Presentations | anthropic-skills:pptx |
+| Spreadsheets | anthropic-skills:xlsx |
+| PDF work | anthropic-skills:pdf |
+| Scheduled tasks | anthropic-skills:schedule |
+
+Agent reads the SKILL.md BEFORE writing any code.
+No exceptions. This is what produces premium output.
+
+---
+
+### CONVERSATION TRIGGERS
+
+Qassim can shift modes at any time using these keywords:
+
+"plan it" → enter plan mode for the current task
+"go" or "GO" → execute the last approved plan
+"adjust: [change]" → revise plan with the change described
+"cancel" → abandon current plan, log it, move on
+"status" → report current step and what's next
+"what's the plan" → re-show the current plan
+"auto" → execute without showing plan (trust mode)
+
+---
+
+### PROACTIVE PLAN TRIGGERS
+
+Agent enters plan mode automatically (without being asked) when:
+→ Session starts and today.md has pending tasks
+→ A pending task has been waiting more than 24 hours
+→ A new revenue opportunity is identified (score ≥ 70)
+→ A client file or memory file is out of date
+→ Code is broken or an API integration is failing
 
 ---
 
