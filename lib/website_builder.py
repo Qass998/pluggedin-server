@@ -860,6 +860,48 @@ def deploy_client_portal(
 # MAIN BUILD PIPELINE
 # ─────────────────────────────────────────────
 
+WIDGET_BASE = "https://pluggedin-server.onrender.com"
+
+def inject_widget(html: str, profile: dict) -> str:
+    """
+    Inject the PluggedIN AI chat + voice widget into a generated site.
+    Inserts a single <script> tag before </body>.
+
+    Widget config comes from the business profile:
+      client_id    → profile["client_id"] or slug of business_name
+      agent_name   → profile["agent_name"] or "AI Assistant"
+      brand color  → profile["brand_color"] or "#6C63FF"
+      cal_link     → profile["cal_link"] or ""
+      vapi_id      → profile["vapi_assistant_id"] or ""
+    """
+    import re
+
+    name       = profile.get("business_name", "Business")
+    slug       = re.sub(r'[^a-z0-9]', '-', name.lower())[:28].strip('-')
+    client_id  = profile.get("client_id", slug)
+    agent_name = profile.get("agent_name", "AI Assistant")
+    color      = profile.get("brand_color", "#6C63FF")
+    cal_link   = profile.get("cal_link", "")
+    vapi_id    = profile.get("vapi_assistant_id", "")
+
+    script = f"""
+  <!-- PluggedIN AI Widget -->
+  <script
+    src="{WIDGET_BASE}/static/widget.js"
+    data-client-id="{client_id}"
+    data-business-name="{name}"
+    data-agent-name="{agent_name}"
+    data-color="{color}"
+    data-cal-link="{cal_link}"
+    data-vapi-id="{vapi_id}"
+    defer
+  ></script>"""
+
+    if "</body>" in html:
+        return html.replace("</body>", script + "\n</body>", 1)
+    return html + script
+
+
 def build_website(profile: dict, deploy: bool = True, token: str = None) -> dict:
     """
     Full pipeline: business profile → copy → HTML → Netlify deploy → URL.
@@ -886,6 +928,10 @@ def build_website(profile: dict, deploy: bool = True, token: str = None) -> dict
     # Step 2: Generate HTML
     print(f"[WebBuilder] Generating animated HTML...")
     html = generate_site_html(profile, copy)
+
+    # Step 2b: Inject AI widget
+    print(f"[WebBuilder] Injecting AI chat + voice widget...")
+    html = inject_widget(html, profile)
 
     if not deploy:
         return {"status": "generated", "html": html, "copy": copy}

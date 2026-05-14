@@ -77,6 +77,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve static files (widget.js, etc.)
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
+if os.path.isdir(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 # Serve dashboard at root
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def serve_dashboard():
@@ -1114,6 +1119,145 @@ async def seed_demo_team(req: SeedDemoRequest):
         "status":    "seeded",
         "client_id": req.client_id,
         "team":      get_team_status(team, req.client_id),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Widget — Embeddable AI chat + voice for client websites
+# ---------------------------------------------------------------------------
+
+# Client config store (in-memory, loaded from Airtable on first request)
+_widget_clients: dict = {}
+
+def _get_widget_client_config(client_id: str) -> dict:
+    """Return client config for widget. Falls back to sensible defaults."""
+    if client_id in _widget_clients:
+        return _widget_clients[client_id]
+    # Try loading from Airtable tenants
+    try:
+        tenant = get_tenant(client_id)
+        if tenant:
+            cfg = {
+                "client_id":    client_id,
+                "business_name": tenant.get("business_name", "Us"),
+                "agent_name":   tenant.get("agent_name", "Assistant"),
+                "industry":     tenant.get("industry", "business"),
+                "services":     tenant.get("services", "our services"),
+                "tone":         tenant.get("tone", "professional yet warm"),
+                "owner_name":   tenant.get("owner_name", "the team"),
+                "owner_phone":  tenant.get("owner_phone", os.getenv("QASSIM_PHONE", "")),
+                "cal_link":     tenant.get("cal_link", ""),
+                "vapi_id":      tenant.get("vapi_assistant_id", ""),
+            }
+            _widget_clients[client_id] = cfg
+            return cfg
+    except Exception:
+        pass
+    # Default fallback
+    return {
+        "client_id":    client_id,
+        "business_name": "Us",
+        "agent_name":   "Assistant",
+        "industry":     "business",
+        "services":     "helping you",
+        "tone":         "professional yet warm",
+        "owner_name":   "the team",
+        "owner_phone":  os.getenv("QASSIM_PHONE", ""),
+        "cal_link":     "",
+        "vapi_id":      "",
+    }
+
+
+class WidgetChatRequest(BaseModel):
+    session_id: str
+    client_id:  str
+    message:    str
+
+class WidgetGreetingRequest(BaseModel):
+    client_id: str
+
+class WidgetCallRequest(BaseModel):
+    session_id: str
+    client_id:  str
+    vapi_id:    str = ""
+
+
+@app.post("/widget/chat")
+async def widget_chat(req: WidgetChatRequest):
+    """
+    Handle a chat message from the embedded website widget.
+    Runs the AI lead qualifier, returns reply + lead state.
+    CORS-open so any client website can call this.
+    """
+    try:
+        from lib.lead_qualifier import handle_widget_message
+        config = _get_widget_client_config(req.client_id)
+        result = handle_widget_message(
+            session_id    = req.session_id,
+            user_message  = req.message,
+            client_config = config,
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/widget/greeting")
+async def widget_greeting(req: WidgetGreetingRequest):
+    """Return a personalised opening greeting for the widget."""
+    try:
+        from lib.lead_qualifier import get_greeting
+        config   = _get_widget_client_config(req.client_id)
+        greeting = get_greeting(config)
+        return {"greeting": greeting}
+    except Exception as e:
+        return {"greeting": "Hi! 👋 How can I help you today?"}
+
+
+@app.post("/widget/call")
+async def widget_call(req: WidgetCallRequest):
+    """
+    Trigger a VAPI web call for the voice receptionist.
+    Returns a web_call_url the widget can use.
+    """
+    try:
+        vapi_id = req.vapi_id or _get_widget_client_config(req.client_id).get("vapi_id", "")
+        if not vapi_id:
+            return {"status": "no_vapi", "message": "Voice receptionist not configured for this client."}
+
+        vapi_key = os.getenv("VAPI_API_KEY", "")
+        if not vapi_key:
+            return {"status": "no_key", "message": "Voice service unavailable."}
+
+        resp = requests.post(
+            "https://api.vapi.ai/call/web",
+            headers={
+                "Authorization": f"Bearer {vapi_key}",
+                "Content-Type":  "application/json",
+            },
+            json={"assistantId": vapi_id},
+            timeout=15,
+        )
+        data = resp.json()
+        return {
+            "status":       "connected",
+            "web_call_url": data.get("webCallUrl", ""),
+            "call_id":      data.get("id", ""),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/widget/config/{client_id}")
+async def widget_config(client_id: str):
+    """Return public widget config for a client (safe fields only)."""
+    config = _get_widget_client_config(client_id)
+    return {
+        "client_id":    config["client_id"],
+        "business_name": config["business_name"],
+        "agent_name":   config["agent_name"],
+        "industry":     config["industry"],
+        "cal_link":     config.get("cal_link", ""),
     }
 
 
