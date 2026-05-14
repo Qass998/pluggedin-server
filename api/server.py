@@ -38,7 +38,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 try:
-    from fastapi import FastAPI, HTTPException, BackgroundTasks
+    from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
     from fastapi.staticfiles import StaticFiles
