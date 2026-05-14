@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harland Construction — PluggedIN Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"
+    crossorigin="anonymous"></script>
+  <style>
+    /* === DESIGN SYSTEM === */
+    :root {
+      --brand:       #6c63ff;
+      --brand-light: #ede9ff;
+      --good:        #16a34a;
+      --good-light:  #dcfce7;
+      --warning:     #d97706;
+      --warning-light: #fef3c7;
+      --critical:    #dc2626;
+      --critical-light: #fee2e2;
+      --neutral:     #6b7280;
+      --bg:          #f4f5f7;
+      --card:        #ffffff;
+      --text:        #1a1a2e;
+      --text-muted:  #6b7280;
+      --border:      #e8eaed;
+      --radius:      10px;
+      --shadow:      0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      animation: fadeUp 0.3s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === LAYOUT === */
+    .container { max-width: 1280px; margin: 0 auto; padding: 24px 24px; }
+
+    /* === HEADER === */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo-mark {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: var(--brand);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: #fff; letter-spacing: -1px;
+    }
+    .client-name { font-size: 20px; font-weight: 700; color: var(--text); }
+    .client-sub  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      font-size: 11px; font-weight: 700; padding: 4px 10px;
+      border-radius: 20px; letter-spacing: .5px; text-transform: uppercase;
+    }
+    .badge-demo    { background: var(--warning-light); color: var(--warning); }
+    .badge-module  { background: var(--brand-light);   color: var(--brand); }
+    .timestamp     { font-size: 12px; color: var(--text-muted); }
+
+    /* === KPI ROW === */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .kpi-label  { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .kpi-value  { font-size: 32px; font-weight: 800; color: var(--text); margin: 8px 0 4px; line-height: 1; }
+    .kpi-sub    { font-size: 12px; color: var(--text-muted); }
+    .kpi-good   .kpi-value { color: var(--good); }
+    .kpi-warn   .kpi-value { color: var(--warning); }
+    .kpi-crit   .kpi-value { color: var(--critical); }
+
+    /* === MAIN GRID === */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* === CARD === */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--brand); display: inline-block; margin-right: 8px;
+    }
+
+    /* === ALERT STRIP === */
+    .alert-strip {
+      border-left: 4px solid var(--warning);
+      background: var(--warning-light);
+      padding: 12px 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .alert-strip.critical { border-left-color: var(--critical); background: var(--critical-light); }
+    .alert-strip strong { display: block; font-weight: 700; margin-bottom: 2px; }
+    .alert-strip small   { color: var(--neutral); font-size: 11px; }
+
+    /* === TABLE === */
+    .table-wrap { overflow-x: auto; margin-top: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px;
+      padding: 8px 12px; border-bottom: 2px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:hover { background: #fafafa; }
+    tbody td { padding: 10px 12px; font-size: 13px; }
+    .pill {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .pill-green  { background: var(--good-light);     color: var(--good); }
+    .pill-amber  { background: var(--warning-light);  color: var(--warning); }
+    .pill-red    { background: var(--critical-light);  color: var(--critical); }
+    .pill-purple { background: var(--brand-light);    color: var(--brand); }
+
+    /* === CHART === */
+    .chart-container { position: relative; height: 220px; }
+
+    /* === BRIEFING === */
+    .ceo-briefing {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .ceo-briefing pre {
+      white-space: pre-wrap;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    /* === ACTIVITY FEED === */
+    .feed-item {
+      display: flex; gap: 12px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--brand-light); color: var(--brand);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .feed-body   { flex: 1; }
+    .feed-action { font-size: 13px; font-weight: 600; }
+    .feed-meta   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* === FOOTER === */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ============ HEADER ============ -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">PI</div>
+      <div>
+        <div class="client-name">Harland Construction</div>
+        <div class="client-sub">Sheffield · Construction &amp; Trades</div>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-demo">⚠ DEMO</span>
+      <span class="badge badge-module">Pipeline Agent</span>
+      <span class="badge badge-module">Intelligence Agent</span>
+    </div>
+    <div class="timestamp">
+      Last updated: <span id="ts"></span>
+      <script>document.getElementById('ts').textContent = new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});</script>
+    </div>
+  </div>
+
+  <!-- ============ CEO BRIEFING ============ -->
+  <div class="ceo-briefing">
+    <div class="card-title" style="margin-bottom:12px;">
+      <span><span class="card-title-dot"></span>CEO Morning Briefing</span>
+      <span class="badge badge-demo">DEMO</span>
+    </div>
+    <pre>SITUATION: 2 subcontractors have expired public liability certificates. Timber prices are up 7% this month — 3 live quotes may need revision before submission. Competitor Apex Build won the Sheffield Council contract worth £340k this week.
+
+PRIORITY: Resolve the compliance gap before any site visit from HSE.
+
+RECOMMENDATION: Request updated certificates from the 2 contractors by EOD today. Review 3 outstanding quotes and adjust materials line by 7%. Add a contingency note if timber prices remain volatile.
+
+REASONING: Expired public liability exposes you personally to claims if an incident occurs on site. With £890k in upcoming tenders, revised quotes protect margin before submission rather than after.
+
+EXPECTED OUTCOME: Compliance resolved in 24 hrs. Quotes protected. Pipeline preserved.
+
+PROCEED?</pre>
+  </div>
+
+  <!-- ============ KPI ROW ============ -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Pipeline Value</div>
+      <div class="kpi-value">£1.4M</div>
+      <div class="kpi-sub">Quoted this month</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Upcoming Tenders</div>
+      <div class="kpi-value" style="color:var(--brand);">3</div>
+      <div class="kpi-sub">Total value £890,000</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversion Rate</div>
+      <div class="kpi-value kpi-good" style="font-size:28px;">34%</div>
+      <div class="kpi-sub">Quote → Order</div>
+    </div>
+    <div class="kpi-card kpi-crit">
+      <div class="kpi-label">Compliance Alerts</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-sub">2 expired liability · 1 CSCS lapsed</div>
+    </div>
+    <div class="kpi-card kpi-warn">
+      <div class="kpi-label">Materials Alert</div>
+      <div class="kpi-value" style="font-size:24px;">+7%</div>
+      <div class="kpi-sub">Timber prices this month</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active Projects</div>
+      <div class="kpi-value" style="color:var(--brand);">8</div>
+      <div class="kpi-sub">On-site now</div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN GRID ============ -->
+  <div class="main-grid">
+
+    <!-- LEFT: Module Panels -->
+    <div>
+
+      <!-- MODULE 2: Pipeline Agent -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-title">
+          <span><span class="card-title-dot"></span>Pipeline Agent — Module 2</span>
+          <span class="badge badge-module">£997/mo</span>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert-strip critical">
+          <strong>⚡ Apex Build won Sheffield Council contract — £340k</strong>
+          <small>Next action: Identify the next council tender on Contracts Finder before Apex bids again</small>
+        </div>
+        <div class="alert-strip">
+          <strong>⚠ Quote #QT-2041 — no follow-up in 5 days</strong>
+          <small>Next action: Automated follow-up sequence triggered at 9am tomorrow</small>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Last Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sheffield City Council</strong></td>
+                <td>£340,000</td>
+                <td><span class="pill pill-purple">Tendering</span></td>
+                <td>88</td>
+                <td>Today</td>
+              </tr>
+              <tr>
+                <td><strong>Meadowbrook Developments</strong></td>
+                <td>£210,000</td>
+                <td><span class="pill pill-green">Quoted</span></td>
+                <td>76</td>
+                <td>2 days ago</td>
+              </tr>
+              <tr>
+                <td><strong>Hallam Retail Park</strong></td>
+                <td>£180,000</td>
+                <td><span class="pill pill-amber">Follow-up due</span></td>
+                <td>71</td>
+                <td>5 days ago</td>
+              </tr>
+              <tr>
+                <td><strong>Northern Rail (fitout)</strong></td>
+                <td>£160,000</td>
+                <td><span class="pill pill-green">Quoted</span></td>
+                <td>64</td>
+                <td>1 day ago</td>
+              </tr>
+              <tr>
+                <td><strong>Thornfield Estates</strong></td>
+                <td>£120,000</td>
+                <td><span class="pill pill-amber">Awaiting brief</span></td>
+                <td>55</td>
+                <td>3 days ago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MODULE 4: Intelligence Agent -->
+      <div class="card">
+        <div class="card-title">
+          <span><span class="card-title-dot"></span>Intelligence Agent — Module 4</span>
+          <span class="badge badge-module">£697/mo</span>
+        </div>
+
+        <div class="alert-strip critical">
+          <strong>🔴 2 subcontractors: expired public liability</strong>
+          <small>Next action: WhatsApp request sent to both — awaiting documents</small>
+        </div>
+        <div class="alert-strip">
+          <strong>⚠ Timber prices +7% — 3 live quotes affected</strong>
+          <small>Next action: Agent flagging quotes QT-2038, QT-2041, QT-2043 for revision</small>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Signal</th>
+                <th>Category</th>
+                <th>Impact</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Apex Build wins Sheffield Council £340k</strong></td>
+                <td><span class="pill pill-red">Competitor</span></td>
+                <td>High</td>
+                <td>Today</td>
+              </tr>
+              <tr>
+                <td><strong>Timber: +7% this month (BuildMark index)</strong></td>
+                <td><span class="pill pill-amber">Materials</span></td>
+                <td>High</td>
+                <td>Today</td>
+              </tr>
+              <tr>
+                <td><strong>Planning app: Kelham Island mixed-use, 120 units</strong></td>
+                <td><span class="pill pill-purple">Opportunity</span></td>
+                <td>High</td>
+                <td>Yesterday</td>
+              </tr>
+              <tr>
+                <td><strong>Steelwork pricing flat — no change expected</strong></td>
+                <td><span class="pill pill-green">Materials</span></td>
+                <td>Low</td>
+                <td>2 days ago</td>
+              </tr>
+              <tr>
+                <td><strong>Contractors Ltd (rival) hiring site managers ×3</strong></td>
+                <td><span class="pill pill-amber">Competitor</span></td>
+                <td>Medium</td>
+                <td>3 days ago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /LEFT -->
+
+    <!-- RIGHT: Charts -->
+    <div>
+
+      <!-- Pipeline Funnel Chart -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-title"><span><span class="card-title-dot"></span>Pipeline Funnel</span></div>
+        <div class="chart-container">
+          <canvas id="funnelChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Signal Distribution Chart -->
+      <div class="card">
+        <div class="card-title"><span><span class="card-title-dot"></span>Intelligence Signals</span></div>
+        <div class="chart-container">
+          <canvas id="signalChart"></canvas>
+        </div>
+      </div>
+
+    </div><!-- /RIGHT -->
+  </div><!-- /main-grid -->
+
+  <!-- ============ AGENT ACTIVITY FEED ============ -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title"><span><span class="card-title-dot"></span>Agent Activity — Last 5 Actions</span></div>
+
+    <div class="feed-item">
+      <div class="feed-icon">📞</div>
+      <div class="feed-body">
+        <div class="feed-action">Pipeline Agent sent follow-up to Hallam Retail Park</div>
+        <div class="feed-meta">Email + LinkedIn · Re: Quote QT-2041 · 5 mins ago</div>
+      </div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-icon">🔴</div>
+      <div class="feed-body">
+        <div class="feed-action">Compliance alert raised — 2 expired public liability certs</div>
+        <div class="feed-meta">WhatsApp requests sent to Mike Barker &amp; T. Rhodes · 1 hr ago</div>
+      </div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-icon">📊</div>
+      <div class="feed-body">
+        <div class="feed-action">Materials Intelligence flagged timber +7%</div>
+        <div class="feed-meta">Quotes QT-2038, QT-2041, QT-2043 flagged for revision · 2 hrs ago</div>
+      </div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-icon">🏗️</div>
+      <div class="feed-body">
+        <div class="feed-action">Planning signal found — Kelham Island 120-unit development</div>
+        <div class="feed-meta">Application ref: 26/01847/FUL · developer contact researched · 3 hrs ago</div>
+      </div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-icon">📝</div>
+      <div class="feed-body">
+        <div class="feed-action">Pipeline Agent added Sheffield Council tender to watchlist</div>
+        <div class="feed-meta">Contracts Finder · Closes 14 May 2026 · £200k–£500k est. · 4 hrs ago</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    PluggedIN · Demo data for Harland Construction, Sheffield ·
+    <span class="badge badge-demo" style="vertical-align:middle;">DEMO — not live data</span> ·
+    &copy; 2026 PluggedIN
+  </div>
+
+</div><!-- /container -->
+
+<!-- ============ CHARTS ============ -->
+<script>
+  // Pipeline Funnel
+  new Chart(document.getElementById('funnelChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Identified', 'Contacted', 'Quoted', 'Negotiating', 'Won'],
+      datasets: [{
+        label: 'Leads',
+        data: [24, 14, 9, 4, 3],
+        backgroundColor: [
+          '#ede9ff', '#c4b5fd', '#a78bfa', '#7c5cfc', '#6c63ff'
+        ],
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.raw} leads`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Signal Donut
+  new Chart(document.getElementById('signalChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Compliance', 'Materials', 'Competitor', 'Opportunity', 'Planning'],
+      datasets: [{
+        data: [3, 4, 2, 3, 5],
+        backgroundColor: ['#dc2626', '#d97706', '#6c63ff', '#16a34a', '#06b6d4'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 11 }, padding: 10, boxWidth: 12 }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>

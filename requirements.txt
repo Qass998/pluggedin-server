@@ -1,0 +1,14 @@
+requests==2.31.0
+python-dotenv==1.0.0
+anthropic==0.25.0
+openai==1.14.0
+flask==3.0.0
+schedule==1.2.1
+twilio==9.0.0
+pyairtable==2.3.3
+apify-client==1.7.0
+elevenlabs==1.9.0
+google-auth==2.29.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.131.0
+cryptography==42.0.7
