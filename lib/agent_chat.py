@@ -26,6 +26,7 @@ Architecture:
   Claude Haiku with persona system prompt → response
 """
 
+from __future__ import annotations
 import os
 import json
 from datetime import datetime
@@ -247,7 +248,6 @@ def chat_with_agent(
     }
     """
     import anthropic
-    client_a = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     agent_id = agent.get("id", f"{client_id}_{agent.get('module_id', 0)}")
 
@@ -262,6 +262,7 @@ def chat_with_agent(
     messages = [{"role": m["role"], "content": m["content"]} for m in history]
 
     try:
+        client_a = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client_a.messages.create(
             model     = "claude-haiku-4-5-20251001",
             max_tokens= 600,

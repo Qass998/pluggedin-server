@@ -27,6 +27,7 @@ It's the architect. It reads the business, designs the team,
 and then hands off a fully operational agent stack.
 """
 
+from __future__ import annotations
 import os
 import json
 from datetime import datetime

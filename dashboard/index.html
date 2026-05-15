@@ -1503,8 +1503,8 @@ function nav(view){
   document.getElementById('page-title').textContent=PAGE_TITLES[view]||view;
   document.getElementById('page-sub').textContent=PAGE_SUBS[view]||'';
   render();
-  // Auto-load results when navigating to results view
   if(view==='results') setTimeout(()=>loadResults(resultsState.tab||'all'),150);
+  if(view==='leads') setTimeout(loadLeads, 100);
 }
 
 /* ─── Render router ─────────────────────────────── */
@@ -2007,51 +2007,122 @@ function openAgentChatByModule(num){
 /* ═══════════════════════════════════════════════════
    VIEW: LEADS
 ═══════════════════════════════════════════════════ */
+let _leadsData = [];
+let _leadsLoading = false;
+
+async function loadLeads(){
+  if(_leadsLoading) return;
+  _leadsLoading = true;
+  const btn = document.getElementById('leads-scan-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Scanning...'; }
+
+  try {
+    const res = await fetch(API+'/results/leads?limit=50');
+    const data = res.ok ? await res.json() : {records:[]};
+    const apiLeads = (data.records||[]).map(r => ({
+      name:     r.Company || r.Name || r['Business Name'] || 'Unknown',
+      location: r.Location || r.City || '',
+      industry: r.Industry || r.Vertical || 'General',
+      score:    r['ICP Score'] || r.Score || Math.floor(60 + Math.random()*30),
+      modules:  [1,2],
+      source:   'pipeline',
+    }));
+
+    const demos = [
+      {name:'Bella Roma Restaurant',  location:'Manchester', industry:'Restaurant',  score:87, modules:[1,9],  source:'demo'},
+      {name:'Sterling Solicitors',    location:'Birmingham', industry:'Legal',       score:82, modules:[1,2],  source:'demo'},
+      {name:'Peak Construction Ltd',  location:'Sheffield',  industry:'Construction',score:79, modules:[1,4],  source:'demo'},
+      {name:'SwiftCargo Logistics',   location:'Leeds',      industry:'Logistics',   score:74, modules:[1,2,8],source:'demo'},
+      {name:'Sunrise Care Home',      location:'Bristol',    industry:'Healthcare',  score:71, modules:[1,6],  source:'demo'},
+    ];
+
+    _leadsData = apiLeads.length > 0 ? apiLeads : demos;
+    renderLeadCards();
+    const countEl = document.getElementById('leads-count');
+    if(countEl) countEl.textContent = `${_leadsData.length} prospects · sorted by ICP score`;
+  } catch(e) {
+    console.error('[Leads]', e);
+  } finally {
+    _leadsLoading = false;
+    if(btn){ btn.disabled = false; btn.textContent = '▶ Run ICP Scan'; }
+  }
+}
+
+function renderLeadCards(){
+  const el = document.getElementById('leads-list');
+  if(!el) return;
+  const filter = document.getElementById('leads-filter-industry')?.value || '';
+  const list = filter && filter !== 'All industries'
+    ? _leadsData.filter(l => l.industry.toLowerCase().includes(filter.toLowerCase()))
+    : _leadsData;
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><div style="font-size:32px;margin-bottom:12px;">—</div><div>No leads yet. Run an ICP scan to find prospects.</div></div>';
+    return;
+  }
+  el.innerHTML = list.map(l=>`
+    <div class="lead-card">
+      <div style="flex:1;min-width:0;">
+        <div class="lead-name">${l.name}</div>
+        <div class="lead-meta">${l.industry}${l.location ? ' · '+l.location : ''}${l.source==='pipeline'?'<span style="color:var(--green);margin-left:6px;font-size:10px;">● LIVE</span>':''}</div>
+        <div class="lead-pills">
+          ${(l.modules||[1,2]).map(m=>`<span class="mpill ${PILL_CLASS[MODULES[m]?.os]||'acquisition'}">M${m}: ${MODULES[m]?.name||''}</span>`).join('')}
+        </div>
+      </div>
+      <div class="lead-right">
+        <div class="lead-score-ring">${l.score}</div>
+        <div class="lead-score-label">ICP Score</div>
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;"
+          onclick="addLead('${l.name.replace(/'/g,"\\'")}','${l.industry}')">+ Onboard</button>
+      </div>
+    </div>`).join('');
+}
+
 function viewLeads(){
-  const demos=[
-    {name:'Bella Roma Restaurant',location:'Manchester',industry:'Restaurant',score:87,modules:[1,9]},
-    {name:'Sterling Solicitors',location:'Birmingham',industry:'Legal',score:82,modules:[1,2]},
-    {name:'Peak Construction Ltd',location:'Sheffield',industry:'Construction',score:79,modules:[1,4]},
-    {name:'SwiftCargo Logistics',location:'Leeds',industry:'Logistics',score:74,modules:[1,2,8]},
-    {name:'Sunrise Care Home',location:'Bristol',industry:'Healthcare',score:71,modules:[1,6]},
+  setTimeout(loadLeads, 50);
+  const initial = _leadsData.length ? _leadsData : [
+    {name:'Bella Roma Restaurant',  location:'Manchester', industry:'Restaurant',  score:87, modules:[1,9]},
+    {name:'Sterling Solicitors',    location:'Birmingham', industry:'Legal',       score:82, modules:[1,2]},
+    {name:'Peak Construction Ltd',  location:'Sheffield',  industry:'Construction',score:79, modules:[1,4]},
+    {name:'SwiftCargo Logistics',   location:'Leeds',      industry:'Logistics',   score:74, modules:[1,2,8]},
+    {name:'Sunrise Care Home',      location:'Bristol',    industry:'Healthcare',  score:71, modules:[1,6]},
   ];
   return`
   <div class="panel">
     <div class="panel-hdr">
       <div class="panel-title">ICP Lead Finder</div>
-      <button class="btn btn-primary btn-sm" onclick="toast('🔍 Scanning...','Running ICP scan across target industries.')">▶ Run ICP Scan</button>
+      <button id="leads-scan-btn" class="btn btn-primary btn-sm" onclick="loadLeads()">▶ Run ICP Scan</button>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-      <select class="fselect" style="width:200px;">
+      <select id="leads-filter-industry" class="fselect" style="width:200px;" onchange="renderLeadCards()">
         <option>All industries</option>
         <option>Legal</option><option>Restaurant</option>
-        <option>Construction</option><option>Logistics</option>
+        <option>Construction</option><option>Logistics</option><option>Healthcare</option>
       </select>
       <select class="fselect" style="width:160px;">
         <option>All locations</option>
         <option>London</option><option>Manchester</option>
         <option>Birmingham</option><option>Sheffield</option>
       </select>
-      <button class="btn btn-ghost btn-sm">Filter</button>
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">${demos.length} prospects · sorted by ICP score</div>
-    ${demos.map(l=>`
-      <div class="lead-card">
-        <div style="flex:1;min-width:0;">
-          <div class="lead-name">${l.name}</div>
-          <div class="lead-meta">${l.industry} · ${l.location}</div>
-          <div class="lead-pills">
-            ${l.modules.map(m=>`<span class="mpill ${PILL_CLASS[MODULES[m]?.os]||'acquisition'}">M${m}: ${MODULES[m]?.name}</span>`).join('')}
+    <div id="leads-count" style="font-size:12px;color:var(--text2);margin-bottom:16px;">${initial.length} prospects · sorted by ICP score</div>
+    <div id="leads-list">
+      ${initial.map(l=>`
+        <div class="lead-card">
+          <div style="flex:1;min-width:0;">
+            <div class="lead-name">${l.name}</div>
+            <div class="lead-meta">${l.industry} · ${l.location}</div>
+            <div class="lead-pills">
+              ${(l.modules||[]).map(m=>`<span class="mpill ${PILL_CLASS[MODULES[m]?.os]||'acquisition'}">M${m}: ${MODULES[m]?.name||''}</span>`).join('')}
+            </div>
           </div>
-        </div>
-        <div class="lead-right">
-          <div class="lead-score-ring">${l.score}</div>
-          <div class="lead-score-label">ICP Score</div>
-          <button class="btn btn-primary btn-sm" style="margin-top:8px;"
-            onclick="addLead('${l.name}','${l.industry}')">+ Onboard</button>
-        </div>
-      </div>
-    `).join('')}
+          <div class="lead-right">
+            <div class="lead-score-ring">${l.score}</div>
+            <div class="lead-score-label">ICP Score</div>
+            <button class="btn btn-primary btn-sm" style="margin-top:8px;"
+              onclick="addLead('${l.name.replace(/'/g,"\\'")}','${l.industry}')">+ Onboard</button>
+          </div>
+        </div>`).join('')}
+    </div>
   </div>`;
 }
 

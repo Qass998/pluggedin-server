@@ -21,6 +21,7 @@ All three steps tracked in _active_demos dict.
 Dashboard polls /demo/status/{demo_id} for live progress.
 """
 
+from __future__ import annotations
 import os
 import uuid
 import time

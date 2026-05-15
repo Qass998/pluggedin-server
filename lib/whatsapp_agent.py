@@ -20,6 +20,7 @@ CEO morning briefing:
   Summarises all overnight conversations and hot leads.
 """
 
+from __future__ import annotations
 import os
 import re
 import json
