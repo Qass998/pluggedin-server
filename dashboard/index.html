@@ -4333,7 +4333,7 @@ function viewSettings(){
 ═══════════════════════════════════════════════════ */
 const AGENT_SKILLS = {
   1:{ skills:['inbound-lead-triage','inbound-lead-qualification'], mcps:['Gmail','Google Calendar'] },
-  2:{ skills:['outbound-prospecting-engine','signal-detection-pipeline','icp-identification','apollo-lead-finder'], mcps:['Apify','Vibe Prospecting','Gmail'] },
+  2:{ skills:['outbound-prospecting-engine','signal-detection-pipeline','icp-identification','apollo-lead-finder','icp-gate','pipeline-state','conversation-memory','followup-engine'], mcps:['Apify','Vibe Prospecting','Gmail','Airtable'] },
   3:{ skills:['competitor-ad-intelligence','content-asset-creator','ad-angle-miner','meta-ads-campaign-builder'], mcps:['Apify','Gmail'] },
   4:{ skills:['competitor-monitoring-system','industry-scanner','signal-scanner','review-intelligence-digest'], mcps:['Apify','Brave Search'] },
   5:{ skills:['sales-call-prep','sales-coaching','pipeline-review','battlecard-generator'], mcps:['Airtable','Google Drive'] },
@@ -4366,15 +4366,16 @@ const AGENT_REGISTRY = {
   2:{
     name:'Pipeline Agent', icon:'', color:'oklch(72% 0.18 200)',
     scope:'client',
-    tagline:'Scrapes leads, qualifies them and kicks off outreach',
+    tagline:'Scrapes leads, qualifies them, and runs autonomous follow-up until they close',
     what_it_does:[
-      'Scrapes Google Maps, LinkedIn, and directories for businesses matching your criteria',
-      'Scores each lead by size, revenue signals, and fit score',
-      'Drafts personalised cold email/DM sequences per lead',
-      'Logs all leads to Airtable with full contact details',
-      'Triggers follow-up sequences after 3/7/14 days automatically',
+      'Scrapes Google Maps, LinkedIn, and directories for businesses matching your ICP',
+      'Gates every lead through a 4-dimension ICP score — only contacts leads scoring 60+',
+      'Runs a state machine per lead: QUALIFIED → READY → PENDING → CONNECTED → CLOSED',
+      'Extracts and remembers facts from every reply (company size, budget, objections)',
+      'Makes structured follow-up decisions: send message / wait / close — with reasons',
+      'Auto-closes unresponsive leads after 3 attempts and logs outcomes to Airtable',
     ],
-    outputs:['Qualified lead list','Personalised outreach emails','Follow-up sequences','Airtable lead database'],
+    outputs:['Scored lead list with ICP gate decisions','Personalised outreach sequences','Per-lead conversation facts','Outcome tracking (converted/not_interested/wrong_fit/...)','Airtable lead database'],
     trigger_phrases:['find me leads','scrape businesses','build my pipeline','cold outreach','prospect for clients'],
     time_to_run:'5–15 minutes (50–200 leads)',
     airtable_table:'Leads',
