@@ -6,41 +6,44 @@
 <title>PluggedIN OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <style>
 /* ─── Reset ─────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#080d14;
-  --surface:#0e1521;
-  --card:#111927;
-  --card2:#161e2c;
-  --card3:#1a2436;
-  --border:#1e2d42;
-  --border2:#243348;
-  --accent:#7c6fff;
-  --accent2:#a78bfa;
-  --accent-glow:#7c6fff22;
-  --accent-glow2:#7c6fff44;
-  --green:#22c55e;
-  --green-dim:#22c55e18;
-  --yellow:#f59e0b;
-  --yellow-dim:#f59e0b18;
-  --red:#ef4444;
-  --red-dim:#ef444418;
-  --blue:#3b82f6;
-  --blue-dim:#3b82f618;
-  --cyan:#06b6d4;
-  --text:#e2eaf6;
-  --text2:#94a3b8;
-  --muted:#4a5568;
-  --sidebar:228px;
-  --topbar:60px;
+  --bg:        oklch(6% 0 0);
+  --surface:   oklch(10% 0 0);
+  --card:      oklch(12% 0 0);
+  --card2:     oklch(14% 0 0);
+  --card3:     oklch(16% 0 0);
+  --border:    oklch(20% 0 0);
+  --border2:   oklch(24% 0 0);
+  --accent:    oklch(74% 0.18 65);
+  --accent2:   oklch(78% 0.16 70);
+  --accent-glow:  oklch(74% 0.18 65 / 0.10);
+  --accent-glow2: oklch(74% 0.18 65 / 0.20);
+  --green:     oklch(72% 0.18 145);
+  --green-dim: oklch(72% 0.18 145 / 0.12);
+  --yellow:    oklch(85% 0.18 90);
+  --yellow-dim:oklch(85% 0.18 90 / 0.12);
+  --red:       oklch(65% 0.22 25);
+  --red-dim:   oklch(65% 0.22 25 / 0.12);
+  --blue:      oklch(65% 0.18 260);
+  --blue-dim:  oklch(65% 0.18 260 / 0.12);
+  --pink:      oklch(70% 0.2 340);
+  --text:      oklch(95% 0 0);
+  --text2:     oklch(65% 0 0);
+  --muted:     oklch(38% 0 0);
+  --sidebar:   240px;
+  --topbar:    62px;
 }
 html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.brand-name,.hero-mrr,.modal-title,.kpi-value,.rev-card-val{font-family:'Syne',sans-serif;}
 button{cursor:pointer;border:none;background:none;color:inherit;font:inherit;}
 input,select{font:inherit;color:var(--text);}
 a{color:inherit;text-decoration:none;}
+p{text-wrap:pretty;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#1e2d42;border-radius:10px;}
@@ -68,10 +71,11 @@ a{color:inherit;text-decoration:none;}
 }
 .brand-logo{
   width:36px;height:36px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,#7c6fff 0%,#a78bfa 50%,#c4b5fd 100%);
+  background:var(--accent);
   display:flex;align-items:center;justify-content:center;
-  font-size:17px;font-weight:900;color:#fff;
-  box-shadow:0 4px 14px #7c6fff55;
+  font-size:17px;font-weight:900;color:oklch(6% 0 0);
+  font-family:'Syne',sans-serif;
+  box-shadow:0 4px 14px oklch(74% 0.18 65 / 0.4);
 }
 .brand-text{}
 .brand-name{font-size:14px;font-weight:800;letter-spacing:-.01em;color:var(--text);}
@@ -93,9 +97,9 @@ a{color:inherit;text-decoration:none;}
 .nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.8;}
 .nav-item:hover{background:var(--card);color:var(--text);}
 .nav-item.active{
-  background:linear-gradient(135deg,#7c6fff1a,#a78bfa0d);
-  color:var(--accent2);
-  border:1px solid #7c6fff22;
+  background:var(--accent-glow);
+  color:var(--accent);
+  border:1px solid oklch(74% 0.18 65 / 0.18);
 }
 .nav-item.active svg{opacity:1;}
 .nav-badge{
@@ -132,7 +136,7 @@ a{color:inherit;text-decoration:none;}
   padding:0 28px;gap:16px;
 }
 .topbar-left{display:flex;align-items:center;gap:12px;min-width:0;}
-.topbar-title{font-size:17px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;}
+.topbar-title{font-size:17px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;font-family:'Syne',sans-serif;}
 .topbar-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
 .topbar-sub{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
@@ -144,11 +148,12 @@ a{color:inherit;text-decoration:none;}
   cursor:pointer;transition:all .15s;white-space:nowrap;
 }
 .btn-primary{
-  background:linear-gradient(135deg,#7c6fff,#a78bfa);
-  color:#fff;
-  box-shadow:0 2px 12px #7c6fff40;
+  background:var(--accent);
+  color:oklch(6% 0 0);
+  font-weight:700;
+  box-shadow:0 2px 14px oklch(74% 0.18 65 / 0.35);
 }
-.btn-primary:hover{box-shadow:0 4px 20px #7c6fff60;transform:translateY(-1px);}
+.btn-primary:hover{box-shadow:0 4px 22px oklch(74% 0.18 65 / 0.5);transform:translateY(-1px);}
 .btn-ghost{background:var(--card2);border:1px solid var(--border2);color:var(--text2);}
 .btn-ghost:hover{background:var(--card3);color:var(--text);border-color:var(--border2);}
 .btn-sm{padding:6px 12px;font-size:11.5px;}
@@ -177,7 +182,7 @@ a{color:inherit;text-decoration:none;}
   width:80px;height:80px;border-radius:50%;
   filter:blur(30px);opacity:.12;pointer-events:none;
 }
-.kpi-card.purple::before{background:#7c6fff;}
+.kpi-card.purple::before{background:var(--accent);}
 .kpi-card.green::before{background:#22c55e;}
 .kpi-card.yellow::before{background:#f59e0b;}
 .kpi-card.blue::before{background:#3b82f6;}
@@ -189,7 +194,7 @@ a{color:inherit;text-decoration:none;}
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .kpi-icon svg{width:18px;height:18px;}
-.kpi-icon.purple{background:#7c6fff18;}
+.kpi-icon.purple{background:var(--accent-glow);}
 .kpi-icon.green{background:#22c55e18;}
 .kpi-icon.yellow{background:#f59e0b18;}
 .kpi-icon.blue{background:#3b82f618;}
@@ -199,7 +204,7 @@ a{color:inherit;text-decoration:none;}
 .kpi-body{}
 .kpi-label{font-size:10.5px;color:var(--text2);font-weight:600;letter-spacing:.04em;margin-bottom:4px;}
 .kpi-value{font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--text);}
-.kpi-value.accent{color:var(--accent2);}
+.kpi-value.accent{color:var(--accent);}
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:3px;}
 .kpi-change{
   font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block;
@@ -212,8 +217,8 @@ a{color:inherit;text-decoration:none;}
    HERO BANNER
 ═══════════════════════════════════ */
 .hero-banner{
-  background:linear-gradient(135deg,#1a1440 0%,#0e1521 50%,#0f1a2e 100%);
-  border:1px solid #7c6fff22;
+  background:var(--card);
+  border:1px solid oklch(74% 0.18 65 / 0.18);
   border-radius:16px;padding:24px 28px;
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:24px;gap:24px;
@@ -222,19 +227,19 @@ a{color:inherit;text-decoration:none;}
 .hero-banner::before{
   content:'';position:absolute;top:-60px;right:-60px;
   width:220px;height:220px;border-radius:50%;
-  background:radial-gradient(circle,#7c6fff33 0%,transparent 70%);
+  background:radial-gradient(circle,oklch(74% 0.18 65 / 0.12) 0%,transparent 70%);
   pointer-events:none;
 }
 .hero-banner::after{
   content:'';position:absolute;bottom:-80px;left:30%;
   width:180px;height:180px;border-radius:50%;
-  background:radial-gradient(circle,#a78bfa22 0%,transparent 70%);
+  background:radial-gradient(circle,oklch(74% 0.18 65 / 0.06) 0%,transparent 70%);
   pointer-events:none;
 }
 .hero-left{display:flex;align-items:center;gap:20px;min-width:0;}
 .hero-ring{flex-shrink:0;}
 .hero-text{}
-.hero-label{font-size:11px;color:var(--accent2);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.hero-label{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
 .hero-mrr{font-size:32px;font-weight:800;letter-spacing:-.04em;color:var(--text);}
 .hero-mrr span{font-size:16px;font-weight:500;color:var(--text2);margin-left:4px;}
 .hero-target{font-size:12px;color:var(--text2);margin-top:4px;}
@@ -247,8 +252,8 @@ a{color:inherit;text-decoration:none;}
 /* Progress ring */
 .ring-wrap{position:relative;width:72px;height:72px;}
 .ring-wrap svg{transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:#1e2d42;stroke-width:6;}
-.ring-fill{fill:none;stroke:url(#ringGrad);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:6;}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);}
 .ring-label{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -285,7 +290,7 @@ a{color:inherit;text-decoration:none;}
   background:var(--card);border:1px solid var(--border);border-radius:14px;
   overflow:hidden;transition:all .2s;cursor:pointer;
 }
-.biz-card:hover{border-color:var(--accent);box-shadow:0 4px 24px #7c6fff15;}
+.biz-card:hover{border-color:var(--accent);box-shadow:0 4px 24px oklch(74% 0.18 65 / 0.12);}
 
 .biz-card-inner{padding:18px 20px 14px;}
 .biz-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
@@ -303,7 +308,7 @@ a{color:inherit;text-decoration:none;}
 .biz-meta{font-size:11.5px;color:var(--text2);margin-top:2px;}
 .biz-plan{
   display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;
-  border-radius:20px;background:#7c6fff18;color:var(--accent2);border:1px solid #7c6fff22;
+  border-radius:20px;background:var(--accent-glow);color:var(--accent);border:1px solid oklch(74% 0.18 65 / 0.2);
   margin-top:4px;
 }
 
@@ -316,7 +321,7 @@ a{color:inherit;text-decoration:none;}
 .biz-progress-label{font-size:11px;color:var(--text2);}
 .biz-progress-pct{font-size:11px;font-weight:700;color:var(--text);}
 .biz-progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.biz-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#7c6fff,#a78bfa);transition:width .5s;}
+.biz-progress-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .5s;}
 
 /* Checklist */
 .checklist{display:flex;flex-direction:column;gap:0;}
@@ -331,14 +336,14 @@ a{color:inherit;text-decoration:none;}
   transition:all .2s;
 }
 .check-circle.done{
-  background:linear-gradient(135deg,#7c6fff,#a78bfa);border-color:transparent;
+  background:var(--accent);border-color:transparent;
 }
 .check-circle.done::after{content:'✓';font-size:9px;color:#fff;font-weight:700;}
 .check-text{color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .check-text.done{text-decoration:line-through;color:var(--muted);}
 .check-tag{
   flex-shrink:0;font-size:9.5px;font-weight:700;padding:2px 7px;
-  border-radius:5px;background:#7c6fff12;color:var(--accent);
+  border-radius:5px;background:var(--accent-glow);color:var(--accent);
 }
 
 /* Card footer */
@@ -369,7 +374,7 @@ a{color:inherit;text-decoration:none;}
   font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;
   letter-spacing:.02em;
 }
-.mpill.acquisition{background:#7c6fff18;color:var(--accent2);border:1px solid #7c6fff20;}
+.mpill.acquisition{background:var(--accent-glow);color:var(--accent);border:1px solid oklch(74% 0.18 65 / 0.18);}
 .mpill.growth{background:#22c55e15;color:var(--green);border:1px solid #22c55e20;}
 .mpill.intel{background:#f59e0b15;color:var(--yellow);border:1px solid #f59e0b20;}
 
@@ -395,7 +400,7 @@ a{color:inherit;text-decoration:none;}
 .activity-dot-wrap{flex-shrink:0;padding-top:3px;}
 .activity-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
 .activity-dot.green{background:var(--green);box-shadow:0 0 6px #22c55e66;}
-.activity-dot.purple{background:var(--accent);box-shadow:0 0 6px #7c6fff66;}
+.activity-dot.purple{background:var(--accent);box-shadow:0 0 6px oklch(74% 0.18 65 / 0.4);}
 .activity-dot.yellow{background:var(--yellow);box-shadow:0 0 6px #f59e0b44;}
 .activity-body{min-width:0;}
 .activity-msg{font-size:12px;color:var(--text2);line-height:1.4;}
@@ -415,7 +420,7 @@ a{color:inherit;text-decoration:none;}
 }
 .mq-row:last-child{border-bottom:none;}
 .mq-name{color:var(--text2);}
-.mq-price{color:var(--accent2);font-weight:700;}
+.mq-price{color:var(--accent);font-weight:700;}
 
 /* ═══════════════════════════════════
    TABLE / PANEL (Agents, Revenue)
@@ -443,7 +448,7 @@ a{color:inherit;text-decoration:none;}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
 .badge-green{background:#22c55e18;color:var(--green);}
 .badge-yellow{background:#f59e0b18;color:var(--yellow);}
-.badge-purple{background:#7c6fff18;color:var(--accent2);}
+.badge-amber{background:var(--accent-glow);color:var(--accent);}
 .badge-gray{background:#ffffff0d;color:var(--text2);}
 .badge-blue{background:#3b82f618;color:var(--blue);}
 .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
@@ -458,7 +463,7 @@ a{color:inherit;text-decoration:none;}
 }
 .rev-card-label{font-size:10.5px;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
 .rev-card-val{font-size:28px;font-weight:800;letter-spacing:-.03em;}
-.rev-card-val.accent{color:var(--accent2);}
+.rev-card-val.accent{color:var(--accent);}
 .rev-card-sub{font-size:12px;color:var(--text2);margin-top:6px;}
 
 /* ═══════════════════════════════════
@@ -483,7 +488,7 @@ a{color:inherit;text-decoration:none;}
 .lead-right{text-align:right;flex-shrink:0;}
 .lead-score-ring{display:inline-flex;align-items:center;justify-content:center;
   width:48px;height:48px;border-radius:50%;
-  border:2px solid var(--accent);font-size:15px;font-weight:800;color:var(--accent2);}
+  border:2px solid var(--accent);font-size:15px;font-weight:800;color:var(--accent);}
 .lead-score-label{font-size:10px;color:var(--text2);margin-top:3px;}
 
 /* ═══════════════════════════════════
@@ -547,7 +552,7 @@ a{color:inherit;text-decoration:none;}
   display:flex;justify-content:space-between;align-items:center;
 }
 .mrr-preview-label{font-size:12px;color:var(--text2);}
-.mrr-preview-val{font-size:22px;font-weight:800;color:var(--accent2);letter-spacing:-.02em;}
+.mrr-preview-val{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-.02em;}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:26px;}
 
 /* ═══════════════════════════════════
@@ -575,7 +580,7 @@ a{color:inherit;text-decoration:none;}
 .briefing-client{font-size:15px;font-weight:700;}
 .briefing-body{display:flex;flex-direction:column;gap:8px;}
 .briefing-row{display:flex;gap:10px;font-size:13px;line-height:1.5;}
-.briefing-key{font-size:11px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;min-width:130px;flex-shrink:0;padding-top:1px;}
+.briefing-key{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;min-width:130px;flex-shrink:0;padding-top:1px;}
 .briefing-val{color:var(--text2);}
 
 /* ═══════════════════════════════════
@@ -592,7 +597,7 @@ a{color:inherit;text-decoration:none;}
 .settings-row:last-child{border-bottom:none;}
 .settings-key{font-size:13px;color:var(--text2);}
 .settings-val{font-size:13px;font-weight:600;}
-code{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:3px 10px;font-size:12px;font-family:'SF Mono',monospace;color:var(--accent2);}
+code{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:3px 10px;font-size:12px;font-family:'SF Mono',monospace;color:var(--accent);}
 
 /* ═══════════════════════════════════
    CEO AGENT PANEL
@@ -600,11 +605,11 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 .btn-ceo{
   display:flex;align-items:center;gap:7px;
   padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;
-  background:linear-gradient(135deg,#7c6fff22,#a78bfa18);
-  border:1px solid #7c6fff44;color:var(--accent2);
+  background:var(--accent-glow);
+  border:1px solid oklch(74% 0.18 65 / 0.28);color:var(--accent);
   cursor:pointer;transition:all .2s;
 }
-.btn-ceo:hover{background:linear-gradient(135deg,#7c6fff33,#a78bfa28);border-color:#7c6fff77;box-shadow:0 0 16px #7c6fff22;}
+.btn-ceo:hover{background:var(--accent-glow2);border-color:oklch(74% 0.18 65 / 0.5);box-shadow:0 0 18px oklch(74% 0.18 65 / 0.18);}
 .ceo-btn-dot{
   width:7px;height:7px;border-radius:50%;background:var(--green);
   box-shadow:0 0 6px #22c55e88;animation:pulse 2s infinite;flex-shrink:0;
@@ -619,8 +624,8 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 /* CEO message bubbles */
 .ceo-msg-user{
   align-self:flex-end;background:var(--accent-glow2);
-  border:1px solid #7c6fff33;border-radius:14px 14px 4px 14px;
-  padding:10px 14px;font-size:13px;color:var(--accent2);max-width:85%;
+  border:1px solid oklch(74% 0.18 65 / 0.22);border-radius:14px 14px 4px 14px;
+  padding:10px 14px;font-size:13px;color:var(--accent);max-width:85%;
   line-height:1.55;
 }
 .ceo-msg-agent{
@@ -637,7 +642,7 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
   cursor:pointer;transition:all .2s;
 }
 .ceo-action-btn:hover{background:var(--accent-glow2);border-color:var(--accent);}
-.ceo-action-btn.primary{background:var(--accent-glow2);border-color:#7c6fff55;color:var(--accent2);}
+.ceo-action-btn.primary{background:var(--accent-glow2);border-color:oklch(74% 0.18 65 / 0.35);color:var(--accent);}
 .ceo-thinking{
   align-self:flex-start;display:flex;align-items:center;gap:8px;
   padding:10px 14px;background:var(--card2);border:1px solid var(--border);
@@ -645,7 +650,7 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 }
 .ceo-thinking-dots span{
   display:inline-block;width:5px;height:5px;border-radius:50%;
-  background:var(--accent2);margin:0 2px;
+  background:var(--accent);margin:0 2px;
   animation:ceo-dot .9s infinite;
 }
 .ceo-thinking-dots span:nth-child(2){animation-delay:.2s;}
@@ -658,8 +663,8 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 
 /* Master CEO banner */
 .master-ceo-banner{
-  background:linear-gradient(135deg,#0e1521 0%,#1a1440 50%,#0f1a2e 100%);
-  border:1px solid #7c6fff33;border-radius:16px;
+  background:var(--card);
+  border:1px solid oklch(74% 0.18 65 / 0.2);border-radius:16px;
   padding:22px 28px;margin-bottom:20px;
   display:flex;align-items:center;justify-content:space-between;gap:20px;
   position:relative;overflow:hidden;
@@ -667,17 +672,18 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 .master-ceo-banner::before{
   content:'';position:absolute;top:-50px;right:-50px;
   width:200px;height:200px;border-radius:50%;
-  background:radial-gradient(circle,#7c6fff25 0%,transparent 70%);pointer-events:none;
+  background:radial-gradient(circle,oklch(74% 0.18 65 / 0.1) 0%,transparent 70%);pointer-events:none;
 }
 .master-ceo-left{display:flex;align-items:center;gap:16px;}
 .master-ceo-avatar{
   width:52px;height:52px;border-radius:14px;flex-shrink:0;
-  background:linear-gradient(135deg,#7c6fff,#a78bfa);
+  background:var(--accent);
   display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:900;color:#fff;
-  box-shadow:0 4px 20px #7c6fff44;
+  font-size:22px;font-weight:900;color:oklch(6% 0 0);
+  font-family:'Syne',sans-serif;
+  box-shadow:0 4px 20px oklch(74% 0.18 65 / 0.3);
 }
-.master-ceo-label{font-size:10px;font-weight:700;color:var(--accent2);
+.master-ceo-label{font-size:10px;font-weight:700;color:var(--accent);
   letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;}
 .master-ceo-name{font-size:17px;font-weight:800;letter-spacing:-.02em;}
 .master-ceo-sub{font-size:12px;color:var(--text2);margin-top:2px;}
@@ -704,9 +710,9 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 }
 .brief-priority-num{
   width:22px;height:22px;border-radius:50%;
-  background:linear-gradient(135deg,#7c6fff,#a78bfa);
+  background:var(--accent);
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:#fff;flex-shrink:0;
+  font-size:11px;font-weight:800;color:oklch(6% 0 0);flex-shrink:0;
 }
 .brief-priority-text{font-size:13px;color:var(--text2);line-height:1.4;}
 
@@ -766,12 +772,12 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 .ceo-module-dot{
   width:22px;height:22px;border-radius:6px;
   display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:700;color:#fff;
-  background:#7c6fff44;
+  font-size:9px;font-weight:700;color:oklch(6% 0 0);
+  background:var(--accent-glow2);
 }
 .ceo-ask-btn{
-  font-size:11.5px;font-weight:600;color:var(--accent2);
-  background:var(--accent-glow);border:1px solid #7c6fff22;
+  font-size:11.5px;font-weight:600;color:var(--accent);
+  background:var(--accent-glow);border:1px solid oklch(74% 0.18 65 / 0.18);
   border-radius:8px;padding:6px 12px;
   transition:all .15s;cursor:pointer;white-space:nowrap;
 }
@@ -790,8 +796,8 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 }
 .ask-msg{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;max-width:90%;}
 .ask-msg.user{
-  background:var(--accent-glow);border:1px solid #7c6fff22;
-  color:var(--accent2);align-self:flex-end;
+  background:var(--accent-glow);border:1px solid oklch(74% 0.18 65 / 0.18);
+  color:var(--accent);align-self:flex-end;
 }
 .ask-msg.advisor{
   background:var(--card2);border:1px solid var(--border);
@@ -839,13 +845,13 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 .rpill{
   font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;
 }
-.rpill-job{background:rgba(6,182,212,.15);color:#06b6d4;}
-.rpill-lead{background:rgba(124,111,255,.15);color:#7c6fff;}
-.rpill-content{background:rgba(34,197,94,.15);color:#22c55e;}
-.rpill-review{background:rgba(236,72,153,.15);color:#ec4899;}
-.rpill-task{background:rgba(245,158,11,.15);color:#f59e0b;}
-.rpill-signal{background:rgba(16,185,129,.15);color:#10b981;}
-.rpill-done{background:rgba(34,197,94,.15);color:#22c55e;}
+.rpill-job{background:oklch(72% 0.18 200 / 0.15);color:oklch(72% 0.18 200);}
+.rpill-lead{background:var(--accent-glow);color:var(--accent);}
+.rpill-content{background:var(--green-dim);color:var(--green);}
+.rpill-review{background:oklch(70% 0.2 340 / 0.15);color:oklch(70% 0.2 340);}
+.rpill-task{background:var(--yellow-dim);color:var(--yellow);}
+.rpill-signal{background:oklch(72% 0.18 165 / 0.15);color:oklch(72% 0.18 165);}
+.rpill-done{background:var(--green-dim);color:var(--green);}
 .rpill-running{background:rgba(245,158,11,.15);color:#f59e0b;}
 .rpill-error{background:rgba(239,68,68,.15);color:#ef4444;}
 .rcard-chevron{color:var(--text3);transition:transform .2s;}
@@ -956,8 +962,8 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#7c6fff"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+      <stop offset="0%" stop-color="oklch(74% 0.18 65)"/>
+      <stop offset="100%" stop-color="oklch(78% 0.16 70)"/>
     </linearGradient>
   </defs>
 </svg>
@@ -975,7 +981,7 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
   <div style="padding:20px 22px 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c6fff,#a78bfa);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px #7c6fff44;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px oklch(74% 0.18 65 / 0.3);flex-shrink:0;">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
         <div>
@@ -1017,7 +1023,7 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
         oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';this.style.borderColor='var(--accent)'"
         onblur="this.style.borderColor='var(--border2)'"
       ></textarea>
-      <button onclick="ceoSend()" style="width:40px;height:40px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s;" onmouseover="this.style.background='var(--accent2)'" onmouseout="this.style.background='var(--accent)'">
+      <button onclick="ceoSend()" style="width:40px;height:40px;border-radius:10px;background:var(--accent);border:none;color:oklch(6% 0 0);font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>
@@ -1028,11 +1034,11 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 <!-- ═══════════════════ DATA ══════════════════════════ -->
 <script>
 const MODULES = {
-  1:{ name:'Presence Agent',       os:'acquisition', price:797,  color:'#7c6fff', steps:[
+  1:{ name:'Presence Agent',       os:'acquisition', price:797,  color:'oklch(74% 0.18 65)', steps:[
     'VAPI assistant created','Phone number assigned','Knowledge base loaded',
     'Greeting customised','Cal.com booking set'
   ]},
-  2:{ name:'Pipeline Agent',       os:'acquisition', price:997,  color:'#a78bfa', steps:[
+  2:{ name:'Pipeline Agent',       os:'acquisition', price:997,  color:'oklch(72% 0.18 200)', steps:[
     'Airtable base configured','Lead sources defined',
     'First scrape completed','Outreach sequence active'
   ]},
@@ -1049,10 +1055,10 @@ const MODULES = {
   6:{ name:'Data Intelligence',    os:'intelligence',price:897,  color:'#f59e0b', steps:[
     'KPIs defined','Airtable connected','First board pack generated'
   ]},
-  7:{ name:'Conversion Agent',     os:'acquisition', price:897,  color:'#7c6fff', steps:[
+  7:{ name:'Conversion Agent',     os:'acquisition', price:897,  color:'oklch(74% 0.18 65)', steps:[
     'Website connected','Lead scoring live','Hot leads flagged'
   ]},
-  8:{ name:'Lead Marketplace',     os:'acquisition', price:997,  color:'#a78bfa', steps:[
+  8:{ name:'Lead Marketplace',     os:'acquisition', price:997,  color:'oklch(72% 0.18 200)', steps:[
     'Outbound VAPI live','Buyer list loaded','First match made'
   ]},
   9:{ name:'Customer Retention OS',os:'growth',      price:497,  color:'#22c55e', steps:[
@@ -1075,14 +1081,14 @@ const MODULES = {
 const OS_LABELS = { acquisition:'Acquisition OS', growth:'Growth OS', intelligence:'Intelligence OS' };
 const OS_GROUPS = { acquisition:[1,2,7,8], growth:[3,9,11], intelligence:[4,5,6,10,12] };
 const PILL_CLASS = { acquisition:'acquisition', growth:'growth', intelligence:'intel' };
-const BIZ_COLORS = ['#7c6fff','#22c55e','#f59e0b','#3b82f6','#ef4444','#06b6d4','#a78bfa','#ec4899'];
+const BIZ_COLORS = ['oklch(74% 0.18 65)','oklch(72% 0.18 145)','oklch(85% 0.18 90)','oklch(65% 0.18 260)','oklch(65% 0.22 25)','oklch(72% 0.18 200)','oklch(78% 0.16 70)','oklch(70% 0.2 340)'];
 
 let clients = [
   {
     id:'gromatic', name:'Gromatic', industry:'Legal', location:'London, UK',
     plan:'Starter', modules:[1],
     setup:{ 1:[true,false,true,true,false] },
-    mrr:797, health:72, color:'#7c6fff',
+    mrr:797, health:72, color:'oklch(74% 0.18 65)',
   },
 ];
 
@@ -1124,7 +1130,7 @@ function totalSetupSteps(){
 }
 function atRiskCount(){ return clients.filter(c=>c.health<60).length; }
 
-const API='http://localhost:8000';
+const API=window.location.origin;
 async function apiGet(path){
   try{const r=await fetch(API+path,{signal:AbortSignal.timeout(3000)});return r.ok?await r.json():null;}
   catch{return null;}
@@ -1531,7 +1537,7 @@ function render(){
 /* ═══════════════════════════════════════════════════
    SPARKLINE
 ═══════════════════════════════════════════════════ */
-function sparkline(data, color='#7c6fff', w=80, h=30){
+function sparkline(data, color='oklch(74% 0.18 65)', w=80, h=30){
   const max=Math.max(...data); const min=Math.min(...data);
   const range=max-min||1;
   const pts=data.map((v,i)=>{
@@ -1574,16 +1580,16 @@ function progressRing(pct, size=72, strokeW=6, color='url(#ringGrad)'){
   </div>`;
 }
 
-function smallRing(pct, size=44, color='#7c6fff'){
+function smallRing(pct, size=44, color='oklch(74% 0.18 65)'){
   const strokeW=4;
   const r=(size-strokeW*2)/2;
   const circ=2*Math.PI*r;
   const offset=circ*(1-pct/100);
   const cx=size/2, cy=size/2;
-  const hc=color==='green'?'#22c55e':color==='yellow'?'#f59e0b':color;
+  const hc=color==='green'?'oklch(72% 0.18 145)':color==='yellow'?'oklch(85% 0.18 90)':color;
   return`<div style="position:relative;width:${size}px;height:${size}px;flex-shrink:0;">
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
-      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1e2d42" stroke-width="${strokeW}"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${strokeW}"/>
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${hc}" stroke-width="${strokeW}"
         stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
     </svg>
@@ -1594,7 +1600,7 @@ function smallRing(pct, size=44, color='#7c6fff'){
 /* ═══════════════════════════════════════════════════
    SVG BAR CHART
 ═══════════════════════════════════════════════════ */
-function barChart(labels, values, color='#7c6fff', h=120){
+function barChart(labels, values, color='oklch(74% 0.18 65)', h=120){
   const w=480; const max=Math.max(...values,1);
   const bw=Math.floor(w/values.length*0.55);
   const gap=(w-bw*values.length)/(values.length+1);
@@ -1675,9 +1681,9 @@ function viewDashboard(){
     <div class="kpi-card purple">
       <div class="kpi-top">
         <div class="kpi-icon purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#7c6fff" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="oklch(74% 0.18 65)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         </div>
-        <div class="kpi-spark">${sparkline(mrrTrend,'#7c6fff')}</div>
+        <div class="kpi-spark">${sparkline(mrrTrend,'oklch(74% 0.18 65)')}</div>
       </div>
       <div class="kpi-body">
         <div class="kpi-label">Total MRR</div>
@@ -1879,57 +1885,123 @@ function viewBusinesses(){
 }
 
 /* ═══════════════════════════════════════════════════
-   VIEW: AGENTS
+   VIEW: AGENTS — skill card grid
 ═══════════════════════════════════════════════════ */
 function viewAgents(){
-  return`
-  <div class="panel">
-    <div class="panel-hdr">
-      <div class="panel-title">Module Registry</div>
-      <span style="font-size:12px;color:var(--text2);">${Object.keys(MODULES).length} agents available</span>
-    </div>
-    <table class="table">
-      <thead><tr>
-        <th>Module</th><th>OS Group</th><th>Price</th><th>Active Clients</th><th>Action</th>
-      </tr></thead>
-      <tbody>
-        ${Object.entries(MODULES).map(([m,mod])=>{
-          const num=parseInt(m);
-          const active=clients.filter(c=>c.modules.includes(num));
-          const osLabel=OS_LABELS[mod.os]||mod.os;
-          const pillClass=PILL_CLASS[mod.os]||'acquisition';
+  const osList = ['acquisition','growth','intelligence'];
+  const osColors = { acquisition:'var(--accent)', growth:'var(--green)', intelligence:'var(--yellow)' };
+
+  const cardHtml = osList.map(os=>{
+    const nums = OS_GROUPS[os]||[];
+    if(!nums.length) return '';
+    return`
+    <div style="margin-bottom:32px;">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${osColors[os]};letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+        ${OS_LABELS[os]}
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div class="agent-skill-grid">
+        ${nums.map(num=>{
+          const mod=MODULES[num];
           const agent=AGENT_REGISTRY[num];
-          return`<tr>
-            <td style="cursor:pointer;" onclick="openAgentDrawer(${num})">
-              <strong style="color:var(--text);">${agent?.icon||''} M${m}</strong>
-              <span style="color:var(--text2);"> — ${mod.name}</span>
-              <span style="font-size:10px;color:var(--accent);margin-left:4px;">ℹ</span>
-            </td>
-            <td><span class="mpill ${pillClass}">${osLabel}</span></td>
-            <td style="color:var(--accent2);font-weight:700;">£${mod.price}/mo</td>
-            <td>${active.length>0?active.map(c=>`<span class="badge badge-green"><span class="dot"></span>${c.name}</span>`).join(' '):'<span style="color:var(--muted);">—</span>'}</td>
-            <td style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-              <button class="btn btn-ghost btn-sm" onclick="openAgentDrawer(${num})">ℹ Info</button>
-              ${active.length>0?active.map(c=>`
-                <button class="btn btn-ghost btn-sm" onclick="runModule('${c.id}',${num})">▶ Run</button>
-              `).join(''):''}
-            </td>
-          </tr>`;
+          const skills=AGENT_SKILLS[num];
+          if(!mod||!agent)return '';
+          const active=clients.filter(c=>c.modules.includes(num));
+          const statusDot=active.length>0?'var(--green)':'var(--muted)';
+          const accentCol=agent.color||'var(--accent)';
+          return`
+          <div class="agent-skill-card" style="--card-accent:${accentCol};" id="asc-${num}">
+            <div class="asc-topbar" style="background:${accentCol};"></div>
+            <div class="asc-body">
+              <div class="asc-head">
+                <div class="asc-id" style="color:${accentCol};">M${num}</div>
+                <div class="asc-status" style="background:${statusDot};"></div>
+              </div>
+              <div class="asc-name">${mod.name}</div>
+              <div class="asc-tagline">${agent.tagline}</div>
+
+              <div class="asc-section-label">Skills loaded</div>
+              <div class="asc-chips">
+                ${(skills?.skills||[]).map(s=>`<span class="asc-chip skill">${s}</span>`).join('')}
+              </div>
+
+              <div class="asc-section-label" style="margin-top:8px;">MCPs connected</div>
+              <div class="asc-chips">
+                ${(skills?.mcps||[]).map(m=>`<span class="asc-chip mcp">${m}</span>`).join('')}
+              </div>
+
+              ${active.length>0?`<div class="asc-clients">${active.map(c=>`<span class="badge badge-green"><span class="dot"></span>${c.name}</span>`).join('')}</div>`:''}
+            </div>
+            <div class="asc-footer">
+              <button class="btn btn-ghost btn-sm" onclick="openAgentDrawer(${num})">Details</button>
+              <button class="btn btn-primary btn-sm" onclick="openAgentChatByModule(${num})" style="font-size:11px;">Chat</button>
+            </div>
+          </div>`;
         }).join('')}
-      </tbody>
-    </table>
-  </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`
+  <style>
+  .agent-skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .agent-skill-card{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .agent-skill-card:hover{
+    border-color:var(--card-accent,var(--accent));
+    box-shadow:0 4px 24px oklch(0% 0 0 / 0.3);
+  }
+  .asc-topbar{height:3px;width:100%;flex-shrink:0;}
+  .asc-body{padding:16px 18px 12px;flex:1;}
+  .asc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .asc-id{font-size:10px;font-weight:800;letter-spacing:.08em;font-family:'Syne',sans-serif;}
+  .asc-status{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .asc-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.2;}
+  .asc-tagline{font-size:11.5px;color:var(--text-2,var(--text2));line-height:1.45;margin-bottom:12px;text-wrap:pretty;}
+  .asc-section-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;}
+  .asc-chips{display:flex;flex-wrap:wrap;gap:4px;}
+  .asc-chip{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;}
+  .asc-chip.skill{background:var(--accent-glow);color:var(--accent);border:1px solid oklch(74% 0.18 65 / 0.15);}
+  .asc-chip.mcp{background:var(--green-dim);color:var(--green);border:1px solid oklch(72% 0.18 145 / 0.15);}
+  .asc-clients{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;}
+  .asc-footer{padding:11px 18px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--card2);}
+  </style>
+  ${cardHtml}
   ${state.agentLogs.length>0?`
-  <div class="panel">
+  <div class="panel" style="margin-top:8px;">
     <div class="panel-hdr"><div class="panel-title">Agent Log</div></div>
     ${state.agentLogs.slice(-15).reverse().map(l=>`
       <div style="font-family:'SF Mono',monospace;font-size:12px;padding:8px 0;border-bottom:1px solid var(--border);color:var(--text2);">
         <span style="color:${l.ok?'var(--green)':'var(--red)'};">[${l.ok?'OK':'ERR'}]</span>
-        <span style="color:var(--accent2);"> M${l.module}</span> · ${l.client} · ${l.msg}
+        <span style="color:var(--accent);"> M${l.module}</span> · ${l.client} · ${l.msg}
         <span style="float:right;color:var(--muted);">${new Date(l.ts).toLocaleTimeString()}</span>
       </div>
     `).join('')}
   </div>`:''}`;
+}
+
+/* Open agent chat from module number */
+function openAgentChatByModule(num){
+  // Map module to team agent or fall back to CEO chat
+  const agent=AGENT_REGISTRY[num];
+  if(!agent)return;
+  // If team is loaded, try to find matching agent
+  const teamAgent=teamState.team.find(a=>a.module_id===num||a.title?.toLowerCase().includes(agent.name.split(' ')[0].toLowerCase()));
+  if(teamAgent){
+    nav('team');
+    openAgentChat(teamAgent);
+    loadAgentHistory(teamAgent);
+  } else {
+    // Fall back to CEO chat prefilled
+    openCEO();
+    setTimeout(()=>{
+      const inp=document.getElementById('ceo-input');
+      if(inp){inp.value=`I want to talk to the ${agent.name}`;inp.focus();}
+    },300);
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2015,7 +2087,7 @@ function viewRevenue(){
       <div class="panel-title">MRR Growth</div>
       <span style="font-size:12px;color:var(--text2);">Last 6 months</span>
     </div>
-    <div class="chart-wrap">${barChart(months,chartVals,'#7c6fff')}</div>
+    <div class="chart-wrap">${barChart(months,chartVals,'oklch(74% 0.18 65)')}</div>
     <div class="chart-labels">${months.map(m=>`<span>${m}</span>`).join('')}</div>
   </div>
 
@@ -2183,8 +2255,9 @@ function viewCommand(){
       <div class="brief-title">Agent Command Structure</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      ${_hierarchyRow('You — Pasha','Final decisions, strategy, new clients','#7c6fff','👤')}
-      ${_hierarchyRow('Master CEO Agent','Reads all client reports · sends you this daily brief · spots cross-client patterns','#a78bfa','🧠')}
+      ${_hierarchyRow('You — Qassim','Final decisions, strategy, new clients','oklch(74% 0.18 65)','')}
+      ${_hierarchyRow('Master CEO Agent','Reads all client reports · sends you this daily brief · spots cross-client patterns','oklch(72% 0.18 200)','')}
+
       ${_hierarchyRow('Client CEO Agents (×'+clients.length+')','One per client · coordinates their M1–M11 agents · generates Remotion briefings · answers owner questions','#22c55e','⚡')}
       ${_hierarchyRow('Module Agents M1–M11','Execute actions · write to Airtable · report to their CEO Agent daily','#f59e0b','🔧')}
     </div>
@@ -2223,7 +2296,7 @@ function ceoCAgentCard(c){
   const setupPct=total?Math.round(done/total*100):0;
   const healthColor=c.health>=75?'#22c55e':c.health>=60?'#f59e0b':'#ef4444';
   const initials=c.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  const color=c.color||'#7c6fff';
+  const color=c.color||'oklch(74% 0.18 65)';
   const isActive=c.modules.length>0 && done>0;
 
   // Simulate top insight per client
@@ -2266,7 +2339,7 @@ function ceoCAgentCard(c){
     <div class="ceo-card-footer">
       <div class="ceo-modules">
         ${c.modules.map(m=>`
-          <div class="ceo-module-dot" style="background:${MODULES[m]?.color||'#7c6fff'}44;color:${MODULES[m]?.color||'#7c6fff'};cursor:pointer;"
+          <div class="ceo-module-dot" style="background:${MODULES[m]?.color||'oklch(74% 0.18 65)'}33;color:${MODULES[m]?.color||'oklch(74% 0.18 65)'};cursor:pointer;"
             title="M${m}: ${MODULES[m]?.name} — click for details"
             onclick="openAgentDrawer(${m})">
             ${AGENT_REGISTRY[m]?.icon||''} M${m}
@@ -2476,7 +2549,7 @@ async function ceoSend(){
   if(state.apiOnline){
     // ── Q&A mode: POST /master/ask → immediate answer ─────────────────
     try{
-      const res = await fetch('http://localhost:8000/master/ask',{
+      const res = await fetch(API+'/master/ask',{
         method:'POST', headers:{'Content-Type':'application/json'},
         body:JSON.stringify({ question:q, history:CEO_HISTORY.slice(-6) }),
         signal:AbortSignal.timeout(15000),
@@ -2503,7 +2576,7 @@ async function _ceoExecuteTask(q){
   const thinkId = _ceoThinking();
   if(state.apiOnline){
     try{
-      const res = await fetch('http://localhost:8000/ceo/task',{
+      const res = await fetch(API+'/ceo/task',{
         method:'POST', headers:{'Content-Type':'application/json'},
         body:JSON.stringify({ command:q }),
         signal:AbortSignal.timeout(10000),
@@ -2554,7 +2627,7 @@ async function _ceoPollTask(taskId, originalCommand){
     await new Promise(r=>setTimeout(r, 3000)); // poll every 3s
     polls++;
     try{
-      const res = await fetch(`http://localhost:8000/ceo/task/${taskId}`);
+      const res = await fetch(`${API}/ceo/task/${taskId}`);
       if(!res.ok) continue;
       const data = await res.json();
 
@@ -3113,7 +3186,7 @@ function agencyAgentCard(a){
         ${a.pipeline.map(p=>`
           <div style="display:flex;align-items:center;gap:8px;padding:5px 0;">
             <div style="flex:1;font-size:12px;color:var(--text);">${p.name}</div>
-            <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:${p.score>=85?'#22c55e18':p.score>=70?'#f59e0b18':'#7c6fff18'};color:${p.score>=85?'var(--green)':p.score>=70?'var(--yellow)':'var(--accent2)'};">${p.stage}</span>
+            <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:${p.score>=85?'var(--green-dim)':p.score>=70?'var(--yellow-dim)':'var(--accent-glow)'};color:${p.score>=85?'var(--green)':p.score>=70?'var(--yellow)':'var(--accent)'};">${p.stage}</span>
             <div style="font-size:11px;font-weight:700;color:var(--text2);width:28px;text-align:right;">${p.score}</div>
           </div>
         `).join('')}
@@ -3778,12 +3851,12 @@ function buildScanResult(r){
 
   <!-- ── DEEP INSIGHT (if available) ────────────────── -->
   ${deepI.strategic_insight?`
-  <div style="background:linear-gradient(135deg,#0e0d1a,#12101f);border:1px solid #7c6fff33;border-radius:14px;padding:20px;margin-bottom:18px;">
-    <div style="font-size:10px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">🧠 Strategic Intelligence (AI Analysis)</div>
+  <div style="background:var(--card);border:1px solid oklch(74% 0.18 65 / 0.2);border-radius:14px;padding:20px;margin-bottom:18px;">
+    <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">Strategic Intelligence (AI Analysis)</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-      ${deepI.strategic_insight?`<div><div style="font-size:10px;color:#7c6fff;font-weight:700;margin-bottom:4px;">KEY INSIGHT</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.strategic_insight}</div></div>`:''}
-      ${deepI.hidden_leverage?`<div><div style="font-size:10px;color:#7c6fff;font-weight:700;margin-bottom:4px;">HIDDEN LEVERAGE</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.hidden_leverage}</div></div>`:''}
-      ${deepI.objection_preempt?`<div><div style="font-size:10px;color:#7c6fff;font-weight:700;margin-bottom:4px;">LIKELY OBJECTION</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.objection_preempt}</div></div>`:''}
+      ${deepI.strategic_insight?`<div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-bottom:4px;">KEY INSIGHT</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.strategic_insight}</div></div>`:''}
+      ${deepI.hidden_leverage?`<div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-bottom:4px;">HIDDEN LEVERAGE</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.hidden_leverage}</div></div>`:''}
+      ${deepI.objection_preempt?`<div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-bottom:4px;">LIKELY OBJECTION</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI.objection_preempt}</div></div>`:''}
       ${deepI['6_month_vision']?`<div><div style="font-size:10px;color:#22c55e;font-weight:700;margin-bottom:4px;">6-MONTH VISION</div><div style="font-size:12px;color:var(--text);line-height:1.6;">${deepI['6_month_vision']}</div></div>`:''}
     </div>
     ${deepI.week_1_action?`
@@ -4149,7 +4222,7 @@ function viewSettings(){
     </div>
     <div class="settings-row">
       <span class="settings-key">API Docs</span>
-      <a href="http://localhost:8000/api/docs" target="_blank" style="color:var(--accent2);">localhost:8000/api/docs ↗</a>
+      <a href="/api/docs" target="_blank" style="color:var(--accent2);">API docs ↗</a>
     </div>
   </div>
 
@@ -4184,9 +4257,27 @@ function viewSettings(){
    AGENT REGISTRY — mirrors task_router.py AGENT_REGISTRY
    Used by Results view, Agent Drawer, Plan Preview
 ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   AGENT SKILLS REGISTRY — skills loaded per agent
+═══════════════════════════════════════════════════ */
+const AGENT_SKILLS = {
+  1:{ skills:['inbound-lead-triage','inbound-lead-qualification'], mcps:['Gmail','Google Calendar'] },
+  2:{ skills:['outbound-prospecting-engine','signal-detection-pipeline','icp-identification','apollo-lead-finder'], mcps:['Apify','Vibe Prospecting','Gmail'] },
+  3:{ skills:['competitor-ad-intelligence','content-asset-creator','ad-angle-miner','meta-ads-campaign-builder'], mcps:['Apify','Gmail'] },
+  4:{ skills:['competitor-monitoring-system','industry-scanner','signal-scanner','review-intelligence-digest'], mcps:['Apify','Brave Search'] },
+  5:{ skills:['sales-call-prep','sales-coaching','pipeline-review','battlecard-generator'], mcps:['Airtable','Google Drive'] },
+  6:{ skills:['kpi-tracking','narrative-reports','data-viz'], mcps:['Airtable','Google Sheets'] },
+  7:{ skills:['inbound-lead-triage','lead-qualification','lead-scoring'], mcps:['Airtable','Google Calendar','Gmail'] },
+  8:{ skills:['outbound-prospecting-engine','icp-identification'], mcps:['Apify','Vibe Prospecting'] },
+  9:{ skills:['churn-detection','win-back-campaigns','review-management'], mcps:['Gmail','Airtable'] },
+  10:{ skills:['stock-monitoring','supplier-alerts','auto-reorder'], mcps:['Airtable'] },
+  11:{ skills:['review-request','reputation-monitoring','response-drafting'], mcps:['Airtable'] },
+  12:{ skills:['job-scraping','cv-tailoring','cover-letter-gen'], mcps:['Airtable'] },
+};
+
 const AGENT_REGISTRY = {
   1:{
-    name:'Presence Agent', icon:'📞', color:'#7c6fff',
+    name:'Presence Agent', icon:'', color:'oklch(74% 0.18 65)',
     scope:'client',
     tagline:'Answers calls 24/7, books appointments automatically',
     what_it_does:[
@@ -4202,7 +4293,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Calls',
   },
   2:{
-    name:'Pipeline Agent', icon:'🎯', color:'#a78bfa',
+    name:'Pipeline Agent', icon:'', color:'oklch(72% 0.18 200)',
     scope:'client',
     tagline:'Scrapes leads, qualifies them and kicks off outreach',
     what_it_does:[
@@ -4218,7 +4309,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Leads',
   },
   3:{
-    name:'Marketing Agent', icon:'📣', color:'#22c55e',
+    name:'Marketing Agent', icon:'', color:'oklch(72% 0.18 145)',
     scope:'client',
     tagline:'Monitors competitors and publishes content on autopilot',
     what_it_does:[
@@ -4234,7 +4325,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Content',
   },
   4:{
-    name:'Intelligence Agent', icon:'🧠', color:'#f59e0b',
+    name:'Intelligence Agent', icon:'', color:'oklch(85% 0.18 90)',
     scope:'client',
     tagline:'Watches competitors 24/7 and sends strategic alerts',
     what_it_does:[
@@ -4250,7 +4341,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Intelligence Reports',
   },
   5:{
-    name:'Sales Intelligence', icon:'💬', color:'#f59e0b',
+    name:'Sales Intelligence', icon:'', color:'oklch(85% 0.18 90)',
     scope:'client',
     tagline:'Analyses sales calls and coaches the team to close more',
     what_it_does:[
@@ -4266,7 +4357,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Sales Calls',
   },
   6:{
-    name:'Data Intelligence', icon:'📊', color:'#f59e0b',
+    name:'Data Intelligence', icon:'', color:'oklch(85% 0.18 90)',
     scope:'client',
     tagline:'Turns raw business data into board packs and KPI dashboards',
     what_it_does:[
@@ -4282,7 +4373,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Board Packs',
   },
   7:{
-    name:'Conversion Agent', icon:'⚡', color:'#7c6fff',
+    name:'Conversion Agent', icon:'', color:'oklch(74% 0.18 65)',
     scope:'client',
     tagline:'Scores website visitors and flags hot leads in real time',
     what_it_does:[
@@ -4298,7 +4389,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Website Leads',
   },
   8:{
-    name:'Lead Marketplace', icon:'🏪', color:'#a78bfa',
+    name:'Lead Marketplace', icon:'', color:'oklch(72% 0.18 200)',
     scope:'client',
     tagline:'Buys and sells verified leads between PluggedIN clients',
     what_it_does:[
@@ -4314,7 +4405,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Marketplace Leads',
   },
   9:{
-    name:'Customer Retention OS', icon:'❤️', color:'#22c55e',
+    name:'Customer Retention OS', icon:'', color:'oklch(72% 0.18 145)',
     scope:'client',
     tagline:'Keeps existing customers happy and reduces churn automatically',
     what_it_does:[
@@ -4330,7 +4421,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Retention',
   },
   10:{
-    name:'Stock Intelligence', icon:'📦', color:'#f59e0b',
+    name:'Stock Intelligence', icon:'', color:'oklch(85% 0.18 90)',
     scope:'client',
     tagline:'Monitors stock levels and auto-orders before you run out',
     what_it_does:[
@@ -4346,7 +4437,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Stock Alerts',
   },
   11:{
-    name:'Reviews & Reputation', icon:'⭐', color:'#ec4899',
+    name:'Reviews & Reputation', icon:'', color:'oklch(70% 0.2 340)',
     scope:'client',
     tagline:'Grows Google reviews and manages reputation on autopilot',
     what_it_does:[
@@ -4362,7 +4453,7 @@ const AGENT_REGISTRY = {
     airtable_table:'Reviews',
   },
   12:{
-    name:'Job Hunter Agent', icon:'💼', color:'#06b6d4',
+    name:'Job Hunter Agent', icon:'', color:'oklch(72% 0.18 200)',
     scope:'agency',
     tagline:'Scrapes job boards, analyses signals and writes a tailored CV',
     what_it_does:[
@@ -4695,7 +4786,7 @@ function _renderResultsCards(records, grid, isDemo=false){
           ${r['Summary']?`<div class="rcard-content">${_esc(r['Summary'].slice(0,800))}</div>`:''}
           <div class="rcard-actions">
             ${r['URL']?`<a href="${_esc(r['URL'])}" target="_blank" class="btn btn-ghost btn-sm">🔗 Open Source</a>`:''}
-            <button class="btn btn-sm" onclick="scoutToBroker(${i})" style="background:rgba(124,111,255,.15);color:#7c6fff;border:1px solid #7c6fff33;">+ Add to TradeBridge</button>
+            <button class="btn btn-sm" onclick="scoutToBroker(${i})" style="background:var(--accent-glow);color:var(--accent);border:1px solid oklch(74% 0.18 65 / 0.2);">+ Add to TradeBridge</button>
           </div>
         </div>
       </div>`;
@@ -4730,7 +4821,7 @@ function _renderResultsCards(records, grid, isDemo=false){
         <div class="rcard-actions">
           ${hasContent?`<button class="btn btn-ghost btn-sm" onclick="copyResult(${i})">📋 Copy</button>`:''}
           ${t==='jobs'?`<button class="btn btn-sm btn-sm" onclick="markApplied(${i})" style="background:rgba(6,182,212,.15);color:#06b6d4;border:1px solid #06b6d433;">✓ Mark Applied</button>`:''}
-          ${t==='leads'?`<button class="btn btn-sm" onclick="approveLead(${i})" style="background:rgba(124,111,255,.15);color:#7c6fff;border:1px solid #7c6fff33;">✓ Approve Lead</button>`:''}
+          ${t==='leads'?`<button class="btn btn-sm" onclick="approveLead(${i})" style="background:var(--accent-glow);color:var(--accent);border:1px solid oklch(74% 0.18 65 / 0.2);">Approve Lead</button>`:''}
           ${t==='content'?`<button class="btn btn-sm" onclick="approveContent(${i})" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid #22c55e33;">✓ Approve Post</button>`:''}
         </div>
       </div>
@@ -4739,7 +4830,7 @@ function _renderResultsCards(records, grid, isDemo=false){
 }
 
 function _typeColor(t){
-  return{jobs:'#06b6d4',leads:'#7c6fff',content:'#22c55e',reviews:'#ec4899',tasks:'#f59e0b',task:'#f59e0b',signal:'#10b981'}[t]||'#7c6fff';
+  return{jobs:'oklch(72% 0.18 200)',leads:'oklch(74% 0.18 65)',content:'oklch(72% 0.18 145)',reviews:'oklch(70% 0.2 340)',tasks:'oklch(85% 0.18 90)',task:'oklch(85% 0.18 90)',signal:'oklch(72% 0.18 165)'}[t]||'oklch(74% 0.18 65)';
 }
 
 function scoutToBroker(i){
@@ -5240,6 +5331,35 @@ function toast(title,msg){
 /* ─── Init ──────────────────────────────────────── */
 render(); // Render immediately with offline state
 // _scheduleCheck() already called above — will auto-connect when server is ready
+
+/* ─── GSAP page entrance ────────────────────────── */
+(function initGSAP(){
+  if(typeof gsap === 'undefined') return;
+  gsap.set('.sidebar', { x: -20, opacity: 0 });
+  gsap.set('.topbar',  { y: -16, opacity: 0 });
+  gsap.set('.content', { opacity: 0 });
+
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  tl.to('.sidebar', { x: 0, opacity: 1, duration: 0.5 }, 0)
+    .to('.topbar',  { y: 0, opacity: 1, duration: 0.45 }, 0.1)
+    .to('.content', { opacity: 1, duration: 0.4 }, 0.25);
+})();
+
+/* ─── GSAP stagger on agent cards after render ──── */
+function animateAgentCards(){
+  if(typeof gsap === 'undefined') return;
+  gsap.from('.agent-skill-card', {
+    y: 22, opacity: 0, duration: 0.45, ease: 'power2.out',
+    stagger: 0.06, clearProps: 'all'
+  });
+}
+
+/* Wrap render to animate agent cards */
+const _origRender = render;
+window.render = function(){
+  _origRender();
+  if(state.view === 'agents') setTimeout(animateAgentCards, 30);
+};
 </script>
 </body>
 </html>
