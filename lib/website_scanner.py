@@ -110,8 +110,16 @@ def fetch_website(url: str, timeout: int = 12) -> str:
         return text[:3000]
 
     except Exception as e:
-        print(f"[Scanner] Fetch error for {url}: {e}")
-        return ""
+        print(f"[Scanner] Basic fetch failed for {url}: {e} — trying TinyFish")
+        try:
+            from lib.tinyfish_client import browse_site
+            result = browse_site(url, "Extract all text content from this website: business name, services, contact details, about section", stealth=True)
+            if isinstance(result, dict):
+                return str(result)[:3000]
+            return str(result)[:3000]
+        except Exception as e2:
+            print(f"[Scanner] TinyFish also failed for {url}: {e2}")
+            return ""
 
 
 # ─────────────────────────────────────────────
@@ -123,9 +131,25 @@ def extract_business_profile(url: str, raw_text: str) -> dict:
     Uses Claude to extract structured business intelligence from website text.
     Returns a profile dict with industry, services, size, pain signals, etc.
     """
-    import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    if not ANTHROPIC_API_KEY:
+        print("[Scanner] ANTHROPIC_API_KEY not set — returning fallback profile")
+        return {
+            "business_name": url.split("//")[-1].split("/")[0].replace("www.", "").split(".")[0].title(),
+            "industry": "General",
+            "location": "",
+            "services": [],
+            "team_size_signal": "unknown",
+            "pain_signals": ["no 24/7 support", "manual lead handling"],
+            "strengths": [],
+            "target_customer": "local businesses and consumers",
+            "missed_opportunity": "Losing leads outside office hours with no automated follow-up",
+            "tone": "professional",
+            "has_whatsapp": False,
+            "has_online_booking": False,
+            "has_reviews_section": False,
+        }
 
+    import anthropic
     prompt = f"""You are analysing a business website to extract intelligence for an AI agency pitch.
 
 Website URL: {url}
@@ -151,6 +175,7 @@ Extract and return a JSON object with exactly these fields:
 Return ONLY valid JSON. No explanation, no markdown, no code blocks."""
 
     try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=800,
@@ -188,8 +213,37 @@ def recommend_modules(profile: dict) -> list[dict]:
     Based on the business profile, recommend the 3-5 most impactful modules.
     Returns a ranked list with personalised rationale and example outputs.
     """
+    if not ANTHROPIC_API_KEY:
+        industry = profile.get('industry', 'your industry')
+        name = profile.get('business_name', 'your business')
+        return [
+            {
+                "module_id": 1, "name": "Presence Agent", "icon": "📞",
+                "priority": "essential",
+                "why": f"Every {industry} business loses leads outside office hours. This stops that.",
+                "example_output": f"'Hi! Thanks for reaching out to {name}. How can I help you today?'",
+                "monthly_impact": "Recover 30-40% of after-hours leads",
+                "setup_time": "30 seconds",
+            },
+            {
+                "module_id": 3, "name": "WhatsApp Assistant", "icon": "message-circle",
+                "priority": "essential",
+                "why": "Your customers are on WhatsApp. The AI handles enquiries 24/7, qualifies them, and books them in.",
+                "example_output": "'I can book you in for a consultation on Thursday at 2pm. Can I take your name?'",
+                "monthly_impact": "Save 15 hours/week on customer messages",
+                "setup_time": "30 seconds",
+            },
+            {
+                "module_id": 7, "name": "Reviews Agent", "icon": "star",
+                "priority": "high",
+                "why": "Reviews are the first thing customers check. The AI monitors and responds to every review professionally.",
+                "example_output": "'Thank you so much for your kind words! We're thrilled you had a great experience.'",
+                "monthly_impact": "Protect and grow online reputation",
+                "setup_time": "5 minutes",
+            },
+        ]
+
     import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     modules_catalogue = json.dumps(MODULES, indent=2)
     profile_json = json.dumps(profile, indent=2)
@@ -225,6 +279,7 @@ Return a JSON array:
 Order by impact, highest first. Return ONLY valid JSON array."""
 
     try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1500,

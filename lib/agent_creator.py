@@ -58,7 +58,6 @@ def design_custom_agent(
     Returns a custom agent spec dict, or None if a standard module covers it.
     """
     import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     existing_str = ", ".join([str(m) for m in existing_modules])
 
@@ -95,6 +94,7 @@ Use module_id 99+ (99, 100, 101...) for custom agents.
 Return ONLY valid JSON."""
 
     try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=800,
@@ -273,7 +273,6 @@ def generate_system_prompt(module_id: int, agent: dict, profile: dict) -> str:
 def generate_custom_prompt(agent: dict, profile: dict) -> str:
     """Generate a system prompt for a custom or non-templated agent via Claude."""
     import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     prompt = f"""Write a system prompt for an AI agent with these specs:
 
@@ -292,6 +291,7 @@ Write a 100–150 word system prompt that:
 Write ONLY the system prompt text — no JSON, no explanation."""
 
     try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model="claude-haiku-4-5-20251001",
             max_tokens=400,
@@ -334,11 +334,9 @@ def run_ceo_architecture(
         "custom_agents": [...]         # Any custom agents designed
     }
     """
-    import anthropic
     from lib.agent_factory import generate_team, MODULE_TEMPLATES
     from lib.first_principles import INDUSTRY_BENCHMARKS
 
-    client_a  = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     industry  = business_profile.get("industry", "General").lower()
     benchmark = INDUSTRY_BENCHMARKS.get(industry, INDUSTRY_BENCHMARKS["general"])
 

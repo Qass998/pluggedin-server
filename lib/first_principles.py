@@ -501,7 +501,6 @@ def run_deep_assessment(profile: dict, first_principles: dict) -> dict:
     Called when high-value prospects justify the extra API call.
     """
     import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     profile_json     = json.dumps(profile, indent=2)
     principles_json  = json.dumps(first_principles, indent=2)
@@ -531,6 +530,7 @@ Be specific, direct, and bold. Reference their industry, services, and pain sign
 Return ONLY valid JSON."""
 
     try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1000,
