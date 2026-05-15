@@ -66,6 +66,36 @@ def log_lead(base_id: str, firm_name: str, contact_name: str,
     return response.json()
 
 
+def log_whatsapp_message(
+    base_id: str,
+    client_id: str,
+    sender_phone: str,
+    message_content: str,
+    response_content: str,
+    lead_score: int = 0,
+) -> dict:
+    """
+    Log a WhatsApp message to a client's Airtable base.
+    """
+    url = f"{BASE_URL}/{base_id}/WhatsApp Messages"
+
+    payload = {
+        "records": [{
+            "fields": {
+                "Client": [client_id],
+                "Sender Phone": sender_phone,
+                "Message Content": message_content,
+                "Response Content": response_content,
+                "Lead Score": lead_score,
+                "Received At": datetime.now().isoformat(),
+            }
+        }]
+    }
+
+    response = requests.post(url, headers=HEADERS, json=payload)
+    return response.json()
+
+
 def update_pipeline(base_id: str, record_id: str,
                     status: str, notes: str = "") -> dict:
     """

@@ -12,6 +12,8 @@ import requests
 from datetime import datetime, timedelta
 from typing import Optional
 from anthropic import Anthropic
+from core.tenant import get_all_tenants
+from lib import airtable_client
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
@@ -32,15 +34,18 @@ def send_whatsapp(
     to_number: str,
     message: str,
     media_url: str = None,
+    from_number: str = None,
 ) -> dict:
     """
     Send a WhatsApp message via Twilio.
     to_number: international format e.g. "+447700900000"
     media_url: optional image URL for rich messages
+    from_number: optional Twilio number to send from
     """
     url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+    sender = from_number or TWILIO_WHATSAPP_FROM
     payload = {
-        "From": TWILIO_WHATSAPP_FROM,
+        "From": sender,
         "To": f"whatsapp:{to_number}",
         "Body": message,
     }
@@ -421,3 +426,76 @@ def retention_summary(
         "churned": churned,
         "retention_rate": f"{(active / total * 100):.1f}%" if total > 0 else "0%",
     }
+
+
+# ─────────────────────────────────────────────
+# INBOUND WHATSAPP HANDLER
+# ─────────────────────────────────────────────
+
+def handle_whatsapp_inbound(
+    from_number: str,
+    to_number: str,
+    body: str,
+    profile_name: str = "",
+) -> str:
+    """
+    Handle an incoming WhatsApp message (Module 1/9).
+    Identifies the tenant, generates an AI response, sends it, and logs to Airtable.
+    """
+    # 1. Identify Tenant
+    raw_to = to_number.replace("whatsapp:", "")
+    tenant = None
+    for t in get_all_tenants():
+        if t.whatsapp_number == raw_to:
+            tenant = t
+            break
+
+    if not tenant:
+        print(f"[WhatsApp] No tenant found for number: {to_number}")
+        return "Business not found."
+
+    # 2. Build AI Context
+    system_prompt = f"""You are the AI assistant for {tenant.client_name}, a {tenant.industry} business.
+You handle enquiries on WhatsApp professionally and warmly.
+
+Goals:
+1. Greet the customer and answer questions.
+2. Qualify their interest in {tenant.industry} services.
+3. Offer to book a call via their link: {tenant.calcom_event_type_id if tenant.calcom_event_type_id else 'available upon request'}
+
+Rules:
+- Keep it short (max 3 sentences).
+- Use a friendly, helpful tone.
+- One emoji max.
+"""
+
+    # 3. Generate Response
+    try:
+        response = claude_client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=300,
+            system=system_prompt,
+            messages=[{"role": "user", "content": body}],
+        )
+        reply_text = response.content[0].text
+    except Exception as e:
+        print(f"[WhatsApp] Claude error: {e}")
+        reply_text = f"Thanks for your message to {tenant.client_name}! We'll get back to you shortly."
+
+    # 4. Send Reply
+    send_whatsapp(from_number.replace("whatsapp:", ""), reply_text, from_number=to_number)
+
+    # 5. Log to Airtable
+    try:
+        airtable_client.log_whatsapp_message(
+            base_id=tenant.airtable_base_id,
+            client_id=tenant.client_id,
+            sender_phone=from_number,
+            message_content=body,
+            response_content=reply_text,
+            lead_score=0
+        )
+    except Exception as e:
+        print(f"[WhatsApp] Airtable logging error: {e}")
+
+    return reply_text
