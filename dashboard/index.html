@@ -1113,7 +1113,7 @@ const DEMO_CLIENTS = {
   },
 };
 
-let state = { view:'dashboard', apiOnline:false, demoMode:false, agentLogs:[] };
+let state = { view:'dashboard', apiOnline:false, demoMode:false, agentLogs:[], bizId:null };
 
 function totalMRR(){ return clients.reduce((s,c)=>s+c.mrr,0); }
 function totalModules(){ return clients.reduce((s,c)=>s+c.modules.length,0); }
@@ -1530,7 +1530,7 @@ function render(){
   const views={dashboard:viewDashboard,businesses:viewBusinesses,agents:viewAgents,
                leads:viewLeads,revenue:viewRevenue,briefings:viewBriefings,
                command:viewCommand,agency:viewAgency,results:viewResults,settings:viewSettings,
-               demo:viewDemo, scan:viewScan, team:viewTeam};
+               demo:viewDemo, scan:viewScan, team:viewTeam, 'biz-detail':viewBizDetail};
   document.getElementById('content').innerHTML=(views[state.view]||viewDashboard)();
 }
 
@@ -1885,6 +1885,156 @@ function viewBusinesses(){
 }
 
 /* ═══════════════════════════════════════════════════
+   VIEW: BUSINESS DETAIL
+═══════════════════════════════════════════════════ */
+function viewBizDetail(){
+  const c = clients.find(cl=>cl.id===state.bizId) || clients[0];
+  if(!c) return `<div class="empty"><div class="empty-title">Client not found</div><button class="btn btn-primary" onclick="nav('businesses')">← Back</button></div>`;
+
+  const allSteps=[];
+  c.modules.forEach(m=>{
+    const mod=MODULES[m]; if(!mod)return;
+    (mod.steps||[]).forEach((step,i)=>{
+      allSteps.push({label:step,done:!!(c.setup[m]&&c.setup[m][i]),module:m,os:mod.os,mIdx:i});
+    });
+  });
+  const done=allSteps.filter(s=>s.done).length;
+  const total=allSteps.length;
+  const pct=total?Math.round(done/total*100):0;
+  const mrr=c.modules.reduce((s,m)=>s+(MODULES[m]?.price||0),0);
+  const healthColor=c.health>=75?'var(--green)':c.health>=60?'var(--yellow)':'var(--red)';
+  const color=c.color||BIZ_COLORS[0];
+  const initials=c.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+  return`
+  <style>
+  .biz-detail-header{display:flex;align-items:flex-start;gap:20px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;}
+  .biz-detail-avatar{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,${color}cc,${color}55);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;}
+  .biz-detail-info{flex:1;min-width:0;}
+  .biz-detail-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);line-height:1.1;margin-bottom:4px;}
+  .biz-detail-meta{font-size:13px;color:var(--text2);margin-bottom:10px;}
+  .biz-detail-stats{display:flex;gap:20px;flex-wrap:wrap;}
+  .biz-detail-stat{text-align:center;}
+  .biz-detail-stat-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
+  .biz-detail-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .biz-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .biz-detail-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .biz-detail-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+  .biz-step-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+  .biz-step-row:last-child{border-bottom:none;}
+  .biz-step-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;}
+  .biz-step-check.done{background:var(--green);border-color:var(--green);}
+  .biz-step-label{font-size:12.5px;flex:1;color:var(--text);}
+  .biz-step-label.done{color:var(--muted);text-decoration:line-through;}
+  .biz-module-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+  .biz-module-row:last-child{border-bottom:none;}
+  @media(max-width:700px){.biz-detail-grid{grid-template-columns:1fr;}}
+  </style>
+
+  <div style="margin-bottom:14px;">
+    <button class="btn btn-ghost btn-sm" onclick="nav('businesses')">← Back to Businesses</button>
+  </div>
+
+  <div class="biz-detail-header">
+    <div class="biz-detail-avatar">${initials}</div>
+    <div class="biz-detail-info">
+      <div class="biz-detail-name">${c.name}</div>
+      <div class="biz-detail-meta">${c.industry} · ${c.location||'UK'} · <span class="biz-plan">${c.plan}</span></div>
+      <div class="biz-detail-stats">
+        <div class="biz-detail-stat">
+          <div class="biz-detail-stat-val" style="color:var(--accent);">£${mrr.toLocaleString()}</div>
+          <div class="biz-detail-stat-lbl">MRR</div>
+        </div>
+        <div class="biz-detail-stat">
+          <div class="biz-detail-stat-val" style="color:${healthColor};">${c.health||0}%</div>
+          <div class="biz-detail-stat-lbl">Health</div>
+        </div>
+        <div class="biz-detail-stat">
+          <div class="biz-detail-stat-val">${done}/${total}</div>
+          <div class="biz-detail-stat-lbl">Setup done</div>
+        </div>
+        <div class="biz-detail-stat">
+          <div class="biz-detail-stat-val">${c.modules.length}</div>
+          <div class="biz-detail-stat-lbl">Modules</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+      <button class="btn btn-primary btn-sm" onclick="openAgentChatByModule(${c.modules[0]||1})">Chat with CEO Agent</button>
+      <button class="btn btn-ghost btn-sm" onclick="runClient(event,'${c.id}')">▶ Run Agent</button>
+    </div>
+  </div>
+
+  <div class="biz-detail-grid">
+
+    <div class="biz-detail-section">
+      <div class="biz-detail-section-title">Active Modules</div>
+      ${c.modules.map(m=>{
+        const mod=MODULES[m]; if(!mod)return'';
+        const steps=(mod.steps||[]);
+        const mDone=(c.setup[m]||[]).filter(Boolean).length;
+        const mTotal=steps.length;
+        const pctM=mTotal?Math.round(mDone/mTotal*100):0;
+        return`<div class="biz-module-row">
+          <span class="mpill ${PILL_CLASS[mod.os]||'acquisition'}" style="flex-shrink:0;">M${m}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);">${mod.name}</div>
+            <div style="height:3px;background:var(--border);border-radius:2px;margin-top:4px;">
+              <div style="height:3px;background:${MODULES[m].color||'var(--accent)'};border-radius:2px;width:${pctM}%;"></div>
+            </div>
+          </div>
+          <span style="font-size:10px;color:var(--muted);flex-shrink:0;">${pctM}%</span>
+          <span style="font-size:11px;color:var(--accent);font-weight:700;flex-shrink:0;">£${(mod.price||0).toLocaleString()}</span>
+        </div>`; }).join('')}
+      <div style="margin-top:12px;">
+        <button class="btn btn-ghost btn-sm" style="width:100%;" onclick="openModal()">+ Add Module</button>
+      </div>
+    </div>
+
+    <div class="biz-detail-section">
+      <div class="biz-detail-section-title">Setup Checklist — ${pct}% complete</div>
+      <div style="height:4px;background:var(--border);border-radius:3px;margin-bottom:12px;">
+        <div style="height:4px;background:var(--green);border-radius:3px;width:${pct}%;transition:width .4s;"></div>
+      </div>
+      ${allSteps.map((s,i)=>`
+        <div class="biz-step-row">
+          <div class="biz-step-check${s.done?' done':''}" onclick="toggleSetupStep('${c.id}',${s.module},${s.mIdx})">
+            ${s.done?'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>':''}
+          </div>
+          <span class="biz-step-label${s.done?' done':''}">${s.label}</span>
+          <span style="font-size:9px;color:var(--muted);flex-shrink:0;">${PILL_CLASS[s.os]?.toUpperCase()||''}</span>
+        </div>`).join('')}
+    </div>
+
+  </div>
+
+  <div class="biz-detail-section">
+    <div class="biz-detail-section-title">Notes</div>
+    <textarea id="biz-notes-${c.id}" class="finput" style="width:100%;min-height:80px;resize:vertical;font-size:13px;"
+      placeholder="Add notes about this client — contacts, context, special instructions…"
+      onblur="saveBizNote('${c.id}',this.value)">${c.notes||''}</textarea>
+  </div>
+
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-ghost btn-sm" onclick="nav('results')">→ View Agent Results</button>
+    <button class="btn btn-ghost btn-sm" onclick="nav('team')">→ Agent Team</button>
+    <button class="btn btn-ghost btn-sm" onclick="nav('revenue')">→ Revenue</button>
+  </div>`;
+}
+
+function toggleSetupStep(clientId, moduleId, stepIdx){
+  const c=clients.find(cl=>cl.id===clientId); if(!c)return;
+  if(!c.setup[moduleId]) c.setup[moduleId]=[];
+  c.setup[moduleId][stepIdx] = !c.setup[moduleId][stepIdx];
+  render();
+}
+
+function saveBizNote(clientId, text){
+  const c=clients.find(cl=>cl.id===clientId); if(!c)return;
+  c.notes=text;
+}
+
+/* ═══════════════════════════════════════════════════
    VIEW: AGENTS — skill card grid
 ═══════════════════════════════════════════════════ */
 function viewAgents(){
@@ -1930,7 +2080,9 @@ function viewAgents(){
                 ${(skills?.mcps||[]).map(m=>`<span class="asc-chip mcp">${m}</span>`).join('')}
               </div>
 
-              ${active.length>0?`<div class="asc-clients">${active.map(c=>`<span class="badge badge-green"><span class="dot"></span>${c.name}</span>`).join('')}</div>`:''}
+              ${active.length>0
+                ?`<div class="asc-clients">${active.map(c=>`<span class="badge badge-green"><span class="dot"></span>${c.name}</span>`).join('')}</div>`
+                :`<div class="asc-clients"><span style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.05em;">NOT ASSIGNED — no clients on this module yet</span></div>`}
             </div>
             <div class="asc-footer">
               <button class="btn btn-ghost btn-sm" onclick="openAgentDrawer(${num})">Details</button>
@@ -4298,6 +4450,38 @@ function viewSettings(){
   </div>
 
   <div class="settings-card">
+    <div class="panel-hdr"><div class="panel-title">Integration Keys</div></div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">These keys are saved in your browser only — never sent anywhere.</div>
+    ${[
+      {key:'VAPI_API_KEY',     label:'VAPI API Key',        hint:'From dashboard.vapi.ai → API Keys'},
+      {key:'AIRTABLE_TOKEN',   label:'Airtable Token',      hint:'From airtable.com → Account → API'},
+      {key:'CAL_API_KEY',      label:'Cal.com API Key',     hint:'From cal.com → Settings → Developer'},
+      {key:'ANTHROPIC_KEY',    label:'Anthropic API Key',   hint:'From console.anthropic.com → API Keys'},
+      {key:'WHATSAPP_TOKEN',   label:'WhatsApp / Green API',hint:'From console.greenapi.com'},
+    ].map(cfg=>`
+      <div class="settings-row" style="align-items:flex-start;flex-direction:column;gap:6px;padding:12px 0;">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+          <span class="settings-key" style="font-size:12px;">${cfg.label}</span>
+          <span style="font-size:10px;color:var(--muted);">${cfg.hint}</span>
+        </div>
+        <div style="display:flex;gap:8px;width:100%;">
+          <input type="password" id="cfg-${cfg.key}" placeholder="sk-…"
+            value="${localStorage.getItem('pluggedin_'+cfg.key)||''}"
+            style="flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--text);outline:none;font-family:monospace;"
+            oninput="this.style.borderColor='var(--accent)'"
+          />
+          <button class="btn btn-ghost btn-sm" onclick="saveCfgKey('${cfg.key}')">Save</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--text3);" onclick="document.getElementById('cfg-${cfg.key}').type=document.getElementById('cfg-${cfg.key}').type==='password'?'text':'password'">Show</button>
+        </div>
+      </div>
+    `).join('')}
+    <div style="padding-top:8px;border-top:1px solid var(--border);margin-top:4px;">
+      <button class="btn btn-sm" style="background:var(--accent);color:#000;" onclick="saveAllCfgKeys()">Save all</button>
+      <span id="cfg-saved-msg" style="font-size:11px;color:var(--green);margin-left:12px;display:none;">Saved</span>
+    </div>
+  </div>
+
+  <div class="settings-card">
     <div class="panel-hdr"><div class="panel-title">Demo Businesses</div></div>
     <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">Pre-built demo clients for prospect presentations.</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -4566,12 +4750,7 @@ function viewResults(){
     🔍 Scout running… scraping Reddit, HackerNews, TradeKey, EC21…
     <span id="scout-status-detail" style="color:var(--text2);margin-left:8px;"></span>
   </div>
-  <div class="results-grid" id="results-grid">
-    <div class="results-empty">
-      <div class="results-empty-icon">⏳</div>
-      <div class="results-empty-title">Loading results…</div>
-    </div>
-  </div>`;
+  <div class="results-grid" id="results-grid"></div>`;
 }
 
 function switchResultsTab(tab){
@@ -4666,16 +4845,17 @@ async function loadResults(tab='all'){
   resultsState.tab = tab;
   resultsState.loading = true;
   const grid = document.getElementById('results-grid');
-  if(grid) grid.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3);">Fetching from Airtable…</div>';
+
+  // Always show demo data immediately — never leave the grid blank
+  const demoFiltered = tab==='all' ? DEMO_RESULTS : DEMO_RESULTS.filter(r=>r._type===tab);
+  resultsState.records = demoFiltered;
+  _updateTabCounts(DEMO_RESULTS);
+  _renderResultsCards(demoFiltered, grid, true);
+  const ts = document.getElementById('results-ts');
+  if(ts) ts.textContent = 'Demo data — connecting to server…';
 
   if(!state.apiOnline){
-    // Show demo data with offline banner
-    const ts = document.getElementById('results-ts');
-    if(ts) ts.textContent = 'Demo mode — start server for live data';
-    const demo = tab==='all' ? DEMO_RESULTS : DEMO_RESULTS.filter(r=>r._type===tab);
-    resultsState.records = demo;
-    _updateTabCounts(DEMO_RESULTS);
-    _renderResultsCards(demo, grid, true);
+    if(ts) ts.textContent = 'Demo mode · start server (python3 start.py) for live data';
     resultsState.loading = false;
     return;
   }
@@ -5335,7 +5515,7 @@ function submitClient(){ openModal(); }
 /* ═══════════════════════════════════════════════════
    ACTIONS
 ═══════════════════════════════════════════════════ */
-function openBiz(id){ nav('businesses'); }
+function openBiz(id){ state.bizId=id; nav('biz-detail'); }
 
 function runClient(e,id){
   e.stopPropagation();
@@ -5375,6 +5555,17 @@ function toggleDemo(){
   }
   render();
 }
+function saveCfgKey(key){
+  const val = document.getElementById('cfg-'+key)?.value?.trim();
+  if(val) localStorage.setItem('pluggedin_'+key, val);
+  const msg = document.getElementById('cfg-saved-msg');
+  if(msg){ msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2000); }
+}
+function saveAllCfgKeys(){
+  ['VAPI_API_KEY','AIRTABLE_TOKEN','CAL_API_KEY','ANTHROPIC_KEY','WHATSAPP_TOKEN'].forEach(k=>saveCfgKey(k));
+  toast('Keys saved','Stored in browser localStorage — never transmitted.');
+}
+
 function loadDemo(key){
   const d=DEMO_CLIENTS[key];if(!d)return;
   if(!clients.find(c=>c.id===d.id))clients.push({...d});
