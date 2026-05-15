@@ -337,6 +337,18 @@ def get_reviews(limit: int = 50):
     }
 
 
+@app.get("/results/signals")
+def get_signals(limit: int = 50):
+    """Market signals from M4 Intelligence Agent."""
+    token = os.getenv("AIRTABLE_TOKEN", "")
+    agency_base = os.getenv("AIRTABLE_BASE_AGENCY", "appl51bhjj9R2wtKx")
+    records = _airtable_get(agency_base, "Market%20Signals", token, limit)
+    return {
+        "records": [{"_type": "signal", **r.get("fields", {})} for r in records],
+        "total": len(records),
+    }
+
+
 @app.get("/results/all")
 def get_all_results(limit: int = 30):
     """Unified feed: all result types merged and sorted newest first."""
@@ -349,6 +361,7 @@ def get_all_results(limit: int = 30):
         "Content":            "content",
         "Reviews":            "reviews",
         "Agent%20Reports":    "task",
+        "Market%20Signals":   "signal",
     }
 
     all_records = []
@@ -648,60 +661,7 @@ def scout_topics():
         return {"topics": {}}
 
 
-# ---------------------------------------------------------------------------
-# Results — live Airtable browser endpoints
-# ---------------------------------------------------------------------------
-
-_agency_base = os.getenv("AIRTABLE_BASE_AGENCY", "")
-_at_token    = os.getenv("AIRTABLE_TOKEN", "")
-
-@app.get("/results/jobs")
-def get_jobs(limit: int = 50):
-    records = _airtable_get(_agency_base, "Job%20Applications", _at_token, limit)
-    return {"records": [{"_type": "jobs", **r.get("fields", {})} for r in records], "total": len(records)}
-
-@app.get("/results/leads")
-def get_leads(limit: int = 50):
-    records = _airtable_get(_agency_base, "Leads", _at_token, limit)
-    return {"records": [{"_type": "leads", **r.get("fields", {})} for r in records], "total": len(records)}
-
-@app.get("/results/content")
-def get_content(limit: int = 50):
-    records = _airtable_get(_agency_base, "Content", _at_token, limit)
-    return {"records": [{"_type": "content", **r.get("fields", {})} for r in records], "total": len(records)}
-
-@app.get("/results/reviews")
-def get_reviews(limit: int = 50):
-    records = _airtable_get(_agency_base, "Reviews", _at_token, limit)
-    return {"records": [{"_type": "reviews", **r.get("fields", {})} for r in records], "total": len(records)}
-
-@app.get("/results/signals")
-def get_signals(limit: int = 50):
-    records = _airtable_get(_agency_base, "Market%20Signals", _at_token, limit)
-    return {"records": [{"_type": "signal", **r.get("fields", {})} for r in records], "total": len(records)}
-
-@app.get("/results/all")
-def get_all_results(limit: int = 30):
-    all_records = []
-    table_map = {
-        "Job%20Applications": "jobs",
-        "Leads": "leads",
-        "Content": "content",
-        "Reviews": "reviews",
-        "Market%20Signals": "signal",
-    }
-    for table, rtype in table_map.items():
-        records = _airtable_get(_agency_base, table, _at_token, limit)
-        for r in records:
-            all_records.append({"_type": rtype, **r.get("fields", {})})
-
-    # Sort by date field (try multiple field names)
-    def get_date(r):
-        for f in ("Date Found", "Ran At", "Created", "Date"):
-            if r.get(f): return r[f]
-        return ""
-    all_records.sort(key=get_date, reverse=True)
-    return {"records": all_records[:limit * 2], "total": len(all_records)}
+# (duplicate results routes removed — canonical definitions are above at /results/*)
 
 
 # ---------------------------------------------------------------------------
