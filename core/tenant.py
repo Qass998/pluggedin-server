@@ -57,6 +57,13 @@ class Tenant:
     green_api_instance_id: Optional[str]  # Green API instance for this client
     green_api_token: Optional[str]        # Green API token for this client
 
+    # AI Configuration
+    tone: str = "professional but warm"
+    language: str = "English"
+    business_hours: str = "Monday to Friday, 9am to 6pm"
+    faqs: list[dict] = field(default_factory=list)
+    ceo_phone: Optional[str] = None       # whatsapp:+44... for alerts
+
     # Active modules (list of module numbers as ints, e.g. [1, 9])
     modules_active: list = field(default_factory=list)
 
@@ -104,6 +111,12 @@ def _build_registry() -> dict:
         whatsapp_number=os.getenv("WHATSAPP_GROMATIC"),
         green_api_instance_id=os.getenv("GREEN_API_INSTANCE_GROMATIC"),
         green_api_token=os.getenv("GREEN_API_TOKEN_GROMATIC"),
+        tone="professional, expert, and helpful",
+        faqs=[
+            {"question": "What services do you offer?", "answer": "We provide AI-powered legal document automation and workflow optimisation for law firms."},
+            {"question": "How much does it cost?", "answer": "Our Presence Agent starts at £1,297/month and replaces an entire front-of-house department."}
+        ],
+        ceo_phone=os.getenv("CEO_PHONE_GROMATIC"),
         modules_active=[1],
         timezone="Europe/London",
         currency="GBP",

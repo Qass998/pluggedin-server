@@ -10,10 +10,10 @@ from lib.retention_client import handle_whatsapp_inbound
 class TestWhatsAppFlow(unittest.TestCase):
 
     @patch('lib.retention_client.get_all_tenants')
-    @patch('lib.retention_client.claude_client.messages.create')
+    @patch('lib.whatsapp_agent._get_ai_response')
     @patch('lib.retention_client.send_whatsapp')
     @patch('lib.airtable_client.log_whatsapp_message')
-    def test_handle_whatsapp_inbound_success(self, mock_log, mock_send, mock_claude, mock_tenants):
+    def test_handle_whatsapp_inbound_success(self, mock_log, mock_send, mock_ai, mock_tenants):
         # 1. Setup Mock Tenant
         mock_tenant = MagicMock()
         mock_tenant.whatsapp_number = "+441234567890"
@@ -25,10 +25,8 @@ class TestWhatsAppFlow(unittest.TestCase):
 
         mock_tenants.return_value = [mock_tenant]
 
-        # 2. Setup Mock Claude Response
-        mock_response = MagicMock()
-        mock_response.content = [MagicMock(text="Hello! How can I help you today?")]
-        mock_claude.return_value = mock_response
+        # 2. Setup Mock AI Response
+        mock_ai.return_value = "Hello! How can I help you today?"
 
         # 3. Setup Mock Airtable Response
         mock_log.return_value = {"id": "rec123"}
@@ -43,11 +41,13 @@ class TestWhatsAppFlow(unittest.TestCase):
         # 5. Assertions
         self.assertEqual(reply, "Hello! How can I help you today?")
 
-        # Verify Claude was called with the right prompt
-        mock_claude.assert_called_once()
-        args, kwargs = mock_claude.call_args
-        self.assertIn("Test Client", kwargs['system'])
-        self.assertEqual(kwargs['messages'][0]['content'], body)
+        # Verify AI was called with the right prompt
+        mock_ai.assert_called_once()
+        args, kwargs = mock_ai.call_args
+        # args[0] is system_prompt
+        self.assertIn("Test Client", args[0])
+        # args[1] is messages
+        self.assertEqual(args[1][0]['content'], body)
 
         # Verify WhatsApp was sent back
         mock_send.assert_called_once_with("+447700900000", reply, from_number=to_num)

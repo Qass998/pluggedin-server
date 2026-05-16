@@ -12,7 +12,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Optional
 from anthropic import Anthropic
-from core.tenant import get_all_tenants
+from core.tenant import get_all_tenants, Tenant
 from lib import airtable_client
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
@@ -441,7 +441,10 @@ def handle_whatsapp_inbound(
     """
     Handle an incoming WhatsApp message (Module 1/9).
     Identifies the tenant, generates an AI response, sends it, and logs to Airtable.
+    Now includes advanced qualification and VAPI callback detection.
     """
+    from lib import whatsapp_agent
+
     # 1. Identify Tenant
     raw_to = to_number.replace("whatsapp:", "")
     tenant = None
@@ -454,38 +457,41 @@ def handle_whatsapp_inbound(
         print(f"[WhatsApp] No tenant found for number: {to_number}")
         return "Business not found."
 
-    # 2. Build AI Context
-    system_prompt = f"""You are the AI assistant for {tenant.client_name}, a {tenant.industry} business.
-You handle enquiries on WhatsApp professionally and warmly.
+    # 2. Get conversation context
+    conv = whatsapp_agent._get_or_create_conversation(from_number, tenant.client_id)
+    conv["messages"].append({"role": "user", "content": body})
+    conv["message_count"] += 1
 
-Goals:
-1. Greet the customer and answer questions.
-2. Qualify their interest in {tenant.industry} services.
-3. Offer to book a call via their link: {tenant.calcom_event_type_id if tenant.calcom_event_type_id else 'available upon request'}
+    # 3. Build AI Context
+    system_prompt = whatsapp_agent._build_system_prompt(tenant)
 
-Rules:
-- Keep it short (max 3 sentences).
-- Use a friendly, helpful tone.
-- One emoji max.
-"""
+    # 4. Generate Response
+    reply_raw = whatsapp_agent._get_ai_response(system_prompt, conv["messages"], tenant)
 
-    # 3. Generate Response
-    try:
-        response = claude_client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=300,
-            system=system_prompt,
-            messages=[{"role": "user", "content": body}],
-        )
-        reply_text = response.content[0].text
-    except Exception as e:
-        print(f"[WhatsApp] Claude error: {e}")
-        reply_text = f"Thanks for your message to {tenant.client_name}! We'll get back to you shortly."
+    # 5. Parse qualification tag
+    reply_text, lead_data = whatsapp_agent._extract_qualified_tag(reply_raw)
+    conv["messages"].append({"role": "assistant", "content": reply_text})
 
-    # 4. Send Reply
+    # 6. Handle newly qualified lead
+    if lead_data and conv["stage"] != "qualified":
+        conv["stage"] = "qualified"
+        conv["lead_data"] = {**lead_data, "qualified_at": datetime.utcnow().isoformat()}
+        whatsapp_agent._alert_ceo_hot_lead(tenant, from_number, lead_data)
+        whatsapp_agent._log_lead_to_airtable(tenant, from_number, lead_data)
+
+    # 7. Detect callback request
+    if whatsapp_agent._customer_wants_call(body) and conv.get("stage") != "calling":
+        conv["stage"] = "calling"
+        call_id = whatsapp_agent._trigger_callback(from_number, tenant)
+        if call_id:
+            reply_text = reply_text.rstrip()
+            if not any(phrase in reply_text.lower() for phrase in ["calling you", "give you a call", "ring you"]):
+                reply_text += "\n\nI'm calling you now! 📞"
+
+    # 8. Send Reply
     send_whatsapp(from_number.replace("whatsapp:", ""), reply_text, from_number=to_number)
 
-    # 5. Log to Airtable
+    # 9. Log message to Airtable (every message)
     try:
         airtable_client.log_whatsapp_message(
             base_id=tenant.airtable_base_id,
@@ -493,7 +499,7 @@ Rules:
             sender_phone=from_number,
             message_content=body,
             response_content=reply_text,
-            lead_score=0
+            lead_score=100 if conv["stage"] == "qualified" else 0
         )
     except Exception as e:
         print(f"[WhatsApp] Airtable logging error: {e}")
