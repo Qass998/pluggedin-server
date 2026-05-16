@@ -56,6 +56,69 @@ from core.onboarding import onboard_client
 log = logging.getLogger("api.server")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
+# ---------------------------------------------------------------------------
+# APScheduler — daily autonomous agent runs
+# ---------------------------------------------------------------------------
+_scheduler = None
+_live_run_log: list[dict] = []   # in-memory last 50 cycle results
+
+def _start_scheduler():
+    global _scheduler
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.triggers.cron import CronTrigger
+
+        _scheduler = BackgroundScheduler(timezone="UTC")
+
+        # 05:00 UTC — full live cycle (market scout → opportunity engine → digital products → lead gen → agritrade)
+        _scheduler.add_job(
+            _run_daily_live_cycle,
+            CronTrigger(hour=5, minute=0),
+            id="live_daily_cycle",
+            name="PluggedIN Live Daily Cycle",
+            replace_existing=True,
+        )
+
+        # 06:30 UTC — PluggedIN own lead gen pipeline
+        _scheduler.add_job(
+            _run_pluggedin_lead_gen,
+            CronTrigger(hour=6, minute=30),
+            id="pluggedin_lead_gen",
+            name="PluggedIN Lead Gen",
+            replace_existing=True,
+        )
+
+        _scheduler.start()
+        log.info("[Scheduler] APScheduler started — daily cycles at 05:00 and 06:30 UTC")
+    except ImportError:
+        log.warning("[Scheduler] apscheduler not installed — run: pip install apscheduler")
+    except Exception as e:
+        log.error(f"[Scheduler] Failed to start: {e}")
+
+
+def _run_daily_live_cycle():
+    log.info("[Scheduler] Triggering daily live cycle")
+    try:
+        from lib.live_agents import run_daily_cycle
+        result = run_daily_cycle(dry_run=False)
+        _live_run_log.append(result)
+        if len(_live_run_log) > 50:
+            _live_run_log.pop(0)
+        log.info(f"[Scheduler] Daily cycle complete — ok={result.get('ok')}")
+    except Exception as e:
+        log.error(f"[Scheduler] Daily cycle error: {e}")
+        _live_run_log.append({"cycle_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                               "ok": False, "error": str(e)})
+
+
+def _run_pluggedin_lead_gen():
+    log.info("[Scheduler] Triggering PluggedIN lead gen")
+    try:
+        from lib.live_agents import run_lead_gen
+        run_lead_gen(dry_run=False)
+    except Exception as e:
+        log.error(f"[Scheduler] Lead gen error: {e}")
+
 DASHBOARD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dashboard")
 
 # ---------------------------------------------------------------------------
@@ -134,6 +197,23 @@ def _airtable_get(base_id: str, table: str, token: str, max_records: int = 50) -
     except Exception as e:
         log.warning(f"Airtable fetch failed ({table}): {e}")
     return []
+
+
+# ---------------------------------------------------------------------------
+# Startup / shutdown
+# ---------------------------------------------------------------------------
+
+@app.on_event("startup")
+async def on_startup():
+    _start_scheduler()
+    log.info("[Server] PluggedIN OS started — agents scheduled")
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    global _scheduler
+    if _scheduler and _scheduler.running:
+        _scheduler.shutdown(wait=False)
+        log.info("[Server] Scheduler stopped")
 
 
 # ---------------------------------------------------------------------------
@@ -1496,3 +1576,95 @@ def _load_whatsapp_clients_from_config():
 
 
 _load_whatsapp_clients_from_config()
+
+
+# ---------------------------------------------------------------------------
+# Live Agents — PluggedIN's own in-house agent endpoints
+# ---------------------------------------------------------------------------
+
+LIVE_AGENT_IDS = [
+    "opportunity_engine",
+    "digital_products",
+    "lead_gen",
+    "agritrade",
+    "creator_outreach",
+    "market_scout",
+]
+
+_live_task_store: dict = {}
+
+
+@app.post("/live/run/{agent_id}")
+async def run_live_agent(agent_id: str, background_tasks: BackgroundTasks, dry_run: bool = False):
+    """
+    Trigger a PluggedIN in-house agent by ID.
+    IDs: opportunity_engine | digital_products | lead_gen | agritrade | creator_outreach | market_scout
+    dry_run=true runs without writing to Airtable (safe for testing).
+    """
+    if agent_id not in LIVE_AGENT_IDS and agent_id != "daily_cycle":
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown agent: {agent_id}. Valid: {LIVE_AGENT_IDS + ['daily_cycle']}"
+        )
+
+    import uuid
+    task_id = str(uuid.uuid4())[:8]
+    _live_task_store[task_id] = {
+        "id": task_id, "agent": agent_id, "status": "running",
+        "dry_run": dry_run, "started": datetime.now(timezone.utc).isoformat(),
+    }
+
+    def _run():
+        try:
+            from lib.live_agents import run_agent, run_daily_cycle
+            if agent_id == "daily_cycle":
+                result = run_daily_cycle(dry_run=dry_run)
+            else:
+                result = run_agent(agent_id, dry_run=dry_run)
+            _live_task_store[task_id].update({
+                "status": "done" if result.get("ok") else "error",
+                "result": {k: v for k, v in result.items()
+                           if isinstance(v, (str, int, float, bool, type(None)))},
+                "finished": datetime.now(timezone.utc).isoformat(),
+            })
+        except Exception as e:
+            _live_task_store[task_id].update({"status": "error", "error": str(e)})
+
+    background_tasks.add_task(_run)
+    return {"task_id": task_id, "agent": agent_id, "dry_run": dry_run, "status": "started"}
+
+
+@app.get("/live/task/{task_id}")
+def get_live_task(task_id: str):
+    """Poll the status of a live agent run."""
+    task = _live_task_store.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+@app.get("/live/status")
+def live_status():
+    """Summary of all live agents: last run time, scheduler status."""
+    scheduler_jobs = []
+    if _scheduler and _scheduler.running:
+        for job in _scheduler.get_jobs():
+            next_run = job.next_run_time
+            scheduler_jobs.append({
+                "id": job.id,
+                "name": job.name,
+                "next_run": next_run.isoformat() if next_run else None,
+            })
+
+    return {
+        "scheduler_running": bool(_scheduler and _scheduler.running),
+        "scheduled_jobs": scheduler_jobs,
+        "recent_cycles": _live_run_log[-5:],
+        "available_agents": LIVE_AGENT_IDS + ["daily_cycle"],
+    }
+
+
+@app.get("/live/log")
+def live_log():
+    """Full cycle log — last 50 daily runs."""
+    return {"cycles": list(reversed(_live_run_log)), "total": len(_live_run_log)}
