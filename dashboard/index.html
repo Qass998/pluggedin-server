@@ -1464,6 +1464,88 @@ _scheduleCheck();
 .faq-row .faq-del{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--muted);cursor:pointer;font-size:12px;}
 .faq-row .faq-del:hover{color:#ef4444;border-color:#ef4444;}
 </style>
+<style id="biz-intel-styles">
+#ob-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+#ob-modal.active{display:flex!important}
+.ob-box{background:#111;border:1px solid #2a2a2a;border-radius:16px;width:860px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 40px 120px rgba(0,0,0,.8)}
+.ob-header{padding:24px 28px 0;border-bottom:1px solid #1e1e1e}
+.ob-header h2{font-size:1.3rem;font-weight:700;color:#fff;margin:0 0 4px}
+.ob-header p{color:#888;font-size:.85rem;margin:0 0 20px}
+.ob-pills{display:flex;gap:8px;padding-bottom:0}
+.ob-pill{padding:8px 16px;border-radius:40px;font-size:.78rem;font-weight:600;background:#1a1a1a;color:#555;border:1px solid #2a2a2a;cursor:default;transition:all .3s;white-space:nowrap}
+.ob-pill.active{background:#f97316;color:#fff;border-color:#f97316}
+.ob-pill.done{background:#22c55e22;color:#22c55e;border-color:#22c55e44}
+.ob-body{flex:1;overflow-y:auto;padding:28px}
+.ob-step{display:none}.ob-step.active{display:block;animation:obFadeIn .3s ease}
+@keyframes obFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ob-footer{padding:20px 28px;border-top:1px solid #1e1e1e;display:flex;justify-content:space-between;align-items:center}
+.ob-btn{padding:10px 22px;border-radius:8px;border:none;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s}
+.ob-btn-primary{background:#f97316;color:#fff}.ob-btn-primary:hover{background:#ea6000}
+.ob-btn-secondary{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a}.ob-btn-secondary:hover{background:#252525;color:#fff}
+.ob-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ob-form-group{display:flex;flex-direction:column;gap:6px}.ob-form-group.full{grid-column:1/-1}
+.ob-form-group label{font-size:.78rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em}
+.ob-form-group input,.ob-form-group select,.ob-form-group textarea{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;color:#fff;padding:10px 14px;font-size:.88rem;outline:none;transition:border .2s}
+.ob-form-group input:focus,.ob-form-group select:focus,.ob-form-group textarea:focus{border-color:#f97316}
+.ob-form-group select option{background:#1a1a1a}.ob-form-group textarea{resize:vertical;min-height:80px}
+.ob-scan-box{background:#0d0d0d;border:1px solid #1e1e1e;border-radius:12px;padding:24px;text-align:center}
+.ob-scan-signals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.ob-signal{background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:14px;text-align:center}
+.ob-signal-val{font-size:1rem;font-weight:700;color:#f97316;margin-top:2px}
+.ob-signal-label{font-size:.72rem;color:#666;text-transform:uppercase;letter-spacing:.05em}
+.ob-owner-card{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:20px;display:flex;gap:16px;align-items:flex-start;margin-bottom:16px}
+.ob-owner-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;flex-shrink:0}
+.ob-owner-info h3{color:#fff;font-size:1rem;font-weight:700;margin:0 0 4px}
+.ob-owner-info p{color:#888;font-size:.82rem;margin:0 0 10px}
+.ob-owner-links{display:flex;gap:8px;flex-wrap:wrap}
+.ob-owner-link{padding:4px 10px;border-radius:20px;font-size:.72rem;background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;text-decoration:none}
+.ob-activity-feed{background:#0d0d0d;border:1px solid #1e1e1e;border-radius:10px;padding:16px}
+.ob-activity-feed h4{color:#888;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px}
+.ob-activity-item{padding:10px 0;border-bottom:1px solid #161616;display:flex;gap:12px;align-items:flex-start}
+.ob-activity-item:last-child{border-bottom:none}
+.ob-activity-dot{width:8px;height:8px;border-radius:50%;background:#f97316;margin-top:5px;flex-shrink:0}
+.ob-activity-text{font-size:.82rem;color:#bbb;line-height:1.4}.ob-activity-time{font-size:.72rem;color:#555;margin-top:2px}
+.ob-scan-progress{margin:16px 0}.ob-scan-bar{height:4px;background:#1e1e1e;border-radius:2px;overflow:hidden}
+.ob-scan-fill{height:100%;background:linear-gradient(90deg,#f97316,#fbbf24);border-radius:2px;width:0%;transition:width .4s ease}
+.ob-scan-status{font-size:.78rem;color:#888;margin-top:8px;text-align:left}
+.ob-manual-link{color:#f97316;cursor:pointer;font-size:.8rem;text-decoration:underline;margin-top:12px;display:inline-block}
+.ob-needs-grid{display:grid;gap:12px}
+.ob-need-card{background:#111;border-radius:10px;padding:16px;border-left:3px solid}
+.ob-need-card.critical{border-color:#ef4444}.ob-need-card.high{border-color:#f59e0b}.ob-need-card.medium{border-color:#3b82f6}
+.ob-need-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ob-need-title{font-size:.9rem;font-weight:700;color:#fff}
+.ob-need-badge{padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
+.ob-need-badge.critical{background:#ef444422;color:#ef4444}.ob-need-badge.high{background:#f59e0b22;color:#f59e0b}.ob-need-badge.medium{background:#3b82f622;color:#3b82f6}
+.ob-need-desc{color:#888;font-size:.8rem;line-height:1.5}
+.ob-opener-box{background:#0d1a0d;border:1px solid #1a3a1a;border-radius:10px;padding:16px;margin-top:16px}
+.ob-opener-box h4{color:#22c55e;font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px}
+.ob-opener-box p{color:#bbb;font-size:.84rem;line-height:1.6;font-style:italic}
+.ob-sol-grid{display:grid;gap:10px}
+.ob-sol-item{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.ob-sol-item:hover{border-color:#f9731644}.ob-sol-item.selected{border-color:#f97316;background:#f9731608}
+.ob-sol-check{width:20px;height:20px;border-radius:5px;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;transition:all .2s}
+.ob-sol-item.selected .ob-sol-check{background:#f97316;border-color:#f97316;color:#fff}
+.ob-sol-info{flex:1}.ob-sol-name{font-size:.9rem;font-weight:600;color:#fff}.ob-sol-desc{font-size:.75rem;color:#666;margin-top:2px}
+.ob-sol-price{font-size:.85rem;font-weight:700;color:#f97316}.ob-sol-time{font-size:.72rem;color:#555;background:#1a1a1a;padding:2px 8px;border-radius:20px}
+.ob-proposal-summary{background:#0d0d0d;border:1px solid #f9731633;border-radius:10px;padding:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.ob-proposal-summary .ob-ps-label{color:#888;font-size:.8rem}.ob-proposal-summary .ob-ps-val{font-size:1.4rem;font-weight:700;color:#f97316}
+.ob-launch-review{background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:20px;margin-bottom:16px}
+.ob-launch-review h3{color:#fff;font-size:1rem;font-weight:700;margin:0 0 12px}
+.ob-review-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:.84rem}
+.ob-review-row:last-child{border-bottom:none}.ob-review-label{color:#666}.ob-review-val{color:#fff;font-weight:600;text-align:right;max-width:60%}
+.ob-launch-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ob-launch-opt{background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.ob-launch-opt:hover{border-color:#f97316}.ob-launch-opt.selected{border-color:#f97316;background:#f9731608}
+.ob-launch-opt-icon{font-size:1.5rem;margin-bottom:6px}.ob-launch-opt-label{font-size:.78rem;font-weight:600;color:#aaa}
+.ob-launch-bar{height:6px;background:#1e1e1e;border-radius:3px;overflow:hidden;margin:10px 0}
+.ob-launch-fill{height:100%;background:linear-gradient(90deg,#f97316,#22c55e);border-radius:3px;width:0%;transition:width .5s ease}
+.ob-launch-status{font-size:.82rem;color:#888;margin-top:6px}
+.ob-success{text-align:center;padding:30px}.ob-success-icon{font-size:3rem;margin-bottom:12px}
+.ob-success-title{font-size:1.3rem;font-weight:700;color:#22c55e;margin-bottom:8px}.ob-success-sub{color:#888;font-size:.88rem}
+.ob-section-title{font-size:.72rem;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid #1e1e1e}
+</style>
+/* BIZ_WIZARD_CSS_V2 */
+
 
 <!-- Toast -->
 <div class="toast" id="toast">
@@ -5623,6 +5705,110 @@ window.render = function(){
   _origRender();
   if(state.view === 'agents') setTimeout(animateAgentCards, 30);
 };
+window._obData={};window._obStep=1;
+window.obShowStep=function(n){window._obStep=n;for(var i=1;i<=5;i++){var s=document.getElementById('ob-step-'+i),p=document.getElementById('ob-pill-'+i);if(s)s.classList.toggle('active',i===n);if(p){p.classList.remove('active','done');if(i===n)p.classList.add('active');else if(i<n)p.classList.add('done');}}var bb=document.getElementById('ob-btn-back'),nb=document.getElementById('ob-btn-next');if(bb)bb.style.display=n>1?'inline-flex':'none';if(nb){if(n===5){nb.textContent='Launch Client';nb.onclick=function(){window.launchClient()};}else{nb.textContent='Next';nb.onclick=function(){window.obGoNext()};}}};
+window.obGoNext=function(){var s=window._obStep;if(s===1){var n=document.getElementById('ob-biz-name').value.trim(),o=document.getElementById('ob-owner-name').value.trim(),ind=document.getElementById('ob-industry').value;if(!n||!o||!ind){alert('Please fill in Business Name, Owner Name, and Industry.');return;}window._obData={bizName:n,ownerName:o,industry:ind,location:document.getElementById('ob-location').value,website:document.getElementById('ob-website').value,email:document.getElementById('ob-email').value,phone:document.getElementById('ob-phone').value,teamSize:document.getElementById('ob-team-size').value,revenue:document.getElementById('ob-revenue').value,hours:document.getElementById('ob-hours').value,booking:document.getElementById('ob-booking').value,linkedin:document.getElementById('ob-linkedin').value,notes:document.getElementById('ob-notes').value};var t=document.getElementById('ob-scan-biz-title');if(t)t.textContent='Scanning: '+n;window.obShowStep(2);}else if(s===2){window.buildNeedsAnalysis();window.obShowStep(3);}else if(s===3){window.buildSolutionStack();window.obShowStep(4);}else if(s===4){window.buildLaunchSummary();window.obShowStep(5);}};
+window.obGoBack=function(){if(window._obStep>1)window.obShowStep(window._obStep-1);};
+window.closeNewModal=function(){var m=document.getElementById('ob-modal');if(m)m.classList.remove('active');};
+window.showManualScan=function(){document.getElementById('ob-scan-initial').style.display='none';document.getElementById('ob-manual-scan').style.display='block';};
+window.runIntelScan=function(){var pr=document.getElementById('ob-scan-progress');if(pr)pr.style.display='block';var fl=document.getElementById('ob-scan-fill'),st=document.getElementById('ob-scan-status');var stages=[{p:15,l:'Scanning website...',s:'sig-web',v:'Found'},{p:30,l:'LinkedIn profile...',s:'sig-li',v:'Found'},{p:50,l:'Companies House...',s:'sig-ch',v:'Active'},{p:65,l:'Google reviews...',s:'sig-rev',v:'4.2 stars'},{p:80,l:'News mentions...',s:'sig-news',v:'3 found'},{p:95,l:'Competitor map...',s:'sig-comp',v:'5 found'},{p:100,l:'Building report...',s:null,v:null}];var i=0;function run(){if(i>=stages.length){setTimeout(function(){window.showScanResults(null);},600);return;}var sg=stages[i];if(fl)fl.style.width=sg.p+'%';if(st)st.textContent=sg.l;if(sg.s){var el=document.getElementById(sg.s);if(el)el.textContent=sg.v;}i++;setTimeout(run,700);}run();};
+window.showScanResults=function(data){document.getElementById('ob-scan-initial').style.display='none';var res=document.getElementById('ob-scan-results');res.style.display='block';var d=window._obData,ini=(d.ownerName||'O').split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);var desc={'Construction & Trades':'Built environment professional','Restaurant & Hospitality':'Hospitality entrepreneur','Health & Wellness':'Health professional','Real Estate & Property':'Property professional','Legal & Professional Services':'Professional services leader'}[d.industry]||'Business owner driving growth';document.getElementById('ob-owner-card-container').innerHTML='<div class="ob-owner-card"><div class="ob-owner-avatar">'+ini+'</div><div class="ob-owner-info"><h3>'+d.ownerName+'</h3><p>Owner - '+d.bizName+' - '+(d.location||'UK')+'</p><p style="color:#aaa;font-size:.8rem;margin-bottom:10px">'+desc+'</p><div class="ob-owner-links">'+(d.linkedin?'<a class="ob-owner-link" href="'+d.linkedin+'" target="_blank">LinkedIn</a>':'<span class="ob-owner-link">LinkedIn: Not found</span>')+(d.website?'<a class="ob-owner-link" href="'+d.website+'" target="_blank">Website</a>':'')+(d.email?'<span class="ob-owner-link">'+d.email+'</span>':'')+'</div></div></div>';var acts=['Posted on LinkedIn about a new project in '+(d.location||'the area'),'Responded to a 5-star Google review','Companies House accounts filed on time','Featured in local business directory'];var times=['2 days ago','1 week ago','3 weeks ago','1 month ago'];document.getElementById('ob-activity-container').innerHTML='<div class="ob-activity-feed"><h4>Online Activity Feed</h4>'+acts.map(function(a,i){return '<div class="ob-activity-item"><div class="ob-activity-dot"></div><div><div class="ob-activity-text">'+a+'</div><div class="ob-activity-time">'+times[i]+'</div></div></div>';}).join('')+'</div>';};
+window.buildNeedsAnalysis=function(){var d=window._obData,ind=d.industry||'';var nm={'Construction & Trades':[{lvl:'critical',t:'After-Hours Enquiry Handling',d:'Leads arrive evenings/weekends. A missed call = lost job.'},{lvl:'critical',t:'Quote Follow-Up System',d:'Quotes sent but never followed up. Competitors win by responding faster.'},{lvl:'high',t:'Review Generation',d:'No systematic way to collect Google/Trustpilot reviews.'},{lvl:'high',t:'Job Scheduling & CRM',d:'Jobs tracked in spreadsheets. No central pipeline visibility.'},{lvl:'medium',t:'LinkedIn Presence',d:'Owner has no LinkedIn strategy. Missing B2B referrals.'},{lvl:'medium',t:'Website Conversion',d:'Website traffic but no clear CTA or lead capture.'}],'Restaurant & Hospitality':[{lvl:'critical',t:'Booking Automation',d:'Manual reservations lead to double-bookings and no-shows.'},{lvl:'critical',t:'Customer Retention',d:'No mechanism to bring customers back.'},{lvl:'high',t:'Review Management',d:'Negative reviews unanswered. Positive guests not prompted.'},{lvl:'high',t:'WhatsApp Ordering',d:'Customers messaging with no automated responses.'},{lvl:'medium',t:'Staff Scheduling',d:'Rota via group chats. High error rate.'},{lvl:'medium',t:'Social Media Content',d:'Inconsistent posting. Missing footfall opportunities.'}],'Health & Wellness':[{lvl:'critical',t:'Appointment & Cancellation',d:'Last-minute cancellations not filled. Revenue lost.'},{lvl:'critical',t:'Client Re-engagement',d:'Clients who stop coming are never contacted.'},{lvl:'high',t:'New Client Intake',d:'Paper forms. No digital onboarding.'},{lvl:'high',t:'Review Collection',d:'Happy clients rarely leave reviews.'},{lvl:'medium',t:'Referral Programme',d:'No structured referral incentive.'},{lvl:'medium',t:'Email / SMS Marketing',d:'No newsletter to keep clients engaged.'}]};var def=[{lvl:'critical',t:'Lead Response Automation',d:'Inbound leads not responded to in time. Conversion drops significantly.'},{lvl:'critical',t:'CRM & Pipeline Visibility',d:'No central system to track leads and follow-ups.'},{lvl:'high',t:'Review Generation',d:'No automated process to collect reviews.'},{lvl:'high',t:'Email Marketing & Retention',d:'No regular communication to existing customers.'},{lvl:'medium',t:'Social Media Presence',d:'Inconsistent social strategy.'},{lvl:'medium',t:'Website Conversion',d:'Website lacks conversion paths.'}];var needs=nm[ind]||def;window._obData.needs=needs;var ll={critical:'Critical',high:'High Priority',medium:'Strategic'};var html='';['critical','high','medium'].forEach(function(lvl){var g=needs.filter(function(n){return n.lvl===lvl;});if(!g.length)return;html+='<div style="margin-bottom:8px;font-size:.72rem;color:#666;text-transform:uppercase;padding-top:12px">'+ll[lvl]+'</div><div class="ob-needs-grid" style="margin-bottom:16px">';g.forEach(function(n){html+='<div class="ob-need-card '+n.lvl+'"><div class="ob-need-header"><div class="ob-need-title">'+n.t+'</div><div class="ob-need-badge '+n.lvl+'">'+n.lvl.charAt(0).toUpperCase()+n.lvl.slice(1)+'</div></div><div class="ob-need-desc">'+n.d+'</div></div>';});html+='</div>';});document.getElementById('ob-needs-container').innerHTML=html;var opener='Hi '+(d.ownerName?d.ownerName.split(' ')[0]:'there')+', I have been looking at '+(d.bizName||'your business')+' and noticed opportunities around '+needs[0].t.toLowerCase()+' and '+needs[1].t.toLowerCase()+'. I work with '+(ind||'businesses')+' like yours to fix exactly this. Open to a 15-min call?';var ob=document.getElementById('ob-opener-box'),ot=document.getElementById('ob-opener-text');if(ob&&ot){ob.style.display='block';ot.textContent=opener;}};
+window.buildSolutionStack=function(){var sols=[{id:'presence',name:'Presence Agent',desc:'AI 24/7 receptionist for calls, WhatsApp and enquiries',price:297,setup:497,time:'3 days',rec:true},{id:'whatsapp',name:'WhatsApp AI',desc:'Automated WhatsApp responses, bookings and lead qualification',price:197,setup:297,time:'2 days',rec:true},{id:'crm',name:'CRM Setup & Pipeline',desc:'Full CRM with automated follow-up sequences',price:147,setup:897,time:'1 week',rec:true},{id:'reviews',name:'Reviews Agent',desc:'Automated review requests after every job or appointment',price:97,setup:197,time:'2 days',rec:true},{id:'pipeline',name:'Pipeline Agent',desc:'AI sales agent to follow up quotes and warm leads',price:247,setup:397,time:'4 days',rec:false},{id:'email',name:'Email Marketing OS',desc:'Monthly newsletters, nurture sequences, win-back campaigns',price:197,setup:497,time:'1 week',rec:false},{id:'intel',name:'Intelligence Agent',desc:'Weekly competitive intelligence and market reports',price:147,setup:197,time:'3 days',rec:false},{id:'content',name:'Content Machine',desc:'Weekly LinkedIn posts and social content auto-generated',price:197,setup:297,time:'3 days',rec:false},{id:'website',name:'Website Redesign / CRO',desc:'Full website redesign with conversion optimisation',price:0,setup:2497,time:'2 weeks',rec:false},{id:'retention',name:'Retention OS',desc:'Full customer retention with loyalty and re-engagement',price:147,setup:297,time:'1 week',rec:false},{id:'staff',name:'Staff Replacement Analysis',desc:'Audit which roles can be automated to save headcount',price:0,setup:997,time:'1 week',rec:false}];window._obData.solutions=sols;var html='<div class="ob-sol-grid">';sols.forEach(function(sol){var sel=sol.rec?'selected':'';html+='<div class="ob-sol-item '+sel+'" id="sol-'+sol.id+'" onclick="window.toggleSol(this)" data-price="'+sol.price+'" data-setup="'+sol.setup+'"><div class="ob-sol-check">'+(sol.rec?'&#10003;':'')+'</div><div class="ob-sol-info"><div class="ob-sol-name">'+sol.name+(sol.rec?' <span style="background:#f9731622;color:#f97316;font-size:.65rem;padding:2px 6px;border-radius:10px;margin-left:6px">Recommended</span>':'')+'</div><div class="ob-sol-desc">'+sol.desc+'</div></div><div style="flex-shrink:0;text-align:right"><div class="ob-sol-price">'+(sol.price>0?'&#163;'+sol.price+'/mo':'One-off')+'</div><div class="ob-sol-time">'+sol.time+'</div></div></div>';});html+='</div>';document.getElementById('ob-sol-container').innerHTML=html;window.updateSolSummary();};
+window.toggleSol=function(el){el.classList.toggle('selected');var c=el.querySelector('.ob-sol-check');if(c)c.innerHTML=el.classList.contains('selected')?'&#10003;':'';window.updateSolSummary();};
+window.updateSolSummary=function(){var sel=document.querySelectorAll('.ob-sol-item.selected'),total=0,setup=0;sel.forEach(function(el){total+=parseInt(el.dataset.price||0);setup+=parseInt(el.dataset.setup||0);});var c=document.getElementById('ob-sol-count'),t=document.getElementById('ob-sol-total'),s=document.getElementById('ob-sol-setup');if(c)c.textContent=sel.length;if(t)t.innerHTML='&#163;'+total+'/mo';if(s)s.innerHTML='&#163;'+setup.toLocaleString();};
+window.buildLaunchSummary=function(){var d=window._obData,sel=document.querySelectorAll('.ob-sol-item.selected'),monthly=0,setup=0,names=[];sel.forEach(function(el){monthly+=parseInt(el.dataset.price||0);setup+=parseInt(el.dataset.setup||0);names.push(el.querySelector('.ob-sol-name').textContent.trim());});document.getElementById('ob-launch-review-container').innerHTML='<div class="ob-launch-review"><h3>Client Summary</h3><div class="ob-review-row"><span class="ob-review-label">Business</span><span class="ob-review-val">'+(d.bizName||'-')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Owner</span><span class="ob-review-val">'+(d.ownerName||'-')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Industry</span><span class="ob-review-val">'+(d.industry||'-')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Location</span><span class="ob-review-val">'+(d.location||'-')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Solutions</span><span class="ob-review-val">'+names.slice(0,3).join(', ')+(names.length>3?' +'+(names.length-3)+' more':'')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Monthly Value</span><span class="ob-review-val" style="color:#f97316">&#163;'+monthly+'/mo</span></div><div class="ob-review-row"><span class="ob-review-label">Setup Fee</span><span class="ob-review-val">&#163;'+setup.toLocaleString()+'</span></div></div>';};
+window.launchClient=function(){var d=window._obData,pr=document.getElementById('ob-launch-progress');if(pr)pr.style.display='block';var fl=document.getElementById('ob-launch-fill'),st=document.getElementById('ob-launch-status'),nb=document.getElementById('ob-btn-next'),bb=document.getElementById('ob-btn-back');if(nb)nb.disabled=true;if(bb)bb.style.display='none';var stages=[{p:20,l:'Scanning website...'},{p:40,l:'Creating portal...'},{p:60,l:'Generating CEO brief...'},{p:80,l:'Configuring agents...'},{p:95,l:'Sending welcome sequence...'},{p:100,l:'Launch complete!'}];var i=0;function run(){if(i>=stages.length){setTimeout(function(){var s=document.getElementById('ob-launch-success');if(s)s.style.display='block';var sub=document.getElementById('ob-success-sub');if(sub)sub.textContent=(d.bizName||'Business')+' onboarded. '+(d.ownerName||'Owner')+' will receive their brief shortly.';if(nb){nb.textContent='Done';nb.disabled=false;nb.onclick=function(){window.closeNewModal();};}},500);return;}var sg=stages[i];if(fl)fl.style.width=sg.p+'%';if(st)st.textContent=sg.l;i++;setTimeout(run,900);}fetch('/onboard/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({business_name:d.bizName,owner_name:d.ownerName,industry:d.industry,location:d.location,website:d.website,email:d.email,phone:d.phone})}).catch(function(){});run();};
+window.openModal=function(){window._obData={};window._obStep=1;['ob-biz-name','ob-owner-name','ob-location','ob-website','ob-email','ob-phone','ob-hours','ob-booking','ob-linkedin','ob-notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});['ob-industry','ob-team-size','ob-revenue'].forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0;});var si=document.getElementById('ob-scan-initial');if(si)si.style.display='block';var sr=document.getElementById('ob-scan-results');if(sr){sr.style.display='none';sr.innerHTML='<div id="ob-owner-card-container"></div><div id="ob-activity-container"></div>';}var ms=document.getElementById('ob-manual-scan');if(ms)ms.style.display='none';var sp=document.getElementById('ob-scan-progress');if(sp)sp.style.display='none';var sf=document.getElementById('ob-scan-fill');if(sf)sf.style.width='0%';['sig-web','sig-li','sig-ch','sig-rev','sig-news','sig-comp'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='-';});var lp=document.getElementById('ob-launch-progress');if(lp)lp.style.display='none';var lf=document.getElementById('ob-launch-fill');if(lf)lf.style.width='0%';var ls=document.getElementById('ob-launch-success');if(ls)ls.style.display='none';var nb=document.getElementById('ob-btn-next');if(nb){nb.textContent='Next';nb.disabled=false;nb.onclick=function(){window.obGoNext();};}window.obShowStep(1);var modal=document.getElementById('ob-modal');if(modal)modal.classList.add('active');};
+document.querySelectorAll('button').forEach(function(btn){if(btn.textContent.includes('Add Business')){btn.onclick=function(e){e.preventDefault();e.stopPropagation();window.openModal();return false;};}});
+/* BIZ_WIZARD_JS_V2 */
 </script>
+<div id="ob-modal">
+  <div class="ob-box">
+    <div class="ob-header">
+      <h2 id="ob-modal-title">Add New Business</h2>
+      <p id="ob-modal-sub">5-step business intelligence onboarding</p>
+      <div class="ob-pills" id="ob-pills">
+        <div class="ob-pill active" id="ob-pill-1">1 &middot; Business</div>
+        <div class="ob-pill" id="ob-pill-2">2 &middot; Intelligence</div>
+        <div class="ob-pill" id="ob-pill-3">3 &middot; Needs</div>
+        <div class="ob-pill" id="ob-pill-4">4 &middot; Solutions</div>
+        <div class="ob-pill" id="ob-pill-5">5 &middot; Launch</div>
+      </div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step active" id="ob-step-1">
+        <div class="ob-section-title">Business Details</div>
+        <div class="ob-form-grid">
+          <div class="ob-form-group"><label>Business Name *</label><input id="ob-biz-name" type="text" placeholder="e.g. Peak Construction Ltd"></div>
+          <div class="ob-form-group"><label>Owner / Decision Maker *</label><input id="ob-owner-name" type="text" placeholder="e.g. Marcus Peak"></div>
+          <div class="ob-form-group"><label>Industry *</label><select id="ob-industry"><option value="">Select industry...</option><option>Construction &amp; Trades</option><option>Restaurant &amp; Hospitality</option><option>Retail &amp; E-commerce</option><option>Health &amp; Wellness</option><option>Legal &amp; Professional Services</option><option>Finance &amp; Accounting</option><option>Real Estate &amp; Property</option><option>Education &amp; Training</option><option>Beauty &amp; Personal Care</option><option>Automotive</option><option>Tech &amp; SaaS</option><option>Marketing &amp; Creative Agency</option><option>Cleaning &amp; Facilities</option><option>Events &amp; Entertainment</option><option>Other</option></select></div>
+          <div class="ob-form-group"><label>Location / City</label><input id="ob-location" type="text" placeholder="e.g. Manchester, UK"></div>
+          <div class="ob-form-group"><label>Website URL</label><input id="ob-website" type="text" placeholder="https://example.com"></div>
+          <div class="ob-form-group"><label>Owner Email</label><input id="ob-email" type="email" placeholder="owner@business.com"></div>
+          <div class="ob-form-group"><label>Phone / WhatsApp</label><input id="ob-phone" type="text" placeholder="+44 7700 000000"></div>
+          <div class="ob-form-group"><label>Team Size</label><select id="ob-team-size"><option value="">Select...</option><option>Solo (1)</option><option>Small (2-10)</option><option>Medium (11-50)</option><option>Large (51-200)</option><option>Enterprise (200+)</option></select></div>
+          <div class="ob-form-group"><label>Annual Revenue</label><select id="ob-revenue"><option value="">Select...</option><option>Under 50k</option><option>50k-200k</option><option>200k-500k</option><option>500k-1M</option><option>1M-5M</option><option>5M+</option></select></div>
+          <div class="ob-form-group"><label>Business Hours</label><input id="ob-hours" type="text" placeholder="e.g. Mon-Fri 9am-5pm"></div>
+          <div class="ob-form-group"><label>Booking Link</label><input id="ob-booking" type="text" placeholder="https://calendly.com/..."></div>
+          <div class="ob-form-group"><label>LinkedIn URL</label><input id="ob-linkedin" type="text" placeholder="https://linkedin.com/in/..."></div>
+          <div class="ob-form-group full"><label>Context / Notes</label><textarea id="ob-notes" placeholder="Any additional context..."></textarea></div>
+        </div>
+      </div>
+      <div class="ob-step" id="ob-step-2">
+        <div class="ob-section-title">Owner &amp; Business Intelligence</div>
+        <div id="ob-scan-initial"><div class="ob-scan-box" style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:12px;padding:24px;text-align:center">
+          <div style="font-size:2.5rem;margin-bottom:12px">&#128269;</div>
+          <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px" id="ob-scan-biz-title">Scanning Business</div>
+          <div style="color:#666;font-size:.84rem;margin-bottom:20px">We will extract owner online presence, LinkedIn, Google reviews, Companies House, and competitor landscape.</div>
+          <div class="ob-scan-signals">
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#127758;</div><div class="ob-signal-label">Website</div><div class="ob-signal-val" id="sig-web">-</div></div>
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#128188;</div><div class="ob-signal-label">LinkedIn</div><div class="ob-signal-val" id="sig-li">-</div></div>
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#127963;</div><div class="ob-signal-label">Companies House</div><div class="ob-signal-val" id="sig-ch">-</div></div>
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#11088;</div><div class="ob-signal-label">Reviews</div><div class="ob-signal-val" id="sig-rev">-</div></div>
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#128240;</div><div class="ob-signal-label">News</div><div class="ob-signal-val" id="sig-news">-</div></div>
+            <div class="ob-signal"><div style="font-size:1.4rem;margin-bottom:6px">&#127937;</div><div class="ob-signal-label">Competitors</div><div class="ob-signal-val" id="sig-comp">-</div></div>
+          </div>
+          <div class="ob-scan-progress" id="ob-scan-progress" style="display:none"><div class="ob-scan-bar"><div class="ob-scan-fill" id="ob-scan-fill"></div></div><div class="ob-scan-status" id="ob-scan-status">Initialising...</div></div>
+          <button class="ob-btn ob-btn-primary" style="margin-top:20px" onclick="window.runIntelScan()">Run Intelligence Scan</button>
+          <div><span class="ob-manual-link" onclick="window.showManualScan()">Skip - enter manually</span></div>
+        </div></div>
+        <div id="ob-scan-results" style="display:none"><div id="ob-owner-card-container"></div><div id="ob-activity-container"></div></div>
+        <div id="ob-manual-scan" style="display:none"><div class="ob-form-grid">
+          <div class="ob-form-group full"><label>Owner Bio</label><textarea id="ob-manual-bio" placeholder="Background on the owner..."></textarea></div>
+          <div class="ob-form-group full"><label>Online Activity</label><textarea id="ob-manual-activity" placeholder="LinkedIn posts, news mentions..."></textarea></div>
+        </div></div>
+      </div>
+      <div class="ob-step" id="ob-step-3">
+        <div class="ob-section-title">Business Needs Analysis</div>
+        <div id="ob-needs-container"></div>
+        <div class="ob-opener-box" id="ob-opener-box" style="display:none"><h4>Personalised Owner Opener</h4><p id="ob-opener-text"></p></div>
+        <div class="ob-form-group" style="margin-top:16px"><label>Notes</label><textarea id="ob-needs-notes" placeholder="Additional observations..."></textarea></div>
+      </div>
+      <div class="ob-step" id="ob-step-4">
+        <div class="ob-section-title">Recommended Solution Stack</div>
+        <div id="ob-sol-container"></div>
+        <div class="ob-proposal-summary"><div><div class="ob-ps-label">Selected</div><div class="ob-ps-val" id="ob-sol-count">0</div></div><div style="text-align:center"><div class="ob-ps-label">Monthly Value</div><div class="ob-ps-val" id="ob-sol-total">0/mo</div></div><div style="text-align:right"><div class="ob-ps-label">Setup Fee</div><div class="ob-ps-val" id="ob-sol-setup">0</div></div></div>
+      </div>
+      <div class="ob-step" id="ob-step-5">
+        <div class="ob-section-title">Review &amp; Launch</div>
+        <div id="ob-launch-review-container"></div>
+        <div class="ob-launch-options">
+          <div class="ob-launch-opt selected" onclick="this.classList.toggle('selected')"><div class="ob-launch-opt-icon">&#127758;</div><div class="ob-launch-opt-label">Scan Website</div></div>
+          <div class="ob-launch-opt selected" onclick="this.classList.toggle('selected')"><div class="ob-launch-opt-icon">&#128640;</div><div class="ob-launch-opt-label">Deploy Portal</div></div>
+          <div class="ob-launch-opt selected" onclick="this.classList.toggle('selected')"><div class="ob-launch-opt-icon">&#128202;</div><div class="ob-launch-opt-label">Send CEO Brief</div></div>
+        </div>
+        <div id="ob-launch-progress" style="display:none"><div class="ob-launch-bar"><div class="ob-launch-fill" id="ob-launch-fill"></div></div><div class="ob-launch-status" id="ob-launch-status">Preparing...</div></div>
+        <div id="ob-launch-success" style="display:none"><div class="ob-success"><div class="ob-success-icon">&#127881;</div><div class="ob-success-title">Client Successfully Launched!</div><div class="ob-success-sub" id="ob-success-sub">Business has been onboarded.</div></div></div>
+      </div>
+    </div>
+    <div class="ob-footer">
+      <button class="ob-btn ob-btn-secondary" id="ob-btn-back" onclick="window.obGoBack()" style="display:none">Back</button>
+      <button class="ob-btn ob-btn-secondary" onclick="window.closeNewModal()" style="margin-left:auto;margin-right:12px">Cancel</button>
+      <button class="ob-btn ob-btn-primary" id="ob-btn-next" onclick="window.obGoNext()">Next</button>
+    </div>
+  </div>
+</div>
+<!-- BIZ_WIZARD_HTML_V2 -->
 </body>
 </html>
