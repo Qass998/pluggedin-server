@@ -233,33 +233,58 @@ def _extract_qualified_tag(text: str) -> tuple:
 # TWILIO — SEND WHATSAPP
 # ─────────────────────────────────────────────
 
-def send_whatsapp(to: str, body: str, from_number: str = None) -> bool:
+def send_whatsapp(to: str, body: str, from_number: str = None, client_id: str = None) -> bool:
     """
-    Send a WhatsApp message via Twilio.
+    Send a WhatsApp message.
+    Routes to Green API (primary) or Twilio (fallback) automatically.
 
-    to:          destination (whatsapp:+447...)
+    to:          destination number (any format: +447..., 447..., 447...@c.us)
     body:        message text
-    from_number: sender number (whatsapp:+14155...) — uses client's number if provided
+    client_id:   if provided, uses client's Green API instance
+    from_number: Twilio sender number (only used if falling back to Twilio)
     """
+    # ── Green API (primary) ──────────────────────────────────
+    try:
+        from lib.green_api_client import get_instance, send_message as ga_send
+
+        cfg = get_instance(client_id) if client_id else None
+        if not cfg:
+            # Try env-level default Green API instance
+            default_id    = os.getenv("GREEN_API_INSTANCE_ID")
+            default_token = os.getenv("GREEN_API_TOKEN")
+            if default_id and default_token:
+                cfg = {"instance_id": default_id, "token": default_token}
+
+        if cfg:
+            result = ga_send(cfg["instance_id"], cfg["token"], to, body)
+            if result.get("ok"):
+                print(f"[WhatsApp/GreenAPI] Sent to {to} ✓")
+                return True
+            print(f"[WhatsApp/GreenAPI] Send failed — {result.get('error')} — falling back to Twilio")
+    except Exception as e:
+        print(f"[WhatsApp/GreenAPI] Error: {e} — falling back to Twilio")
+
+    # ── Twilio (fallback) ────────────────────────────────────
     if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
-        print("[WhatsApp] ERROR: Twilio credentials not set")
+        print("[WhatsApp] ERROR: No WhatsApp provider configured (Green API or Twilio)")
         return False
 
-    url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+    url    = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
     sender = from_number or TWILIO_WHATSAPP_FROM
+    to_fmt = to if to.startswith("whatsapp:") else f"whatsapp:{to}"
 
     try:
         r = requests.post(
             url,
-            data={"From": sender, "To": to, "Body": body},
+            data={"From": sender, "To": to_fmt, "Body": body},
             auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN),
             timeout=10,
         )
         r.raise_for_status()
-        print(f"[WhatsApp] Sent to {to} ✓")
+        print(f"[WhatsApp/Twilio] Sent to {to} ✓")
         return True
     except Exception as e:
-        print(f"[WhatsApp] Send error to {to}: {e}")
+        print(f"[WhatsApp/Twilio] Send error to {to}: {e}")
         return False
 
 
@@ -508,9 +533,57 @@ def handle_incoming_message(
             if not any(phrase in clean_reply.lower() for phrase in ["calling you", "give you a call", "ring you"]):
                 clean_reply += "\n\nI'm calling you now! 📞"
 
-    # Send reply back to customer (from the client's Twilio number)
-    send_whatsapp(from_number, clean_reply, from_number=to_number)
+    # Send reply back to customer
+    # Green API: use client_id to route back through correct instance
+    send_whatsapp(from_number, clean_reply, from_number=to_number,
+                  client_id=config.get("client_id"))
 
+    return clean_reply
+
+
+def handle_green_api_message(payload: dict) -> str:
+    """
+    Entry point for Green API webhook (/webhook/whatsapp-green).
+    Parses the payload and routes into the shared AI conversation engine.
+    Returns the reply text.
+    """
+    from lib.green_api_client import parse_incoming_webhook, get_client_by_instance
+
+    msg = parse_incoming_webhook(payload)
+    if not msg:
+        return ""
+
+    instance_id = msg["instance_id"]
+    client_id   = get_client_by_instance(instance_id)
+
+    # Build a synthetic config if client not yet in registry
+    if client_id:
+        config = get_client_config(f"green:{instance_id}")
+        if config.get("client_id") == "default":
+            # Fall back to default with client_id set
+            config = {**DEFAULT_CLIENT_CONFIG, "client_id": client_id}
+    else:
+        config = {**DEFAULT_CLIENT_CONFIG, "client_id": f"green_{instance_id}"}
+
+    conv = _get_or_create_conversation(msg["from_number"], config["client_id"])
+    conv["messages"].append({"role": "user", "content": msg["body"]})
+    conv["message_count"] += 1
+
+    print(f"[WhatsApp/Green] [{config['business_name']}] {msg['from_number']}: {msg['body'][:60]}")
+
+    system_prompt = _build_system_prompt(config)
+    reply_raw     = _get_ai_response(system_prompt, conv["messages"], config)
+    clean_reply, lead_data = _extract_qualified_tag(reply_raw)
+    conv["messages"].append({"role": "assistant", "content": clean_reply})
+
+    if lead_data and conv["stage"] != "qualified":
+        conv["stage"]     = "qualified"
+        conv["lead_data"] = {**lead_data, "qualified_at": datetime.utcnow().isoformat()}
+        _alert_ceo_hot_lead(config, msg["from_number"], lead_data)
+        _log_lead_to_airtable(config, msg["from_number"], lead_data)
+
+    # Send reply via Green API
+    send_whatsapp(msg["from_number"], clean_reply, client_id=config["client_id"])
     return clean_reply
 
 

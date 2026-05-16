@@ -220,17 +220,6 @@ async def on_shutdown():
 # Routes
 # ---------------------------------------------------------------------------
 
-@app.get("/")
-def root():
-    return {
-        "service": "PluggedIN OS",
-        "version": "1.0.0",
-        "status": "running",
-        "clients": len(list_tenants()),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-    }
-
-
 @app.get("/health")
 def health():
     token = os.getenv("AIRTABLE_TOKEN", "")
@@ -1554,6 +1543,24 @@ async def whatsapp_webhook(request: Request):
         return {"status": "handled", "reply_length": len(reply)}
     except Exception as e:
         print(f"[Webhook] WhatsApp error: {e}")
+        return {"status": "error", "detail": str(e)}
+
+
+@app.post("/webhook/whatsapp-green")
+async def whatsapp_green_webhook(request: Request):
+    """
+    Green API WhatsApp webhook — receives inbound messages, AI replies.
+    Set this URL in Green API instance settings: https://your-domain/webhook/whatsapp-green
+    """
+    from lib.whatsapp_agent import handle_green_api_message
+    try:
+        payload = await request.json()
+        reply = handle_green_api_message(payload)
+        if not reply:
+            return {"status": "ignored"}
+        return {"status": "handled", "reply_length": len(reply)}
+    except Exception as e:
+        print(f"[Webhook] Green API WhatsApp error: {e}")
         return {"status": "error", "detail": str(e)}
 
 
