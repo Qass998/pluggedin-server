@@ -1083,7 +1083,7 @@ const OS_GROUPS = { acquisition:[1,2,7,8], growth:[3,9,11], intelligence:[4,5,6,
 const PILL_CLASS = { acquisition:'acquisition', growth:'growth', intelligence:'intel' };
 const BIZ_COLORS = ['oklch(74% 0.18 65)','oklch(72% 0.18 145)','oklch(85% 0.18 90)','oklch(65% 0.18 260)','oklch(65% 0.22 25)','oklch(72% 0.18 200)','oklch(78% 0.16 70)','oklch(70% 0.2 340)'];
 
-let clients = [
+const DEFAULT_CLIENTS = [
   {
     id:'gromatic', name:'Gromatic', industry:'Legal', location:'London, UK',
     plan:'Starter', modules:[1],
@@ -1091,6 +1091,19 @@ let clients = [
     mrr:797, health:72, color:'oklch(74% 0.18 65)',
   },
 ];
+
+function _loadClients(){
+  try{
+    const saved = localStorage.getItem('pluggedin_clients');
+    if(saved){ const parsed = JSON.parse(saved); if(Array.isArray(parsed) && parsed.length) return parsed; }
+  }catch(e){}
+  return DEFAULT_CLIENTS.map(c=>({...c}));
+}
+function _saveClients(){
+  try{ localStorage.setItem('pluggedin_clients', JSON.stringify(clients)); }catch(e){}
+}
+
+let clients = _loadClients();
 
 const DEMO_CLIENTS = {
   restaurant:{
@@ -5718,7 +5731,27 @@ window.buildSolutionStack=function(){var sols=[{id:'presence',name:'Presence Age
 window.toggleSol=function(el){el.classList.toggle('selected');var c=el.querySelector('.ob-sol-check');if(c)c.innerHTML=el.classList.contains('selected')?'&#10003;':'';window.updateSolSummary();};
 window.updateSolSummary=function(){var sel=document.querySelectorAll('.ob-sol-item.selected'),total=0,setup=0;sel.forEach(function(el){total+=parseInt(el.dataset.price||0);setup+=parseInt(el.dataset.setup||0);});var c=document.getElementById('ob-sol-count'),t=document.getElementById('ob-sol-total'),s=document.getElementById('ob-sol-setup');if(c)c.textContent=sel.length;if(t)t.innerHTML='&#163;'+total+'/mo';if(s)s.innerHTML='&#163;'+setup.toLocaleString();};
 window.buildLaunchSummary=function(){var d=window._obData,sel=document.querySelectorAll('.ob-sol-item.selected'),monthly=0,setup=0,names=[];sel.forEach(function(el){monthly+=parseInt(el.dataset.price||0);setup+=parseInt(el.dataset.setup||0);names.push(el.querySelector('.ob-sol-name').textContent.trim());});document.getElementById('ob-launch-review-container').innerHTML='<div class="ob-launch-review"><h3>Client Summary</h3><div class="ob-review-row"><span class="ob-review-label">Business</span><span class="ob-review-val">'+(d.bizName||'-')+'</span></div>'+(d.ownerName?'<div class="ob-review-row"><span class="ob-review-label">Owner</span><span class="ob-review-val">'+d.ownerName+'</span></div>':'')+'<div class="ob-review-row"><span class="ob-review-label">Website</span><span class="ob-review-val">'+(d.website||'—')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Location</span><span class="ob-review-val">'+(d.location||'-')+'</span></div>'+(d.industry?'<div class="ob-review-row"><span class="ob-review-label">Industry</span><span class="ob-review-val">'+d.industry+'</span></div>':'')+'<div class="ob-review-row"><span class="ob-review-label">Solutions</span><span class="ob-review-val">'+names.slice(0,3).join(', ')+(names.length>3?' +'+(names.length-3)+' more':'')+'</span></div><div class="ob-review-row"><span class="ob-review-label">Monthly Value</span><span class="ob-review-val" style="color:#f97316">&#163;'+monthly+'/mo</span></div><div class="ob-review-row"><span class="ob-review-label">Setup Fee</span><span class="ob-review-val">&#163;'+setup.toLocaleString()+'</span></div></div>';};
-window.launchClient=function(){var d=window._obData,pr=document.getElementById('ob-launch-progress');if(pr)pr.style.display='block';var fl=document.getElementById('ob-launch-fill'),st=document.getElementById('ob-launch-status'),nb=document.getElementById('ob-btn-next'),bb=document.getElementById('ob-btn-back');if(nb)nb.disabled=true;if(bb)bb.style.display='none';var stages=[{p:20,l:'Scanning website...'},{p:40,l:'Creating portal...'},{p:60,l:'Generating CEO brief...'},{p:80,l:'Configuring agents...'},{p:95,l:'Sending welcome sequence...'},{p:100,l:'Launch complete!'}];var i=0;function run(){if(i>=stages.length){setTimeout(function(){var s=document.getElementById('ob-launch-success');if(s)s.style.display='block';var sub=document.getElementById('ob-success-sub');if(sub)sub.textContent=(d.bizName||'Business')+' onboarded. '+(d.ownerName||'Owner')+' will receive their brief shortly.';if(nb){nb.textContent='Done';nb.disabled=false;nb.onclick=function(){window.closeNewModal();};}},500);return;}var sg=stages[i];if(fl)fl.style.width=sg.p+'%';if(st)st.textContent=sg.l;i++;setTimeout(run,900);}fetch('/onboard/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({business_name:d.bizName,owner_name:d.ownerName,industry:d.industry,location:d.location,website:d.website,email:d.email,phone:d.phone})}).catch(function(){});run();};
+window.launchClient=function(){var d=window._obData,pr=document.getElementById('ob-launch-progress');if(pr)pr.style.display='block';var fl=document.getElementById('ob-launch-fill'),st=document.getElementById('ob-launch-status'),nb=document.getElementById('ob-btn-next'),bb=document.getElementById('ob-btn-back');if(nb)nb.disabled=true;if(bb)bb.style.display='none';var stages=[{p:20,l:'Scanning website...'},{p:40,l:'Creating portal...'},{p:60,l:'Generating CEO brief...'},{p:80,l:'Configuring agents...'},{p:95,l:'Sending welcome sequence...'},{p:100,l:'Launch complete!'}];var i=0;function run(){if(i>=stages.length){setTimeout(function(){
+  // Push new client into live clients array and persist
+  var newId='client_'+(d.bizName||'biz').toLowerCase().replace(/[^a-z0-9]+/g,'_');
+  if(!clients.find(function(c){return c.id===newId;})){
+    var colors=['oklch(74% 0.18 65)','#22c55e','#f59e0b','#3b82f6','#a855f7','#ec4899'];
+    clients.push({
+      id:newId, name:d.bizName||'New Business',
+      industry:d.industry||'Other', location:d.location||'',
+      plan:'Starter', modules:[1],
+      setup:{1:[false,false,false,false,false]},
+      mrr:797, health:85,
+      color:colors[clients.length%colors.length],
+      website:d.website||'',
+    });
+    _saveClients();
+    if(typeof renderPage==='function') renderPage();
+  }
+  var s=document.getElementById('ob-launch-success');if(s)s.style.display='block';
+  var sub=document.getElementById('ob-success-sub');if(sub)sub.textContent=(d.bizName||'Business')+' added. Agent team is being built.';
+  if(nb){nb.textContent='Done';nb.disabled=false;nb.onclick=function(){window.closeNewModal();if(typeof renderPage==='function')renderPage();};}
+},500);return;}var sg=stages[i];if(fl)fl.style.width=sg.p+'%';if(st)st.textContent=sg.l;i++;setTimeout(run,900);}fetch('/onboard/client',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({business_name:d.bizName,owner_name:d.ownerName,industry:d.industry,location:d.location,website:d.website,email:d.email,phone:d.phone})}).catch(function(){});run();};
 window.openModal=function(){window._obData={};window._obStep=1;['ob-biz-name','ob-website','ob-location'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});var si=document.getElementById('ob-scan-initial');if(si)si.style.display='block';var sr=document.getElementById('ob-scan-results');if(sr){sr.style.display='none';sr.innerHTML='<div id="ob-owner-card-container"></div><div id="ob-activity-container"></div>';}var ms=document.getElementById('ob-manual-scan');if(ms)ms.style.display='none';var sp=document.getElementById('ob-scan-progress');if(sp)sp.style.display='none';var sf=document.getElementById('ob-scan-fill');if(sf)sf.style.width='0%';['sig-web','sig-li','sig-ch','sig-rev','sig-news','sig-comp'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='-';});var lp=document.getElementById('ob-launch-progress');if(lp)lp.style.display='none';var lf=document.getElementById('ob-launch-fill');if(lf)lf.style.width='0%';var ls=document.getElementById('ob-launch-success');if(ls)ls.style.display='none';var nb=document.getElementById('ob-btn-next');if(nb){nb.textContent='Next';nb.disabled=false;nb.onclick=function(){window.obGoNext();};}window.obShowStep(1);var modal=document.getElementById('ob-modal');if(modal)modal.classList.add('active');};
 document.querySelectorAll('button').forEach(function(btn){if(btn.textContent.includes('Add Business')){btn.onclick=function(e){e.preventDefault();e.stopPropagation();window.openModal();return false;};}});
 /* BIZ_WIZARD_JS_V2 */

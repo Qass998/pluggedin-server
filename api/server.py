@@ -1400,6 +1400,33 @@ async def onboard_client_full(req: OnboardClientRequest, background_tasks: Backg
         from lib.agent_factory import save_team
         save_team(client_id, team)
         _demo_teams[client_id] = team
+
+        # Persist client profile to config/clients.json so it survives restarts
+        clients_file = os.path.normpath(os.path.join(
+            os.path.dirname(__file__), "..", "config", "clients.json"))
+        os.makedirs(os.path.dirname(clients_file), exist_ok=True)
+        existing_clients = []
+        if os.path.exists(clients_file):
+            try:
+                with open(clients_file) as f:
+                    existing_clients = json.load(f)
+            except Exception:
+                pass
+        existing_clients = [c for c in existing_clients if c.get("id") != client_id]
+        existing_clients.append({
+            "id":       client_id,
+            "name":     req.business_name,
+            "industry": req.industry or "",
+            "location": req.location or "",
+            "website":  req.website_url or "",
+            "plan":     "Starter",
+            "modules":  [1],
+            "mrr":      797,
+            "health":   85,
+        })
+        with open(clients_file, "w") as f:
+            json.dump(existing_clients, f, indent=2)
+
         steps.append({"step": "team_built", "status": "done",
                       "agents": [a["name"] for a in team],
                       "roi":    architecture["projected_roi"]["roi_multiple"]})

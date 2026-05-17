@@ -375,9 +375,34 @@ def simulate_activity(agent: dict) -> dict:
 
 _teams: dict = {}
 
+_TEAMS_FILE = os.path.join(os.path.dirname(__file__), "..", "config", "teams.json")
+
+
+def _load_teams_from_disk():
+    try:
+        if os.path.exists(_TEAMS_FILE):
+            with open(_TEAMS_FILE) as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+
+def _flush_teams_to_disk():
+    try:
+        os.makedirs(os.path.dirname(_TEAMS_FILE), exist_ok=True)
+        with open(_TEAMS_FILE, "w") as f:
+            json.dump(_teams, f, indent=2)
+    except Exception as e:
+        print(f"[AgentFactory] Could not persist teams: {e}")
+
+
+_teams = _load_teams_from_disk()
+
 
 def save_team(client_id: str, team: list):
     _teams[client_id] = team
+    _flush_teams_to_disk()
 
 
 def load_team(client_id: str) -> list | None:
