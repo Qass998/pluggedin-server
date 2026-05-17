@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AquaGuinée — Tableau de Bord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #F8FAFF;
+      --surface:      #FFFFFF;
+      --border:       #E2E8F0;
+      --accent:       #2563EB;
+      --accent-light: #EFF6FF;
+      --success:      #16A34A;
+      --success-light:#F0FDF4;
+      --warning:      #D97706;
+      --warning-light:#FFFBEB;
+      --danger:       #DC2626;
+      --danger-light: #FEF2F2;
+      --text:         #0F172A;
+      --text2:        #475569;
+      --text3:        #94A3B8;
+      --radius:       12px;
+      --shadow:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md:    0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      max-width: 480px;
+      margin: 0 auto;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Header ─────────────────────────────── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 12px;
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left h1 { font-size: 17px; font-weight: 700; }
+    .header-left p  { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .header-avatar  {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; letter-spacing: -.5px;
+    }
+
+    /* ─── Screens ─────────────────────────────── */
+    .screen { display: none; padding: 20px; animation: fadeUp .2s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ─── Typography ──────────────────────────── */
+    .section-title {
+      font-size: 10.5px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: .09em;
+      margin: 24px 0 12px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* ─── KPI Grid ────────────────────────────── */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-label { font-size: 10.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .kpi-value { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -.5px; }
+    .kpi-value.accent  { color: var(--accent); }
+    .kpi-value.success { color: var(--success); }
+    .kpi-value.warning { color: var(--warning); }
+    .kpi-value.danger  { color: var(--danger); }
+    .kpi-delta { font-size: 11px; color: var(--text3); margin-top: 5px; }
+    .kpi-delta.up   { color: var(--success); }
+    .kpi-delta.down { color: var(--danger); }
+
+    /* ─── Card ────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* ─── List item ───────────────────────────── */
+    .list-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .list-item:last-child { border-bottom: none; }
+    .list-avatar {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--accent-light); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0; letter-spacing: -.5px;
+    }
+    .list-body { flex: 1; min-width: 0; }
+    .list-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .list-sub  { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .list-right { text-align: right; flex-shrink: 0; }
+    .list-amount { font-size: 13px; font-weight: 700; }
+    .list-date   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* ─── Badge ───────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 8px; border-radius: 100px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-danger  { background: var(--danger-light);  color: var(--danger);  }
+    .badge-accent  { background: var(--accent-light);  color: var(--accent);  }
+
+    /* ─── Chart ───────────────────────────────── */
+    .chart-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+    }
+    .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .chart-title    { font-size: 13px; font-weight: 700; }
+    .chart-subtitle { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* ─── Progress bar ────────────────────────── */
+    .progress-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+    /* ─── Alert card ──────────────────────────── */
+    .alert-card {
+      border-radius: var(--radius); padding: 14px 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .alert-card.danger  { background: var(--danger-light);  border: 1px solid #FCA5A5; }
+    .alert-card.warning { background: var(--warning-light); border: 1px solid #FCD34D; }
+    .alert-card.info    { background: var(--accent-light);  border: 1px solid #BFDBFE; }
+    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body h4 { font-size: 13px; font-weight: 700; }
+    .alert-body p  { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.45; }
+
+    /* ─── Stat row ────────────────────────────── */
+    .stat-row { display: grid; gap: 8px; text-align: center; padding: 4px 0; }
+    .stat-num   { font-size: 20px; font-weight: 800; line-height: 1; }
+    .stat-label { font-size: 10px; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ─── Payment method chip ─────────────────── */
+    .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+    .pay-item { background: var(--bg); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+    .pay-pct   { font-size: 20px; font-weight: 800; color: var(--text); }
+    .pay-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+    /* ─── Reliability stars ───────────────────── */
+    .stars { font-size: 12px; margin-top: 2px; letter-spacing: 1px; }
+
+    /* ─── FAB ─────────────────────────────────── */
+    .fab {
+      position: fixed; bottom: 88px; right: 20px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--accent); color: #fff; border: none;
+      font-size: 26px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(37,99,235,.38);
+      cursor: pointer; z-index: 40;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .fab:active { transform: scale(.93); box-shadow: 0 2px 8px rgba(37,99,235,.28); }
+
+    /* ─── Bottom nav ──────────────────────────── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: var(--surface); border-top: 1px solid var(--border);
+      display: flex; z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-btn {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 10px 0 8px;
+      cursor: pointer; border: none; background: none;
+      color: var(--text3); font-family: inherit;
+      transition: color .15s;
+    }
+    .nav-btn.active { color: var(--accent); }
+    .nav-btn.active .nav-icon { transform: translateY(-1px); }
+    .nav-icon  { font-size: 20px; line-height: 1; transition: transform .15s; }
+    .nav-label { font-size: 10px; font-weight: 600; margin-top: 3px; letter-spacing: .02em; }
+
+    /* ─── Divider ─────────────────────────────── */
+    .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* ─── Info row inside card ────────────────── */
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 12px; color: var(--text3); font-weight: 500; }
+    .info-value { font-size: 13px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<!-- ─── Header ─────────────────────────────────── -->
+<header class="header">
+  <div class="header-left">
+    <h1 id="page-title">Tableau de Bord</h1>
+    <p id="page-date"></p>
+  </div>
+  <div class="header-avatar" id="biz-avatar">AG</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 1 — ACCUEIL
+════════════════════════════════════════════════ -->
+<section class="screen active" id="screen-home">
+
+  <!-- Priority alert -->
+  <div class="alert-card danger">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-body">
+      <h4>3 clients en retard critique</h4>
+      <p>4 850 000 GNF impayés depuis plus de 30 jours. Relances envoyées automatiquement.</p>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Facturé ce mois</div>
+      <div class="kpi-value accent">18,2M</div>
+      <div class="kpi-delta up">↑ 12% vs mai</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Encaissé</div>
+      <div class="kpi-value success">13,4M</div>
+      <div class="kpi-delta">GNF collectés</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Impayés</div>
+      <div class="kpi-value danger">4,8M</div>
+      <div class="kpi-delta down">8 clients</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Livraisons</div>
+      <div class="kpi-value">47</div>
+      <div class="kpi-delta up">↑ ce mois</div>
+    </div>
+  </div>
+
+  <!-- Revenue trend chart -->
+  <div class="section-title">Encaissements — 6 mois</div>
+  <div class="chart-wrap">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Tendance des recettes</div>
+        <div class="chart-subtitle">Millions GNF</div>
+      </div>
+      <span class="badge badge-success">+18%</span>
+    </div>
+    <svg viewBox="0 0 300 90" width="100%" height="90" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2563EB" stop-opacity=".14"/>
+          <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,68 L50,60 L100,52 L150,44 L200,34 L250,20 L300,10 L300,88 L0,88 Z" fill="url(#g)"/>
+      <polyline points="0,68 50,60 100,52 150,44 200,34 250,20 300,10"
+        fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="0"   cy="68" r="3" fill="#2563EB"/>
+      <circle cx="50"  cy="60" r="3" fill="#2563EB"/>
+      <circle cx="100" cy="52" r="3" fill="#2563EB"/>
+      <circle cx="150" cy="44" r="3" fill="#2563EB"/>
+      <circle cx="200" cy="34" r="3" fill="#2563EB"/>
+      <circle cx="250" cy="20" r="3" fill="#2563EB"/>
+      <circle cx="300" cy="10" r="4" fill="#2563EB" stroke="#fff" stroke-width="2"/>
+      <text x="2"   y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Déc</text>
+      <text x="46"  y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Jan</text>
+      <text x="95"  y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Fév</text>
+      <text x="143" y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Mar</text>
+      <text x="193" y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Avr</text>
+      <text x="243" y="87" font-size="8" fill="#94A3B8" font-family="sans-serif">Mai</text>
+      <text x="284" y="87" font-size="8" fill="#2563EB" font-family="sans-serif" font-weight="bold">Juin</text>
+    </svg>
+  </div>
+
+  <!-- Recovery rate -->
+  <div class="section-title">Taux de recouvrement</div>
+  <div class="card" style="padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:14px;font-weight:800;color:var(--warning)">73,6%</span>
+      <span style="font-size:12px;color:var(--text3)">Objectif: 85%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:73.6%;background:var(--warning)"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px;text-align:center">
+      <div>
+        <div class="stat-num" style="color:var(--success)">24</div>
+        <div class="stat-label">Payées</div>
+      </div>
+      <div>
+        <div class="stat-num" style="color:var(--warning)">12</div>
+        <div class="stat-label">En attente</div>
+      </div>
+      <div>
+        <div class="stat-num" style="color:var(--danger)">8</div>
+        <div class="stat-label">En retard</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery bar chart -->
+  <div class="section-title">Livraisons par zone</div>
+  <div class="chart-wrap">
+    <div class="chart-title" style="margin-bottom:16px">Volume · bidons 20L ce mois</div>
+    <svg viewBox="0 0 280 80" width="100%" height="80" xmlns="http://www.w3.org/2000/svg">
+      <!-- bars -->
+      <rect x="10"  y="20" width="32" height="55" rx="4" fill="#2563EB" opacity=".9"/>
+      <rect x="62"  y="32" width="32" height="43" rx="4" fill="#2563EB" opacity=".7"/>
+      <rect x="114" y="44" width="32" height="31" rx="4" fill="#2563EB" opacity=".6"/>
+      <rect x="166" y="52" width="32" height="23" rx="4" fill="#2563EB" opacity=".5"/>
+      <rect x="218" y="58" width="32" height="17" rx="4" fill="#2563EB" opacity=".35"/>
+      <!-- labels -->
+      <text x="18"  y="16" font-size="9" fill="#0F172A" font-weight="700" font-family="sans-serif">640</text>
+      <text x="70"  y="28" font-size="9" fill="#475569" font-family="sans-serif">480</text>
+      <text x="122" y="40" font-size="9" fill="#475569" font-family="sans-serif">360</text>
+      <text x="174" y="48" font-size="9" fill="#475569" font-family="sans-serif">220</text>
+      <text x="224" y="54" font-size="9" fill="#475569" font-family="sans-serif">140</text>
+      <!-- zone labels -->
+      <text x="16"  y="78" font-size="8" fill="#94A3B8" font-family="sans-serif">Kaloum</text>
+      <text x="64"  y="78" font-size="8" fill="#94A3B8" font-family="sans-serif">Ratoma</text>
+      <text x="114" y="78" font-size="8" fill="#94A3B8" font-family="sans-serif">Gbessia</text>
+      <text x="163" y="78" font-size="8" fill="#94A3B8" font-family="sans-serif">Matoto</text>
+      <text x="216" y="78" font-size="8" fill="#94A3B8" font-family="sans-serif">Dubréka</text>
+    </svg>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 2 — FACTURES
+════════════════════════════════════════════════ -->
+<section class="screen" id="screen-factures">
+
+  <!-- Summary KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+    <div class="kpi-card" style="padding:12px">
+      <div class="kpi-label" style="font-size:9px">Total</div>
+      <div class="kpi-value" style="font-size:20px">44</div>
+    </div>
+    <div class="kpi-card" style="padding:12px">
+      <div class="kpi-label" style="font-size:9px">Payées</div>
+      <div class="kpi-value success" style="font-size:20px">24</div>
+    </div>
+    <div class="kpi-card" style="padding:12px">
+      <div class="kpi-label" style="font-size:9px">En retard</div>
+      <div class="kpi-value danger" style="font-size:20px">8</div>
+    </div>
+  </div>
+
+  <div class="section-title">Factures récentes</div>
+  <div class="card">
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--danger-light);color:var(--danger)">HG</div>
+      <div class="list-body">
+        <div class="list-name">Hôtel Gbessia</div>
+        <div class="list-sub">FAC-2026-044 · 15 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">1 200 000</div>
+        <div style="margin-top:4px"><span class="badge badge-danger">En retard</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">RC</div>
+      <div class="list-body">
+        <div class="list-name">Restaurant Cascades</div>
+        <div class="list-sub">FAC-2026-043 · 14 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">780 000</div>
+        <div style="margin-top:4px"><span class="badge badge-success">Payé</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--warning-light);color:var(--warning)">SO</div>
+      <div class="list-body">
+        <div class="list-name">Bureau SONATEL</div>
+        <div class="list-sub">FAC-2026-042 · 12 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">2 400 000</div>
+        <div style="margin-top:4px"><span class="badge badge-warning">En attente</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">LC</div>
+      <div class="list-body">
+        <div class="list-name">Lycée Commercial</div>
+        <div class="list-sub">FAC-2026-041 · 10 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">950 000</div>
+        <div style="margin-top:4px"><span class="badge badge-success">Payé</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--danger-light);color:var(--danger)">CI</div>
+      <div class="list-body">
+        <div class="list-name">Clinique Ignace Deen</div>
+        <div class="list-sub">FAC-2026-040 · 8 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">3 650 000</div>
+        <div style="margin-top:4px"><span class="badge badge-danger">En retard</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">MA</div>
+      <div class="list-body">
+        <div class="list-name">Marché Madina</div>
+        <div class="list-sub">FAC-2026-039 · 7 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">460 000</div>
+        <div style="margin-top:4px"><span class="badge badge-success">Payé</span></div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--accent-light);color:var(--accent)">EP</div>
+      <div class="list-body">
+        <div class="list-name">École Primaire Kipé</div>
+        <div class="list-sub">FAC-2026-038 · 5 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">320 000</div>
+        <div style="margin-top:4px"><span class="badge badge-accent">En attente</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overdue summary -->
+  <div class="section-title">Impayés critiques</div>
+  <div class="alert-card warning">
+    <div class="alert-icon">⏰</div>
+    <div class="alert-body">
+      <h4>Relances automatiques actives</h4>
+      <p>8 clients reçoivent des rappels WhatsApp à J+7, J+14 et J+30. Dernière relance: aujourd'hui 08h00.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 3 — CLIENTS
+════════════════════════════════════════════════ -->
+<section class="screen" id="screen-clients">
+
+  <div class="section-title">Score de fiabilité</div>
+  <div class="card">
+    <!-- Excellent -->
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">SO</div>
+      <div class="list-body">
+        <div class="list-name">Bureau SONATEL</div>
+        <div class="list-sub">Kaloum · Orange Money</div>
+        <div class="stars">⭐⭐⭐ <span style="font-size:10px;color:var(--text3)">95%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:95%;background:var(--success)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--success)">0</div>
+        <div class="list-date">dû (GNF)</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">LC</div>
+      <div class="list-body">
+        <div class="list-name">Lycée Commercial</div>
+        <div class="list-sub">Ratoma · Virement</div>
+        <div class="stars">⭐⭐⭐ <span style="font-size:10px;color:var(--text3)">90%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:90%;background:var(--success)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--success)">0</div>
+        <div class="list-date">dû (GNF)</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--success-light);color:var(--success)">MA</div>
+      <div class="list-body">
+        <div class="list-name">Marché Madina</div>
+        <div class="list-sub">Madina · Espèces</div>
+        <div class="stars">⭐⭐⭐ <span style="font-size:10px;color:var(--text3)">88%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:88%;background:var(--success)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--success)">0</div>
+        <div class="list-date">dû (GNF)</div>
+      </div>
+    </div>
+    <!-- Average -->
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--warning-light);color:var(--warning)">RC</div>
+      <div class="list-body">
+        <div class="list-name">Restaurant Cascades</div>
+        <div class="list-sub">Kaloum · Espèces</div>
+        <div class="stars">⭐⭐ <span style="font-size:10px;color:var(--text3)">72%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:72%;background:var(--warning)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--warning)">780 000</div>
+        <div class="list-date">en attente</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--warning-light);color:var(--warning)">EP</div>
+      <div class="list-body">
+        <div class="list-name">École Primaire Kipé</div>
+        <div class="list-sub">Ratoma · Orange Money</div>
+        <div class="stars">⭐⭐ <span style="font-size:10px;color:var(--text3)">65%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%;background:var(--warning)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--warning)">320 000</div>
+        <div class="list-date">en attente</div>
+      </div>
+    </div>
+    <!-- At risk -->
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--danger-light);color:var(--danger)">HG</div>
+      <div class="list-body">
+        <div class="list-name">Hôtel Gbessia</div>
+        <div class="list-sub">Gbessia · Espèces</div>
+        <div class="stars" style="color:#DC2626">⭐ <span style="font-size:10px;color:var(--text3)">45%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:45%;background:var(--danger)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--danger)">1 200 000</div>
+        <div class="list-date">retard 32j</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--danger-light);color:var(--danger)">CI</div>
+      <div class="list-body">
+        <div class="list-name">Clinique Ignace Deen</div>
+        <div class="list-sub">Conakry · Orange Money</div>
+        <div class="stars" style="color:#DC2626">⭐ <span style="font-size:10px;color:var(--text3)">38%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:38%;background:var(--danger)"></div></div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount" style="color:var(--danger)">3 650 000</div>
+        <div class="list-date">retard 40j</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment methods -->
+  <div class="section-title">Modes de paiement</div>
+  <div class="card">
+    <div class="pay-grid">
+      <div class="pay-item">
+        <div class="pay-pct" style="color:var(--accent)">58%</div>
+        <div class="pay-label">Orange Money</div>
+      </div>
+      <div class="pay-item">
+        <div class="pay-pct">28%</div>
+        <div class="pay-label">Espèces</div>
+      </div>
+      <div class="pay-item">
+        <div class="pay-pct">10%</div>
+        <div class="pay-label">Virement</div>
+      </div>
+      <div class="pay-item">
+        <div class="pay-pct">4%</div>
+        <div class="pay-label">MTN Money</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 4 — LIVRAISONS
+════════════════════════════════════════════════ -->
+<section class="screen" id="screen-livraisons">
+
+  <div class="kpi-grid" style="margin-bottom:20px">
+    <div class="kpi-card">
+      <div class="kpi-label">Ce mois</div>
+      <div class="kpi-value accent">47</div>
+      <div class="kpi-delta up">↑ livraisons</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Volume total</div>
+      <div class="kpi-value">1 840</div>
+      <div class="kpi-delta">bidons 20L</div>
+    </div>
+  </div>
+
+  <div class="section-title">Livraisons récentes</div>
+  <div class="card">
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Hôtel Gbessia</div>
+        <div class="list-sub">80 bidons · Gbessia · 17 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">1 200 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Restaurant Cascades</div>
+        <div class="list-sub">52 bidons · Kaloum · 16 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">780 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Bureau SONATEL</div>
+        <div class="list-sub">160 bidons · Kaloum · 15 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">2 400 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Lycée Commercial</div>
+        <div class="list-sub">64 bidons · Ratoma · 14 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">960 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Marché Madina</div>
+        <div class="list-sub">30 bidons · Madina · 13 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">450 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div class="list-avatar" style="font-size:20px;background:var(--bg)">🚛</div>
+      <div class="list-body">
+        <div class="list-name">Clinique Ignace Deen</div>
+        <div class="list-sub">244 bidons · Conakry · 12 mai</div>
+      </div>
+      <div class="list-right">
+        <div class="list-amount">3 650 000</div>
+        <div class="list-date">GNF</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Today's plan -->
+  <div class="section-title">Tournée prévue aujourd'hui</div>
+  <div class="card">
+    <div class="info-row">
+      <span class="info-label">Arrêts planifiés</span>
+      <span class="info-value">6 clients</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Volume estimé</span>
+      <span class="info-value">320 bidons</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Revenu estimé</span>
+      <span class="info-value accent">4 800 000 GNF</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Zones</span>
+      <span class="info-value">Kaloum, Ratoma</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- FAB -->
+<button class="fab" onclick="handleFab()" title="Ajouter une livraison">+</button>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen('home',this)">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Accueil</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('factures',this)">
+    <div class="nav-icon">🧾</div>
+    <div class="nav-label">Factures</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('clients',this)">
+    <div class="nav-icon">👥</div>
+    <div class="nav-label">Clients</div>
+  </button>
+  <button class="nav-btn" onclick="showScreen('livraisons',this)">
+    <div class="nav-icon">🚛</div>
+    <div class="nav-label">Livraisons</div>
+  </button>
+</nav>
+
+<script>
+  // Date header
+  const JOURS   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const MOIS    = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const TITRES  = { home:'Tableau de Bord', factures:'Factures', clients:'Clients', livraisons:'Livraisons' };
+
+  const now = new Date();
+  document.getElementById('page-date').textContent =
+    JOURS[now.getDay()] + ' ' + now.getDate() + ' ' + MOIS[now.getMonth()] + ' ' + now.getFullYear();
+
+  function showScreen(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    document.getElementById('page-title').textContent = TITRES[id] || id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function handleFab() {
+    // In production: open "Add delivery" form connected to Airtable API
+    alert('➕ Ajouter une livraison\n\nConnectez votre base Airtable pour activer cette fonction.');
+  }
+</script>
+</body>
+</html>

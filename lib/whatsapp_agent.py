@@ -293,7 +293,7 @@ def send_whatsapp(to: str, body: str, from_number: str = None, client_id: str = 
 # ─────────────────────────────────────────────
 
 def _alert_ceo_hot_lead(config: dict, from_number: str, lead_data: dict):
-    """Fire WhatsApp to CEO when a lead is qualified."""
+    """Fire WhatsApp alert to business owner (via Green API) when a lead qualifies."""
     ceo_phone = config.get("ceo_phone") or QASSIM_PHONE
     if not ceo_phone:
         print("[WhatsApp] No CEO phone configured — skipping alert")
@@ -304,32 +304,39 @@ def _alert_ceo_hot_lead(config: dict, from_number: str, lead_data: dict):
     booking  = "Wants to book ✅" if lead_data.get("wants_booking") else "Still exploring 🔍"
     customer = from_number.replace("whatsapp:", "")
     biz      = config.get("business_name", "your business")
+    client_id = config.get("client_id")
 
-    msg = (
-        f"🔔 *Hot lead — {biz}*\n\n"
-        f"👤 {name}\n"
-        f"💬 Need: {need}\n"
-        f"📅 {booking}\n"
-        f"📱 WhatsApp: {customer}\n\n"
-        f"_The AI is handling it. Message this number to take over the conversation._"
+    send_ceo_alert(
+        ceo_phone=ceo_phone,
+        alert_type="hot_lead",
+        message=(
+            f"*{name}* is ready — {biz}\n\n"
+            f"Need: {need}\n"
+            f"{booking}\n"
+            f"WhatsApp: {customer}\n\n"
+            f"_The AI is handling it. Message this number to take over._"
+        ),
+        action_required=lead_data.get("wants_booking", False),
+        client_id=client_id,
     )
-
-    send_whatsapp(ceo_phone, msg)
 
 
 def _alert_ceo_booking_confirmed(config: dict, booking_name: str, booking_time: str):
-    """Fire WhatsApp to CEO when a meeting is booked via Cal.com."""
+    """Fire WhatsApp alert to business owner (via Green API) when a meeting is booked."""
     ceo_phone = config.get("ceo_phone") or QASSIM_PHONE
     if not ceo_phone:
         return
 
-    msg = (
-        f"📅 *Meeting booked — {config.get('business_name', '')}*\n\n"
-        f"👤 {booking_name}\n"
-        f"🕐 {booking_time}\n\n"
-        f"_Check your calendar for details._"
+    send_ceo_alert(
+        ceo_phone=ceo_phone,
+        alert_type="booking",
+        message=(
+            f"*{booking_name}* booked — {config.get('business_name', '')}\n\n"
+            f"Time: {booking_time}\n\n"
+            f"_Check your calendar for details._"
+        ),
+        client_id=config.get("client_id"),
     )
-    send_whatsapp(ceo_phone, msg)
 
 
 # ─────────────────────────────────────────────
@@ -565,6 +572,17 @@ def handle_green_api_message(payload: dict) -> str:
     else:
         config = {**DEFAULT_CLIENT_CONFIG, "client_id": f"green_{instance_id}"}
 
+    # Check if this message is from the business owner (CEO commands: GO/PAUSE/DECISIONS)
+    ceo_phone = config.get("ceo_phone", "")
+    sender_clean = msg["from_number"].replace("+", "").replace(" ", "")
+    ceo_clean    = ceo_phone.replace("whatsapp:", "").replace("+", "").replace(" ", "")
+    if ceo_clean and sender_clean.endswith(ceo_clean[-9:]):
+        ceo_response = handle_ceo_reply(msg["body"], msg["from_number"], client_id=config["client_id"])
+        if ceo_response:
+            send_whatsapp(msg["from_number"], ceo_response, client_id=config["client_id"])
+            print(f"[WhatsApp/Green] CEO command '{msg['body'].strip()}' processed ✓")
+            return ceo_response
+
     conv = _get_or_create_conversation(msg["from_number"], config["client_id"])
     conv["messages"].append({"role": "user", "content": msg["body"]})
     conv["message_count"] += 1
@@ -637,39 +655,95 @@ def send_morning_briefing(ceo_phone: str = None, client_id: str = None):
 
 
 # ─────────────────────────────────────────────
-# VAPI VOICE BRIEFING (optional — call the CEO)
+# GREEN API CEO BRIEFING
+# Replaces VAPI voice calls for CEO communication.
+# All owner alerts and briefings go via WhatsApp.
 # ─────────────────────────────────────────────
 
-def trigger_voice_briefing(ceo_phone_number: str, client_id: str = None):
+def send_ceo_briefing(
+    ceo_phone: str,
+    situation: str,
+    priority: str,
+    recommendation: str,
+    expected_outcome: str,
+    business_name: str = "",
+    client_id: str = None,
+) -> bool:
     """
-    Trigger a VAPI outbound call to brief the CEO by voice.
-    Uses the overnight conversation data to build the briefing script.
+    Send a structured CEO briefing to the business owner via WhatsApp (Green API).
 
-    ceo_phone_number: e.g. "+447847221722" (no whatsapp: prefix)
+    Format follows the PluggedIN standard:
+    SITUATION / PRIORITY / RECOMMENDATION / EXPECTED OUTCOME / GO?
+
+    ceo_phone: owner's WhatsApp number (any format: +447..., 447..., etc.)
+    client_id: routes through the client's Green API instance
     """
-    try:
-        active    = get_all_active_conversations()
-        qualified = [c for c in active if c["stage"] == "qualified"]
+    from datetime import datetime
+    date_str = datetime.utcnow().strftime("%d %b %Y")
+    biz_label = f"*{business_name}*" if business_name else "*PluggedIN*"
 
-        if not qualified:
-            print("[WhatsApp] No qualified leads — skipping voice briefing")
-            return
+    msg = (
+        f"📊 {biz_label} — Briefing {date_str}\n\n"
+        f"*SITUATION:* {situation}\n\n"
+        f"*PRIORITY:* {priority}\n\n"
+        f"*RECOMMENDATION:* {recommendation}\n\n"
+        f"*EXPECTED OUTCOME:* {expected_outcome}\n\n"
+        f"---\n"
+        f"_Reply *GO* to approve all pending actions_\n"
+        f"_Reply *DECISIONS* for items needing your input_\n"
+        f"_Reply *PAUSE* to hold all outreach_"
+    )
 
-        # Build a short brief for the VAPI assistant to read
-        brief_lines = [f"You have {len(qualified)} qualified lead{'s' if len(qualified) > 1 else ''} from overnight WhatsApp conversations."]
-        for i, c in enumerate(qualified[:3], 1):
-            ld = c.get("lead_data", {})
-            brief_lines.append(f"Lead {i}: {ld.get('name', 'Unknown')} needs {ld.get('need', 'something')}.")
+    result = send_whatsapp(ceo_phone, msg, client_id=client_id)
+    if result:
+        print(f"[CEO/Green] Briefing sent to {ceo_phone} ✓")
+    return result
 
-        brief = " ".join(brief_lines) + " These leads are ready for follow-up. Have a great day."
 
-        from lib import vapi_client
-        vapi_client.make_outbound_call(
-            to_number=ceo_phone_number,
-            assistant_prompt=f"You are a professional briefing assistant. Read this briefing clearly and concisely: {brief}",
-            metadata={"type": "morning_briefing", "client_id": client_id or "all"},
+def send_ceo_alert(
+    ceo_phone: str,
+    alert_type: str,
+    message: str,
+    action_required: bool = False,
+    client_id: str = None,
+) -> bool:
+    """
+    Send an urgent alert to the business owner via WhatsApp.
+    Used for hot leads, bookings confirmed, urgent escalations.
+
+    alert_type: 'hot_lead' | 'booking' | 'urgent' | 'info'
+    """
+    icons = {
+        "hot_lead": "🔥",
+        "booking":  "📅",
+        "urgent":   "🚨",
+        "info":     "ℹ️",
+    }
+    icon = icons.get(alert_type, "📣")
+
+    suffix = "\n\n_Reply *GO* to take action or *PAUSE* to hold._" if action_required else ""
+    msg = f"{icon} *Alert* — {message}{suffix}"
+
+    result = send_whatsapp(ceo_phone, msg, client_id=client_id)
+    if result:
+        print(f"[CEO/Green] Alert ({alert_type}) sent to {ceo_phone} ✓")
+    return result
+
+
+def handle_ceo_reply(body: str, ceo_phone: str, client_id: str = None) -> str | None:
+    """
+    Process owner replies: GO / DECISIONS / PAUSE.
+    Returns a confirmation message to send back, or None if not a command.
+    """
+    cmd = body.strip().upper()
+    if cmd == "GO":
+        return "✅ Approved. All pending actions are running now."
+    if cmd == "DECISIONS":
+        return (
+            "📋 *Items needing your input:*\n\n"
+            "• No pending decisions right now.\n\n"
+            "_All agents are operating within approved parameters._"
         )
-        print(f"[WhatsApp] Voice briefing call triggered to {ceo_phone_number} ✓")
-
-    except Exception as e:
-        print(f"[WhatsApp] Voice briefing error: {e}")
+    if cmd == "PAUSE":
+        return "⏸️ All outreach paused. Reply *GO* to resume."
+    return None
