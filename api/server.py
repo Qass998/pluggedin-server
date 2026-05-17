@@ -145,6 +145,11 @@ STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 if os.path.isdir(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+# Serve generated client dashboards at /dashboards/<filename>
+DASHBOARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "outputs", "dashboards")
+os.makedirs(DASHBOARDS_DIR, exist_ok=True)
+app.mount("/dashboards", StaticFiles(directory=DASHBOARDS_DIR), name="dashboards")
+
 # Serve dashboard at root
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def serve_dashboard():
