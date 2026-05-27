@@ -27,6 +27,7 @@ import json
 import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from core.tenant import get_all_tenants, Tenant
 
 load_dotenv()
 
@@ -46,72 +47,35 @@ CONVERSATION_TTL_HOURS = 24
 
 
 # ─────────────────────────────────────────────
-# CLIENT REGISTRY
-# Maps Twilio 'To' number → client config
+# TENANT LOOKUP (Multi-tenant replacement)
 # ─────────────────────────────────────────────
 
-PHONE_TO_CLIENT: dict = {}
-
-DEFAULT_CLIENT_CONFIG = {
-    "client_id":      "default",
-    "client_name":    "the team",
-    "business_name":  "the business",
-    "industry":       "general",
-    "cal_link":       "",
-    "business_hours": "Monday to Friday, 9am to 6pm",
-    "ceo_phone":      None,
-    "faqs":           [],
-    "tone":           "professional but warm",
-    "language":       "English",
-}
-
-
-def register_client(twilio_whatsapp_number: str, config: dict):
-    """
-    Register a client's WhatsApp number → config.
-
-    Call this when provisioning a new client:
-      register_client("+14155238886", {
-          "client_id":     "rec_gromatic",
-          "business_name": "Gromatic",
-          "industry":      "Legal",
-          "cal_link":      "https://calendly.com/gromatic/consultation",
-          "ceo_phone":     "whatsapp:+447847221722",
-          "faqs": [
-              {"question": "What do you do?", "answer": "We automate legal workflows."},
-          ],
-      })
-    """
-    key = f"whatsapp:{twilio_whatsapp_number}" if not twilio_whatsapp_number.startswith("whatsapp:") else twilio_whatsapp_number
-    PHONE_TO_CLIENT[key] = {**DEFAULT_CLIENT_CONFIG, **config}
-    print(f"[WhatsApp] Registered client '{config.get('business_name')}' on {key}")
-
-
-def get_client_config(to_number: str) -> dict:
-    """Lookup client config from Twilio 'To' number."""
-    return PHONE_TO_CLIENT.get(to_number, DEFAULT_CLIENT_CONFIG)
-
-
-def list_registered_clients() -> list:
-    return [{"number": k, **v} for k, v in PHONE_TO_CLIENT.items()]
+def get_tenant_for_number(to_number: str) -> Tenant | None:
+    """Lookup tenant from core registry via Twilio 'To' number."""
+    raw_to = to_number.replace("whatsapp:", "")
+    for tenant in get_all_tenants():
+        if tenant.whatsapp_number == raw_to:
+            return tenant
+    return None
 
 
 # ─────────────────────────────────────────────
 # SYSTEM PROMPT BUILDER
 # ─────────────────────────────────────────────
 
-def _build_system_prompt(config: dict) -> str:
-    business_name = config["business_name"]
-    industry      = config["industry"]
-    cal_link      = config.get("cal_link", "")
-    hours         = config.get("business_hours", "Monday to Friday, 9am to 6pm")
-    tone          = config.get("tone", "professional but warm")
-    language      = config.get("language", "English")
+def _build_system_prompt(tenant: Tenant) -> str:
+    business_name = tenant.client_name
+    industry      = tenant.industry
+    cal_link      = tenant.calcom_event_type_id or ""
+    hours         = getattr(tenant, 'business_hours', "Monday to Friday, 9am to 6pm")
+    tone          = getattr(tenant, 'tone', "professional but warm")
+    language      = getattr(tenant, 'language', "English")
 
     faqs_text = ""
-    if config.get("faqs"):
+    faqs = getattr(tenant, 'faqs', [])
+    if faqs:
         faqs_text = "\n\nFrequently asked questions you know the answers to:\n"
-        for faq in config["faqs"]:
+        for faq in faqs:
             faqs_text += f"Q: {faq['question']}\nA: {faq['answer']}\n"
 
     booking_line = f"When they're ready to proceed, share the booking link: {cal_link}" if cal_link else \
@@ -292,9 +256,9 @@ def send_whatsapp(to: str, body: str, from_number: str = None, client_id: str = 
 # CEO ALERTS
 # ─────────────────────────────────────────────
 
-def _alert_ceo_hot_lead(config: dict, from_number: str, lead_data: dict):
+def _alert_ceo_hot_lead(tenant: Tenant, from_number: str, lead_data: dict):
     """Fire WhatsApp to CEO when a lead is qualified."""
-    ceo_phone = config.get("ceo_phone") or QASSIM_PHONE
+    ceo_phone = getattr(tenant, 'ceo_phone', None) or QASSIM_PHONE
     if not ceo_phone:
         print("[WhatsApp] No CEO phone configured — skipping alert")
         return
@@ -303,7 +267,7 @@ def _alert_ceo_hot_lead(config: dict, from_number: str, lead_data: dict):
     need     = lead_data.get("need", "Not specified")
     booking  = "Wants to book ✅" if lead_data.get("wants_booking") else "Still exploring 🔍"
     customer = from_number.replace("whatsapp:", "")
-    biz      = config.get("business_name", "your business")
+    biz      = tenant.client_name
 
     msg = (
         f"🔔 *Hot lead — {biz}*\n\n"
@@ -317,14 +281,14 @@ def _alert_ceo_hot_lead(config: dict, from_number: str, lead_data: dict):
     send_whatsapp(ceo_phone, msg)
 
 
-def _alert_ceo_booking_confirmed(config: dict, booking_name: str, booking_time: str):
+def _alert_ceo_booking_confirmed(tenant: Tenant, booking_name: str, booking_time: str):
     """Fire WhatsApp to CEO when a meeting is booked via Cal.com."""
-    ceo_phone = config.get("ceo_phone") or QASSIM_PHONE
+    ceo_phone = getattr(tenant, 'ceo_phone', None) or QASSIM_PHONE
     if not ceo_phone:
         return
 
     msg = (
-        f"📅 *Meeting booked — {config.get('business_name', '')}*\n\n"
+        f"📅 *Meeting booked — {tenant.client_name}*\n\n"
         f"👤 {booking_name}\n"
         f"🕐 {booking_time}\n\n"
         f"_Check your calendar for details._"
@@ -336,16 +300,17 @@ def _alert_ceo_booking_confirmed(config: dict, booking_name: str, booking_time: 
 # AIRTABLE LOGGING
 # ─────────────────────────────────────────────
 
-def _log_lead_to_airtable(config: dict, from_number: str, lead_data: dict):
+def _log_lead_to_airtable(tenant: Tenant, from_number: str, lead_data: dict):
     try:
         from lib import airtable_client
         customer_number = from_number.replace("whatsapp:", "")
-        airtable_client.log_lead(
-            name=lead_data.get("name", "WhatsApp Lead"),
-            phone=customer_number,
-            source="WhatsApp",
-            notes=lead_data.get("need", ""),
-            client_id=config.get("client_id", ""),
+        airtable_client.log_whatsapp_message(
+            base_id=tenant.airtable_base_id,
+            client_id=tenant.client_id,
+            sender_phone=from_number,
+            message_content="[QUALIFIED]",
+            response_content=f"Qualified lead: {lead_data.get('name')} - {lead_data.get('need')}",
+            lead_score=100
         )
         print(f"[WhatsApp] Lead logged to Airtable ✓")
     except Exception as e:
@@ -356,7 +321,7 @@ def _log_lead_to_airtable(config: dict, from_number: str, lead_data: dict):
 # CLAUDE — AI RESPONSE
 # ─────────────────────────────────────────────
 
-def _get_ai_response(system_prompt: str, messages: list, config: dict) -> str:
+def _get_ai_response(system_prompt: str, messages: list, tenant: Tenant) -> str:
     """Call Claude Haiku for fast, cheap WhatsApp responses."""
     try:
         import anthropic
@@ -372,7 +337,7 @@ def _get_ai_response(system_prompt: str, messages: list, config: dict) -> str:
 
     except Exception as e:
         print(f"[WhatsApp] Claude error: {e}")
-        biz = config.get("business_name", "us")
+        biz = tenant.client_name
         return f"Thanks for reaching out to {biz}! We'll get back to you shortly. 😊"
 
 
@@ -396,15 +361,15 @@ def _customer_wants_call(message: str) -> bool:
     return any(phrase in lowered for phrase in CALL_REQUEST_PHRASES)
 
 
-def _trigger_callback(from_number: str, config: dict):
+def _trigger_callback(from_number: str, tenant: Tenant):
     """
     Trigger a VAPI outbound call back to the customer.
     Used when customer asks to be called during a WhatsApp conversation.
     """
     raw_number = from_number.replace("whatsapp:", "")
-    business   = config.get("business_name", "the business")
-    industry   = config.get("industry", "services")
-    cal_link   = config.get("cal_link", "")
+    business   = tenant.client_name
+    industry   = tenant.industry
+    cal_link   = tenant.calcom_event_type_id or ""
 
     script = (
         f"You are the AI assistant for {business}, a {industry} business. "
@@ -418,9 +383,10 @@ def _trigger_callback(from_number: str, config: dict):
     try:
         from lib import vapi_client
         call = vapi_client.make_outbound_call(
-            to_number=raw_number,
-            assistant_prompt=script,
-            metadata={"type": "whatsapp_callback", "client_id": config.get("client_id")},
+            phone_number=raw_number,
+            assistant_id=tenant.vapi_assistant_id,
+            metadata={"type": "whatsapp_callback", "client_id": tenant.client_id},
+            first_message=f"Hi! I'm calling you back from {business} as requested on WhatsApp. How can I help?"
         )
         print(f"[WhatsApp] Callback call triggered to {raw_number} ✓ — call_id: {call.get('id')}")
         return call.get("id")
@@ -495,18 +461,22 @@ def handle_incoming_message(
 
     Returns the reply text (already sent via Twilio).
     """
-    config = get_client_config(to_number)
-    conv   = _get_or_create_conversation(from_number, config["client_id"])
+    tenant = get_tenant_for_number(to_number)
+    if not tenant:
+        print(f"[WhatsApp] No tenant found for number: {to_number}")
+        return "Business not found."
+
+    conv = _get_or_create_conversation(from_number, tenant.client_id)
 
     # Add customer message to conversation history
     conv["messages"].append({"role": "user", "content": body})
     conv["message_count"] += 1
 
-    print(f"[WhatsApp] [{config['business_name']}] {from_number}: {body[:60]}...")
+    print(f"[WhatsApp] [{tenant.client_name}] {from_number}: {body[:60]}...")
 
     # Build system prompt and get AI response
-    system_prompt = _build_system_prompt(config)
-    reply_raw     = _get_ai_response(system_prompt, conv["messages"], config)
+    system_prompt = _build_system_prompt(tenant)
+    reply_raw     = _get_ai_response(system_prompt, conv["messages"], tenant)
 
     # Parse qualification tag
     clean_reply, lead_data = _extract_qualified_tag(reply_raw)
@@ -520,13 +490,13 @@ def handle_incoming_message(
         conv["lead_data"] = {**lead_data, "qualified_at": datetime.utcnow().isoformat()}
 
         print(f"[WhatsApp] Lead qualified: {lead_data}")
-        _alert_ceo_hot_lead(config, from_number, lead_data)
-        _log_lead_to_airtable(config, from_number, lead_data)
+        _alert_ceo_hot_lead(tenant, from_number, lead_data)
+        _log_lead_to_airtable(tenant, from_number, lead_data)
 
     # Detect callback request — trigger VAPI outbound call
     if _customer_wants_call(body) and conv.get("stage") != "calling":
         conv["stage"] = "calling"
-        call_id = _trigger_callback(from_number, config)
+        call_id = _trigger_callback(from_number, tenant)
         if call_id:
             # Append a note to the reply acknowledging the call
             clean_reply = clean_reply.rstrip()

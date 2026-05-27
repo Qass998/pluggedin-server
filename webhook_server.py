@@ -141,8 +141,9 @@ def whatsapp_webhook():
 
         print(f"\n[WhatsApp] Inbound: {from_number} → {to_number}: {body[:60]}")
 
-        from lib.whatsapp_agent import handle_incoming_message
-        handle_incoming_message(
+        # Choose the active handler (Module 1/9 uses retention_client for now)
+        from lib.retention_client import handle_whatsapp_inbound
+        handle_whatsapp_inbound(
             from_number=from_number,
             to_number=to_number,
             body=body,

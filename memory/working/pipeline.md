@@ -7,7 +7,8 @@
 
 | Prospect | Source | Stage | Score | Last Touch | Next Action |
 |----------|--------|-------|-------|------------|-------------|
-| Gromatic (Damian) | Direct | Proposal | Tier 1 | Today | Send proposal |
+| Gromatic (Damian) | Direct | Deployment | Tier 1 | Today | Deploy Module 1 |
+| 50 Businesses | Research | Lead Gen | TBC | - | ICP Scoring |
 
 ## GROMATIC CLIENT PIPELINE (Solicitors)
 
@@ -24,4 +25,4 @@
 ## METRICS THIS MONTH
 - MRR added: £0
 - Clients closed: 0
-- Proposals sent: 0
+- Proposals sent: 1 (Gromatic)

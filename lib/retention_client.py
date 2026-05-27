@@ -12,6 +12,8 @@ import requests
 from datetime import datetime, timedelta
 from typing import Optional
 from anthropic import Anthropic
+from core.tenant import get_all_tenants, Tenant
+from lib import airtable_client
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
@@ -32,15 +34,18 @@ def send_whatsapp(
     to_number: str,
     message: str,
     media_url: str = None,
+    from_number: str = None,
 ) -> dict:
     """
     Send a WhatsApp message via Twilio.
     to_number: international format e.g. "+447700900000"
     media_url: optional image URL for rich messages
+    from_number: optional Twilio number to send from
     """
     url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+    sender = from_number or TWILIO_WHATSAPP_FROM
     payload = {
-        "From": TWILIO_WHATSAPP_FROM,
+        "From": sender,
         "To": f"whatsapp:{to_number}",
         "Body": message,
     }
@@ -421,3 +426,82 @@ def retention_summary(
         "churned": churned,
         "retention_rate": f"{(active / total * 100):.1f}%" if total > 0 else "0%",
     }
+
+
+# ─────────────────────────────────────────────
+# INBOUND WHATSAPP HANDLER
+# ─────────────────────────────────────────────
+
+def handle_whatsapp_inbound(
+    from_number: str,
+    to_number: str,
+    body: str,
+    profile_name: str = "",
+) -> str:
+    """
+    Handle an incoming WhatsApp message (Module 1/9).
+    Identifies the tenant, generates an AI response, sends it, and logs to Airtable.
+    Now includes advanced qualification and VAPI callback detection.
+    """
+    from lib import whatsapp_agent
+
+    # 1. Identify Tenant
+    raw_to = to_number.replace("whatsapp:", "")
+    tenant = None
+    for t in get_all_tenants():
+        if t.whatsapp_number == raw_to:
+            tenant = t
+            break
+
+    if not tenant:
+        print(f"[WhatsApp] No tenant found for number: {to_number}")
+        return "Business not found."
+
+    # 2. Get conversation context
+    conv = whatsapp_agent._get_or_create_conversation(from_number, tenant.client_id)
+    conv["messages"].append({"role": "user", "content": body})
+    conv["message_count"] += 1
+
+    # 3. Build AI Context
+    system_prompt = whatsapp_agent._build_system_prompt(tenant)
+
+    # 4. Generate Response
+    reply_raw = whatsapp_agent._get_ai_response(system_prompt, conv["messages"], tenant)
+
+    # 5. Parse qualification tag
+    reply_text, lead_data = whatsapp_agent._extract_qualified_tag(reply_raw)
+    conv["messages"].append({"role": "assistant", "content": reply_text})
+
+    # 6. Handle newly qualified lead
+    if lead_data and conv["stage"] != "qualified":
+        conv["stage"] = "qualified"
+        conv["lead_data"] = {**lead_data, "qualified_at": datetime.utcnow().isoformat()}
+        whatsapp_agent._alert_ceo_hot_lead(tenant, from_number, lead_data)
+        whatsapp_agent._log_lead_to_airtable(tenant, from_number, lead_data)
+
+    # 7. Detect callback request
+    if whatsapp_agent._customer_wants_call(body) and conv.get("stage") != "calling":
+        conv["stage"] = "calling"
+        call_id = whatsapp_agent._trigger_callback(from_number, tenant)
+        if call_id:
+            reply_text = reply_text.rstrip()
+            if not any(phrase in reply_text.lower() for phrase in ["calling you", "give you a call", "ring you"]):
+                reply_text += "\n\nI'm calling you now! 📞"
+
+    # 8. Send Reply
+    send_whatsapp(from_number.replace("whatsapp:", ""), reply_text, from_number=to_number)
+
+    # 9. Log message to Airtable (every message)
+    try:
+        airtable_client.log_whatsapp_message(
+            base_id=tenant.airtable_base_id,
+            client_id=tenant.client_id,
+            sender_phone=from_number,
+            message_content=body,
+            response_content=reply_text,
+            lead_score=100 if conv["stage"] == "qualified" else 0
+        )
+    except Exception as e:
+        print(f"[WhatsApp] Airtable logging error: {e}")
+
+    return reply_text
