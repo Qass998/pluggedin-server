@@ -136,7 +136,7 @@ export default function DashboardPage() {
     <div style={{ display: "flex", height: "100dvh", background: T.canvas, color: T.text, overflow: "hidden" }}>
 
       {/* ── SIDEBAR — desktop visible, mobile drawer ──────────────────── */}
-      <aside className="flex-col flex-shrink-0 hidden md:flex"
+      <aside className="hidden md:flex flex-col flex-shrink-0"
         style={{ width: 220, background: T.surface, borderRight: `1px solid ${T.border}` }}>
 
         {/* Brand */}
