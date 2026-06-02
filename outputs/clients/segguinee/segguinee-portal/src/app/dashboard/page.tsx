@@ -174,14 +174,14 @@ export default function DashboardPage() {
 
 function AgentsPanel() {
   const activeAgents = [
-    { icon: "📄", name: "Facturation Agent", desc: "Invoice generation, payment tracking, billing reports", price: "$250/month", status: "✅ ACTIVE" },
-    { icon: "📊", name: "Data Analysis Agent", desc: "Weekly briefing, production metrics, revenue analysis, incident insights", price: "$300/month", status: "✅ ACTIVE" },
-    { icon: "💬", name: "Presence Agent", desc: "24/7 WhatsApp support, customer inquiries, field coordination", price: "$250/month", status: "✅ ACTIVE" },
+    { icon: "📄", name: "Facturation Agent", desc: "Invoice generation, payment tracking, billing reports" },
+    { icon: "📊", name: "Data Analysis Agent", desc: "Weekly briefing, production metrics, revenue analysis, incident insights" },
+    { icon: "💬", name: "Presence Agent", desc: "24/7 WhatsApp support, customer inquiries, field coordination" },
   ];
 
   const availableAgents = [
-    { icon: "🔍", name: "Pipeline Agent", desc: "Find & qualify new customers, research service areas, expansion planning", price: "$250/month", action: "Add" },
-    { icon: "⚖️", name: "Compliance Agent", desc: "License tracking, regulatory alerts, compliance reports", price: "$150/month", action: "Add" },
+    { icon: "🔍", name: "Pipeline Agent", desc: "Find & qualify new customers, research service areas, expansion planning" },
+    { icon: "⚖️", name: "Compliance Agent", desc: "License tracking, regulatory alerts, compliance reports" },
   ];
 
   return (
@@ -191,59 +191,37 @@ function AgentsPanel() {
         <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>
           Your Active Solutions
         </h3>
-        <div style={{ display: "grid", gap: 16 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           {activeAgents.map((agent, i) => (
             <div key={i} style={{
-              background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12,
-              padding: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-start"
+              background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10,
+              padding: 16, display: "flex", gap: 12
             }}>
-              <div style={{ display: "flex", gap: 16, flex: 1 }}>
-                <div style={{ fontSize: 24 }}>{agent.icon}</div>
-                <div>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
-                  <p style={{ fontSize: 13, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
-                </div>
-              </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: T.accent, marginBottom: 4 }}>{agent.price}</div>
-                <div style={{ fontSize: 12, color: T.success, fontWeight: 600 }}>{agent.status}</div>
+              <div style={{ fontSize: 22, flexShrink: 0 }}>{agent.icon}</div>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
+                <p style={{ fontSize: 12, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
               </div>
             </div>
           ))}
-        </div>
-        <div style={{ marginTop: 20, padding: "16px 20px", background: T.accentDim, borderRadius: 8, borderLeft: `3px solid ${T.accent}` }}>
-          <p style={{ fontSize: 13, color: T.text2, margin: 0 }}>
-            <strong>Total Monthly: $800</strong> — Billed 1st of each month
-          </p>
         </div>
       </div>
 
       {/* AVAILABLE AGENTS */}
       <div>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          Expand Your Capabilities
+          Available to Add
         </h3>
-        <div style={{ display: "grid", gap: 16 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           {availableAgents.map((agent, i) => (
             <div key={i} style={{
-              background: T.surfaceHover, border: `1px solid ${T.border}`, borderRadius: 12,
-              padding: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-start"
+              background: T.surfaceHover, border: `1px solid ${T.border}`, borderRadius: 10,
+              padding: 16, display: "flex", gap: 12, opacity: 0.8
             }}>
-              <div style={{ display: "flex", gap: 16, flex: 1 }}>
-                <div style={{ fontSize: 24 }}>{agent.icon}</div>
-                <div>
-                  <h4 style={{ fontSize: 14, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
-                  <p style={{ fontSize: 13, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
-                </div>
-              </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: T.accent, marginBottom: 8 }}>{agent.price}</div>
-                <button style={{
-                  padding: "8px 16px", borderRadius: 6, border: `1px solid ${T.accent}`, background: "transparent",
-                  color: T.accent, cursor: "pointer", fontWeight: 600, fontSize: 12, fontFamily: "inherit", transition: "all 150ms"
-                }} onMouseEnter={e => { e.currentTarget.style.background = T.accentDim; }} onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-                  + {agent.action}
-                </button>
+              <div style={{ fontSize: 22, flexShrink: 0 }}>{agent.icon}</div>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
+                <p style={{ fontSize: 12, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
               </div>
             </div>
           ))}
