@@ -108,6 +108,14 @@ export default function DashboardPage() {
   const [authed, setAuthed] = useState(false);
   const [tab, setTab] = useState<Tab>("conversations");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (document.cookie.includes("segguinee_auth=")) setAuthed(true);
@@ -136,8 +144,9 @@ export default function DashboardPage() {
     <div style={{ display: "flex", height: "100dvh", background: T.canvas, color: T.text, overflow: "hidden" }}>
 
       {/* ── SIDEBAR — desktop visible, mobile drawer ──────────────────── */}
-      <aside className="hidden md:flex flex-col flex-shrink-0"
-        style={{ width: 220, background: T.surface, borderRight: `1px solid ${T.border}` }}>
+      {!isMobile && (
+      <aside
+        style={{ width: 220, background: T.surface, borderRight: `1px solid ${T.border}`, display: "flex", flexDirection: "column", flexShrink: 0 }}>
 
         {/* Brand */}
         <div style={{ padding: "20px 20px 16px", borderBottom: `1px solid ${T.border}` }}>
@@ -212,13 +221,15 @@ export default function DashboardPage() {
           </button>
         </div>
       </aside>
+      )}
 
       {/* ── MAIN AREA ───────────────────────────────────────────────── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" }}>
 
         {/* Mobile header */}
-        <header className="md:hidden flex-shrink-0 border-b px-4 py-3 flex items-center justify-between relative z-40"
-          style={{ borderColor: T.border, background: T.surface }}>
+        {isMobile && (
+        <header
+          style={{ borderColor: T.border, background: T.surface, borderBottom: `1px solid ${T.border}`, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 40 }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)}
             style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", color: T.text }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -237,9 +248,10 @@ export default function DashboardPage() {
           <button onClick={logout} className="text-xs px-3 py-1.5 rounded-md"
             style={{ background: T.canvas, color: T.text3 }}>Sortir</button>
         </header>
+        )}
 
         {/* Mobile drawer backdrop + sidebar */}
-        {sidebarOpen && (
+        {isMobile && sidebarOpen && (
           <>
             <div onClick={() => setSidebarOpen(false)}
               style={{
@@ -252,7 +264,7 @@ export default function DashboardPage() {
               zIndex: 40, display: "flex", flexDirection: "column",
               animation: "slideIn 200ms ease-out",
               overflow: "hidden"
-            }} className="md:hidden">
+            }}>
               <style>{`@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }`}</style>
 
               {/* Brand */}
