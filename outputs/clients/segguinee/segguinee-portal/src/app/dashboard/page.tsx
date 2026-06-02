@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
   const handleTabChange = (newTab: Tab) => {
     setTab(newTab);
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     params.set("tab", newTab);
     router.push(`?${params.toString()}`, { scroll: false });
   };
