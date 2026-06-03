@@ -88,8 +88,26 @@ def _start_scheduler():
             replace_existing=True,
         )
 
+        # 07:00 UTC — SEGGUINÉE daily briefing (07:00 Conakry = 07:00 UTC/GMT)
+        _scheduler.add_job(
+            _run_segguinee_daily_briefing,
+            CronTrigger(hour=7, minute=0),
+            id="segguinee_daily_briefing",
+            name="SEGGUINEE Daily Briefing",
+            replace_existing=True,
+        )
+
+        # Every 15 minutes — health check all client portals
+        _scheduler.add_job(
+            _run_health_checks,
+            CronTrigger(minute="*/15"),
+            id="health_monitor",
+            name="Health Monitor",
+            replace_existing=True,
+        )
+
         _scheduler.start()
-        log.info("[Scheduler] APScheduler started — daily cycles at 05:00 and 06:30 UTC")
+        log.info("[Scheduler] APScheduler started — daily cycles + health monitor every 15 min")
     except ImportError:
         log.warning("[Scheduler] apscheduler not installed — run: pip install apscheduler")
     except Exception as e:
@@ -118,6 +136,46 @@ def _run_pluggedin_lead_gen():
         run_lead_gen(dry_run=False)
     except Exception as e:
         log.error(f"[Scheduler] Lead gen error: {e}")
+
+
+def _run_segguinee_daily_briefing():
+    """Send SEGGUINÉE daily briefing to director at 07:00 Conakry (UTC)."""
+    log.info("[Scheduler] Triggering SEGGUINÉE daily briefing")
+    try:
+        from core.tenant import get_tenant
+        from lib.segguinee_whatsapp import compile_daily_briefing
+
+        tenant = get_tenant("segguinee")
+        if not tenant.director_phone:
+            log.warning("[Scheduler] SEGGUINEE briefing skipped — director phone not configured")
+            return
+
+        if not tenant.meta_phone_id or not tenant.meta_token:
+            log.warning("[Scheduler] SEGGUINEE briefing skipped — Meta credentials not configured")
+            return
+
+        result = compile_daily_briefing(tenant)
+        if result.get("sent"):
+            log.info(f"[Scheduler] SEGGUINEE briefing sent — "
+                     f"{result['data']['overdue_count']} overdue, "
+                     f"{result['data']['active_incidents']} incidents")
+        else:
+            log.error(f"[Scheduler] SEGGUINEE briefing failed: {result.get('error')}")
+    except ValueError:
+        log.warning("[Scheduler] SEGGUINEE tenant not registered — skipping briefing")
+    except Exception as e:
+        log.error(f"[Scheduler] SEGGUINEE briefing error: {e}")
+
+
+def _run_health_checks():
+    """Check all client portals every 15 minutes. Alert operator on failure."""
+    try:
+        from lib.health_monitor import run_health_checks
+        run_health_checks()
+    except ImportError:
+        log.warning("[Scheduler] health_monitor module not found — skipping health checks")
+    except Exception as e:
+        log.error(f"[Scheduler] Health check error: {e}")
 
 DASHBOARD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dashboard")
 
@@ -149,6 +207,11 @@ if os.path.isdir(STATIC_DIR):
 DASHBOARDS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "outputs", "dashboards")
 os.makedirs(DASHBOARDS_DIR, exist_ok=True)
 app.mount("/dashboards", StaticFiles(directory=DASHBOARDS_DIR), name="dashboards")
+
+# Serve client portals at /clients/<client_id>/
+CLIENTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "outputs", "clients")
+os.makedirs(CLIENTS_DIR, exist_ok=True)
+app.mount("/clients", StaticFiles(directory=CLIENTS_DIR, html=True), name="clients")
 
 # Serve dashboard at root
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
@@ -904,21 +967,6 @@ def demo_list():
     return {"demos": list_demos()}
 
 
-@app.post("/demo/whatsapp")
-async def demo_whatsapp(request: Request):
-    """Send a manual WhatsApp to any number."""
-    try:
-        body    = await request.json()
-        to      = body.get("to", "")
-        message = body.get("message", "")
-        if not to or not message:
-            raise HTTPException(status_code=400, detail="to and message required")
-        from lib.whatsapp_agent import send_whatsapp
-        wa_to = to if to.startswith("whatsapp:") else f"whatsapp:{to}"
-        sent  = send_whatsapp(wa_to, message)
-        return {"status": "sent" if sent else "failed"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ---------------------------------------------------------------------------
@@ -1312,12 +1360,90 @@ if __name__ == "__main__":
 
 
 # ---------------------------------------------------------------------------
-# WHATSAPP BUSINESS REGISTRATION
+# META WHATSAPP CLOUD API — SEGGUINÉE webhook + verification
 # ---------------------------------------------------------------------------
 
-class WhatsAppRegisterRequest(BaseModel):
-    twilio_number: str
-    config:        dict
+@app.get("/webhook/whatsapp-meta")
+async def whatsapp_meta_verify(request: Request):
+    """
+    Meta webhook verification endpoint.
+    Meta sends GET with hub.mode=subscribe&hub.verify_token=...&hub.challenge=...
+    Must return the challenge value raw to prove ownership.
+
+    Set WHATSAPP_VERIFY_TOKEN in .env — use this same string
+    in the Meta Business app webhook settings.
+    """
+    from fastapi.responses import Response
+
+    verify_token = os.getenv("META_VERIFY_TOKEN_SEGGUINEE", "pluggedin_segguinee_2026")
+    mode = request.query_params.get("hub.mode")
+    token = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+
+    if mode == "subscribe" and token == verify_token:
+        log.info("[Webhook] Meta webhook verified ✓")
+        return Response(content=str(challenge or ""), media_type="text/plain")
+
+    log.warning(f"[Webhook] Meta verify failed — mode={mode}")
+    raise HTTPException(status_code=403, detail="Verification failed")
+
+
+@app.post("/webhook/whatsapp-meta")
+async def whatsapp_meta_webhook(request: Request):
+    """
+    Meta WhatsApp Cloud API webhook — inbound messages.
+
+    Set this URL in the Meta Business app webhook settings:
+      https://your-domain/webhook/whatsapp-meta
+
+    Meta payload: {object, entry: [{changes: [{value: {messages: [...]}}]}]}
+
+    Routes to SEGGUINÉE WhatsApp agent:
+      - Director → command handler (relance, briefing, statut, GO, PAUSE)
+      - Customers → inquiry handler (AI reply in French, facts only)
+    """
+    from lib.segguinee_whatsapp import handle_segguinee_message
+    from core.tenant import get_tenant
+
+    try:
+        payload = await request.json()
+        log.info(f"[Webhook] Meta inbound: {json.dumps(payload)[:300]}")
+
+        entries = payload.get("entry", [])
+        for entry in entries:
+            changes = entry.get("changes", [])
+            for change in changes:
+                value = change.get("value", {})
+                messages = value.get("messages", [])
+
+                for msg in messages:
+                    from_number = msg.get("from", "")
+                    text_obj = msg.get("text", {})
+                    body = text_obj.get("body", "").strip()
+                    contacts = value.get("contacts", [])
+                    profile_name = contacts[0].get("profile", {}).get("name", "") if contacts else ""
+
+                    if not body or not from_number:
+                        continue
+
+                    try:
+                        tenant = get_tenant("segguinee")
+                        result = handle_segguinee_message(
+                            tenant=tenant,
+                            from_number=from_number,
+                            body=body,
+                            profile_name=profile_name,
+                        )
+                        log.info(f"[Webhook] Meta handled — from={from_number}, routed={result.get('routed_to')}")
+                    except ValueError:
+                        log.warning("[Webhook] SEGGUINEE tenant not registered — message ignored")
+                        return {"status": "ignored", "reason": "tenant_not_registered"}
+
+        return {"status": "handled"}
+
+    except Exception as e:
+        log.error(f"[Webhook] Meta error: {e}")
+        return {"status": "error", "detail": str(e)}
 
 
 class OnboardClientRequest(BaseModel):
@@ -1534,87 +1660,6 @@ async def onboard_client_full(req: OnboardClientRequest, background_tasks: Backg
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/whatsapp/register")
-async def whatsapp_register(req: WhatsAppRegisterRequest):
-    """Register a business with the WhatsApp agent at runtime."""
-    try:
-        from lib.whatsapp_agent import register_client
-        register_client(req.twilio_number, req.config)
-        return {"status": "registered", "number": req.twilio_number, "business": req.config.get("business_name")}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/whatsapp/clients")
-async def whatsapp_list_clients():
-    """List all registered WhatsApp business clients."""
-    from lib.whatsapp_agent import list_registered_clients
-    return {"clients": list_registered_clients()}
-
-
-@app.post("/webhook/whatsapp")
-async def whatsapp_webhook(request: Request):
-    """
-    Twilio WhatsApp webhook — receives inbound messages, AI replies.
-    Set this URL in Twilio console: https://your-domain/webhook/whatsapp
-    """
-    from lib.whatsapp_agent import handle_incoming_message
-    try:
-        form  = await request.form()
-        body  = form.get("Body", "").strip()
-        from_ = form.get("From", "")
-        to_   = form.get("To", "")
-        name  = form.get("ProfileName", "")
-
-        if not body or not from_:
-            return {"status": "ignored"}
-
-        reply = handle_incoming_message(from_number=from_, to_number=to_, body=body, profile_name=name)
-        return {"status": "handled", "reply_length": len(reply)}
-    except Exception as e:
-        print(f"[Webhook] WhatsApp error: {e}")
-        return {"status": "error", "detail": str(e)}
-
-
-@app.post("/webhook/whatsapp-green")
-async def whatsapp_green_webhook(request: Request):
-    """
-    Green API WhatsApp webhook — receives inbound messages, AI replies.
-    Set this URL in Green API instance settings: https://your-domain/webhook/whatsapp-green
-    """
-    from lib.whatsapp_agent import handle_green_api_message
-    try:
-        payload = await request.json()
-        reply = handle_green_api_message(payload)
-        if not reply:
-            return {"status": "ignored"}
-        return {"status": "handled", "reply_length": len(reply)}
-    except Exception as e:
-        print(f"[Webhook] Green API WhatsApp error: {e}")
-        return {"status": "error", "detail": str(e)}
-
-
-def _load_whatsapp_clients_from_config():
-    """Load registered businesses from config/whatsapp_clients.json on startup."""
-    config_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "config", "whatsapp_clients.json"))
-    if not os.path.exists(config_path):
-        return
-    try:
-        from lib.whatsapp_agent import register_client
-        with open(config_path) as f:
-            clients = json.load(f)
-        for client in clients:
-            number = client.pop("twilio_number", None)
-            if number:
-                register_client(number, client)
-        print(f"[Server] Loaded {len(clients)} WhatsApp client(s) from config ✓")
-    except Exception as e:
-        print(f"[Server] Warning — could not load WhatsApp config: {e}")
-
-
-_load_whatsapp_clients_from_config()
 
 
 # ---------------------------------------------------------------------------

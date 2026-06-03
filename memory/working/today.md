@@ -1,67 +1,57 @@
 # Working Memory — Today
-# Updated: every session
-# Date: 2026-04-28
+# Updated: 2026-05-30
 
 ---
 
 ## REVENUE STATUS
 MRR: £0 — CRITICAL URGENCY
-Target: First client in 7 days
-Primary: Gromatic (Damian) — £797/month + case bonus
+Active deal: SEGGUINÉE (water utility, Guinea) — deployed, WhatsApp blocked on Meta phone number
 
 ## TODAY'S PRIORITY
-Send Gromatic proposal. Launch solicitor outreach.
-Nothing else matters until this is done.
+Get a real Guinea (+224) SIM registered with Meta so WhatsApp webhook can receive inbound messages. The Meta test number (+1 555 657-0856) is outbound-only — cannot receive WhatsApp from real users.
 
 ## ACTIVE TASKS
-- [x] CLAUDE.md V4.0 completed and patched (all 7 gaps fixed)
-- [x] All 11 lib/ files built (vapi, retention, stock_intel, dispatch, intake)
-- [x] templates/ folder created (intake, claude_md, env)
-- [x] industries/ folder created (restaurant, legal, logistics, construction, healthcare)
-- [x] docs/demo-system.md built (10-minute sales demo playbook)
-- [x] relevance/ folder and relevance_client.py deleted
-- [ ] Fill remaining .env API keys
-- [ ] Send Gromatic proposal to Damian ← CRITICAL TODAY
-- [ ] Launch outreach to 10 researched solicitors
-- [ ] Confirm Apify MCP connected in VS Code (run: claude mcp list)
-- [ ] Install Python dependencies (pip install -r requirements.txt)
-- [ ] Sign up for Creatomate (free trial)
-- [ ] Sign up for Artlist
+- [x] SEGGUINÉE portal deployed — https://segguinee.vercel.app (PIN: 2580)
+- [x] WhatsApp webhook code complete — agentic routing, customer context injection, billing reminders, daily briefing, operational data parsing (prod/facture/incident/paiement)
+- [x] OpenAI GPT-4o-mini customer inquiry with full Supabase context injection
+- [x] Supabase schema live (8 tables: conversations, messages, briefings, staff, production, invoices, incidents, billing_reminders)
+- [x] .env fixed — colons converted to equals, SEGGUINEE_DIRECTOR_PHONE added, OPENAI_API_KEY uncommented, duplicate WhatsApp token removed
+- [x] Public /privacy and /terms pages live (Meta compliance)
+- [ ] **BLOCKER: Get real +224 Guinea phone number registered with Meta** — test number doesn't receive inbound
+- [ ] Verify Meta access token is permanent (System User, never expires) vs temporary (24hr expiry)
+- [ ] Configure webhook callback URL in Meta: https://segguinee.vercel.app/api/webhook/whatsapp (verify token: Pluggedin)
+- [ ] Subscribe to "messages" webhook field in Meta
+- [ ] Push code to GitHub
+- [ ] Send director the URL + PIN for review once WhatsApp works end-to-end
+
+## WHATSAPP BLOCKER DETAILS
+- Meta test number +1 555 657-0856 = outbound API only, cannot receive WhatsApp messages
+- Twilio US number +17698881480 exists but Meta verification SMS doesn't arrive (virtual number)
+- Solution: Director buys Guinea SIM ($2), registers it in Meta Business Suite, receives verification code directly
+- Director's UK number (+447495255315) is set as SEGGUINEE_DIRECTOR_PHONE for commands
+- Architecture: Business number (AI agent, +224 Guinea) + Director number (commands, UK)
+
+## ENV STATUS (PluggedIN/.env)
+Fixed formatting bugs that would break local dev:
+- Colons → equals on all WhatsApp/Supabase lines
+- OPENAI_API_KEY uncommented
+- SEGGUINEE_DIRECTOR_PHONE=447495255315 added
+- Duplicate WHATSAPP_ACCESS_TOKEN line removed
+
+## VIDEO INSIGHTS (watched 2026-05-30)
+Video: "Build a WhatsApp AI Agent with Claude Code" — confirmed our architecture is correct
+Key finding: Access token MUST be via System User (never expires), not "Generate access token" button (24hr expiry)
+We should verify which type we have
 
 ## PIPELINE
 | Lead | Stage | Next Action |
 |------|-------|-------------|
-| Gromatic (Damian) | Proposal ready | Send today |
+| SEGGUINÉE (Guinea) | Deployed | Director gets Guinea SIM → register Meta → test webhook → close |
+| Gromatic (Damian) | Proposal ready | Send (hold until SEGGUINÉE closed) |
 | 10 solicitors | Researched | Outreach not started |
 
-## DECISIONS MADE TODAY (2026-04-27)
-- CLAUDE.md rewritten to Version 4.0
-- Full conglomerate architecture locked in
-- Done-for-you retainer model confirmed (no SaaS)
-- Empire OS tier added for multi-business owners
-- Knowledge Acquisition Agent added (brain feeder)
-- Ecommerce Intelligence Agent added
-- YouTube conglomerate strategy confirmed
-- AgriTrade commodity marketplace confirmed
-- Lead gen verticals mapped (6 initial)
-- Digital product businesses mapped (3)
-- OS dashboard architecture designed
-- CEO agent hierarchy locked in
-- Chief of All Chiefs command structure confirmed
-- Softr for portals now, React/Next.js at £20k MRR
-- Creatomate confirmed (replaced Higgsfield)
-- Artlist confirmed for music/stock footage
-- Mobbi AI for vibe editing
-- Remotion for data narrative videos
-- Review removal as standalone revenue stream confirmed
-- Customer Retention OS (Module 9) fully designed
-- Stock Intelligence + Supplier Portal confirmed
-- Wedding/ceremony design business confirmed
-- Pinterest AI art store confirmed
-- Gumroad digital products confirmed
-
-## NOTES
-Vision is complete. Architecture is locked.
-Every idea has a home in the system.
-Focus now shifts entirely to revenue.
-Gromatic is the key that unlocks everything.
+## NEXT SESSION
+1. Ask: Did the director get a Guinea SIM?
+2. If yes: Register it in Meta, configure webhook, test end-to-end
+3. If no: Push on why this is the only blocker — everything else is built and waiting
+4. Verify access token type (System User permanent vs temporary 24hr)

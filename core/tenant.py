@@ -57,6 +57,11 @@ class Tenant:
     green_api_instance_id: Optional[str]  # Green API instance for this client
     green_api_token: Optional[str]        # Green API token for this client
 
+    # WhatsApp / Meta Cloud API (SEGGUINÉE pattern — direct Meta integration)
+    meta_phone_id: Optional[str]          # Meta app phone number ID
+    meta_token: Optional[str]             # Meta permanent access token
+    director_phone: Optional[str]         # Director's WhatsApp (international format)
+
     # Active modules (list of module numbers as ints, e.g. [1, 9])
     modules_active: list = field(default_factory=list)
 
@@ -108,6 +113,35 @@ def _build_registry() -> dict:
         timezone="Europe/London",
         currency="GBP",
         notes="Damian. Legal AI. First client. Solicitors.",
+    )
+
+    # ------------------------------------------------------------------
+    # SEGGUINÉE — Guinea water utility, Module 1 Presence Agent
+    # Portal: https://segguinee.vercel.app (PIN: 2580)
+    # ------------------------------------------------------------------
+    registry["segguinee"] = Tenant(
+        client_id="segguinee",
+        client_name="SEGGUINÉE",
+        industry="water_utility",
+        plan="starter",
+        airtable_base_id=os.getenv("AIRTABLE_BASE_SEGGUINEE", "appkTn2GRpIGBFwMU"),
+        airtable_token=shared["airtable_token"],
+        agency_base_id=shared["agency_base_id"],
+        vapi_api_key=shared["vapi_api_key"],
+        vapi_assistant_id=os.getenv("VAPI_ASSISTANT_SEGGUINEE"),
+        vapi_phone_number_id=os.getenv("VAPI_PHONE_SEGGUINEE"),
+        calcom_api_key=shared["calcom_api_key"],
+        calcom_event_type_id=os.getenv("CALCOM_EVENT_SEGGUINEE"),
+        whatsapp_number=os.getenv("WHATSAPP_SEGGUINEE"),
+        green_api_instance_id=None,     # SEGGUINÉE uses Meta Cloud API, not Green API
+        green_api_token=None,
+        meta_phone_id=os.getenv("WHATSAPP_PHONE_NUMBER_ID"),
+        meta_token=os.getenv("WHATSAPP_ACCESS_TOKEN"),
+        director_phone=os.getenv("SEGGUINEE_DIRECTOR_PHONE"),
+        modules_active=[1],
+        timezone="Africa/Conakry",
+        currency="GNF",
+        notes="Guinea water utility. First African gov-adjacent client. WhatsApp agent via Meta Cloud API.",
     )
 
     # ------------------------------------------------------------------

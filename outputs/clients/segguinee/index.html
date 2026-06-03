@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Espace Dirigeant — SEGGUINÉE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS — SEGGUINÉE Navy Dark
+   §14.8 preset · darkMode=true
+   ═══════════════════════════════════════ */
+:root {
+  --navy:        #0C2340;
+  --navy-mid:    #122d52;
+  --navy-light:  #1a3a66;
+  --accent:      #3B82F6;
+  --accent-dark: #2563EB;
+  --accent-glow: rgba(59,130,246,.15);
+  --accent-ring: rgba(59,130,246,.25);
+  --bg:          #0F172A;
+  --surface:     #1E293B;
+  --border:      #334155;
+  --text:        #F8FAFC;
+  --text-2:      #CBD5E1;
+  --text-3:      #94A3B8;
+  --success:     #34D399;
+  --success-bg:  rgba(16,185,129,.12);
+  --danger:      #F87171;
+  --danger-bg:   rgba(239,68,68,.12);
+  --radius:      12px;
+  --radius-sm:   8px;
+  --shadow:      0 4px 24px rgba(0,0,0,.3), 0 1px 4px rgba(0,0,0,.15);
+  --font:        'DM Sans', -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'SF Mono', monospace;
+}
+
+/* ═══════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════
+   SVG ICONS
+   ═══════════════════════════════════════ */
+.icon { width: 20px; height: 20px; flex-shrink: 0; display: inline-block; vertical-align: middle; }
+.icon-lg { width: 28px; height: 28px; }
+.icon-xl { width: 40px; height: 40px; }
+
+/* ═══════════════════════════════════════
+   CARD
+   ═══════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+}
+
+/* ═══════════════════════════════════════
+   BRAND
+   ═══════════════════════════════════════ */
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.brand-icon-wrap {
+  width: 64px; height: 64px;
+  background: var(--navy);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  color: var(--accent);
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+}
+.brand-name {
+  font-size: 22px; font-weight: 800;
+  color: var(--text); letter-spacing: -.5px;
+}
+.brand-sub {
+  font-size: 13px; color: var(--text-3);
+  margin-top: 4px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.brand-divider {
+  height: 1px; background: var(--border);
+  margin: 24px 0; position: relative;
+}
+.brand-divider span {
+  position: absolute; top: -10px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  padding: 0 12px;
+  font-size: 11px; color: var(--text-3); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em;
+  display: flex; align-items: center; gap: 6px;
+}
+.brand-divider .icon { color: var(--text-3); }
+
+/* ═══════════════════════════════════════
+   FORM
+   ═══════════════════════════════════════ */
+.form-group { margin-bottom: 20px; }
+
+.form-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-3); text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 8px;
+  display: block;
+}
+.form-input {
+  width: 100%; padding: 14px 16px;
+  font-size: 15px; font-family: var(--font-mono);
+  color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  letter-spacing: .5px;
+  font-variant-numeric: tabular-nums;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--surface);
+}
+.form-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.form-input.error   { border-color: var(--danger); }
+.form-input.success { border-color: var(--success); }
+
+/* ═══════════════════════════════════════
+   PIN DOTS
+   ═══════════════════════════════════════ */
+.pin-display {
+  display: flex; gap: 12px; justify-content: center;
+  margin: 8px 0 24px;
+}
+.pin-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid transparent;
+  transition: background .15s ease, transform .12s ease, border-color .15s ease;
+}
+.pin-dot.filled {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.15);
+}
+
+/* ═══════════════════════════════════════
+   PIN PAD — 8px grid, 44px min touch
+   ═══════════════════════════════════════ */
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.pin-key {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 8px;
+  min-height: 56px;
+  font-size: 20px; font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background .12s ease, transform .1s ease, border-color .12s ease;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  -webkit-user-select: none; user-select: none;
+}
+.pin-key sub {
+  font-size: 9px; color: var(--text-3); font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+}
+.pin-key:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+.pin-key:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent-ring);
+}
+.pin-key:active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  transform: scale(.96);
+}
+.pin-key.del {
+  font-size: 18px; color: var(--text-2);
+  font-family: var(--font);
+}
+.pin-key.zero { grid-column: 2; }
+
+/* ═══════════════════════════════════════
+   BUTTON
+   ═══════════════════════════════════════ */
+.btn {
+  width: 100%; padding: 16px;
+  min-height: 52px;
+  font-size: 15px; font-weight: 700;
+  font-family: var(--font);
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  letter-spacing: .02em;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 14px rgba(59,130,246,.3);
+}
+.btn-primary:hover { background: var(--accent-dark); box-shadow: 0 6px 18px rgba(59,130,246,.4); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { background: var(--text-3); box-shadow: none; cursor: not-allowed; opacity: .6; }
+
+/* ═══════════════════════════════════════
+   ERROR MESSAGE
+   ═══════════════════════════════════════ */
+.error-msg {
+  background: var(--danger-bg);
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 13px; color: var(--danger); font-weight: 600;
+  text-align: center; margin-bottom: 16px;
+  display: none;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.error-msg.show { display: flex; animation: shake .3s ease; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%    { transform: translateX(-6px); }
+  75%    { transform: translateX(6px); }
+}
+
+/* ═══════════════════════════════════════
+   SUCCESS OVERLAY
+   ═══════════════════════════════════════ */
+.success-overlay {
+  display: none; text-align: center; padding: 24px 0 8px;
+}
+.success-overlay.show { display: block; animation: fadeUp .3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.success-icon-wrap {
+  width: 56px; height: 56px;
+  background: var(--success-bg);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  color: var(--success);
+}
+.success-text {
+  font-size: 17px; font-weight: 700; color: var(--success);
+  margin-bottom: 4px;
+}
+.success-sub {
+  font-size: 13px; color: var(--text-3); font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════ */
+.footer {
+  margin-top: 32px; text-align: center;
+  font-size: 12px; color: var(--text-3);
+  font-weight: 500;
+}
+.footer strong { color: var(--text-2); font-weight: 600; }
+
+/* ═══════════════════════════════════════
+   ACCESSIBILITY — Reduced motion
+   ═══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SVG ICON SPRITE
+     ═══════════════════════════════════════ -->
+<svg style="display:none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-water" viewBox="0 0 24 24"><path d="M12 2C12 2 4 12.5 4 17a8 8 0 1 0 16 0C20 12.5 12 2 12 2Z" fill="currentColor"/></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8,12 11,15 16,9"/></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-backspace" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/><line x1="16" y1="9" x2="12" y2="13"/><line x1="12" y1="9" x2="16" y2="13"/></symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></symbol>
+</svg>
+
+<div class="card">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon-wrap">
+      <svg class="icon icon-xl" aria-hidden="true"><use href="#icon-water"/></svg>
+    </div>
+    <div class="brand-name">SEGGUINÉE</div>
+    <div class="brand-sub">Espace Dirigeant</div>
+  </div>
+
+  <!-- Login form -->
+  <div id="login-form">
+    <div class="brand-divider">
+      <span>
+        <svg class="icon" style="width:14px;height:14px" aria-hidden="true"><use href="#icon-lock"/></svg>
+        Accès sécurisé
+      </span>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="error-msg" role="alert">
+      <svg class="icon" style="width:16px;height:16px" aria-hidden="true"><use href="#icon-alert"/></svg>
+      Code incorrect. Veuillez réessayer.
+    </div>
+
+    <!-- PIN dots -->
+    <div class="pin-display" aria-label="Code PIN — 6 chiffres">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+      <div class="pin-dot" id="d4"></div>
+      <div class="pin-dot" id="d5"></div>
+    </div>
+
+    <!-- PIN pad -->
+    <div class="pin-pad" role="group" aria-label="Clavier numérique">
+      <button class="pin-key" onclick="addPin('1')" aria-label="1">1</button>
+      <button class="pin-key" onclick="addPin('2')" aria-label="2 — A B C">2<sub>ABC</sub></button>
+      <button class="pin-key" onclick="addPin('3')" aria-label="3 — D E F">3<sub>DEF</sub></button>
+      <button class="pin-key" onclick="addPin('4')" aria-label="4 — G H I">4<sub>GHI</sub></button>
+      <button class="pin-key" onclick="addPin('5')" aria-label="5 — J K L">5<sub>JKL</sub></button>
+      <button class="pin-key" onclick="addPin('6')" aria-label="6 — M N O">6<sub>MNO</sub></button>
+      <button class="pin-key" onclick="addPin('7')" aria-label="7 — P Q R S">7<sub>PQRS</sub></button>
+      <button class="pin-key" onclick="addPin('8')" aria-label="8 — T U V">8<sub>TUV</sub></button>
+      <button class="pin-key" onclick="addPin('9')" aria-label="9 — W X Y Z">9<sub>WXYZ</sub></button>
+      <button class="pin-key zero" onclick="addPin('0')" aria-label="0">0</button>
+      <button class="pin-key del" onclick="delPin()" aria-label="Effacer le dernier chiffre">
+        <svg class="icon" style="width:22px;height:22px" aria-hidden="true"><use href="#icon-backspace"/></svg>
+      </button>
+    </div>
+
+    <button class="btn btn-primary" id="login-btn" onclick="doLogin()" disabled>
+      Accéder à mon espace
+    </button>
+  </div>
+
+  <!-- Success state -->
+  <div class="success-overlay" id="success-state" role="status" aria-live="polite">
+    <div class="success-icon-wrap">
+      <svg class="icon icon-lg" aria-hidden="true"><use href="#icon-check"/></svg>
+    </div>
+    <div class="success-text">Accès confirmé</div>
+    <div class="success-sub">Chargement de votre espace…</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Propulsé par <strong>PluggedIN</strong> · Système intelligent autonome
+</div>
+
+<script>
+  const CORRECT_PIN = '2580';
+  const SESSION_KEY = 'segguinee_session';
+
+  // Check existing session
+  if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
+    window.location.replace('./dashboard.html');
+  }
+
+  let pin = '';
+
+  function updateDots() {
+    for (let i = 0; i < 6; i++) {
+      document.getElementById('d' + i).classList.toggle('filled', i < pin.length);
+    }
+    document.getElementById('login-btn').disabled = pin.length < 4;
+  }
+
+  function addPin(d) {
+    if (pin.length >= 6) return;
+    pin += d;
+    updateDots();
+    if (pin.length === 6) doLogin();
+  }
+
+  function delPin() {
+    pin = pin.slice(0, -1);
+    updateDots();
+    document.getElementById('error-msg').classList.remove('show');
+  }
+
+  function doLogin() {
+    if (pin.length < 4) return;
+    if (pin === CORRECT_PIN) {
+      sessionStorage.setItem(SESSION_KEY, 'ok');
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('success-state').classList.add('show');
+      setTimeout(function() { window.location.replace('./dashboard.html'); }, 1200);
+    } else {
+      document.getElementById('error-msg').classList.remove('show');
+      void document.getElementById('error-msg').offsetWidth;
+      document.getElementById('error-msg').classList.add('show');
+      pin = '';
+      updateDots();
+    }
+  }
+
+  // Keyboard support
+  document.addEventListener('keydown', function(e) {
+    if (e.key >= '0' && e.key <= '9') addPin(e.key);
+    if (e.key === 'Backspace') { e.preventDefault(); delPin(); }
+    if (e.key === 'Enter') doLogin();
+  });
+</script>
+</body>
+</html>

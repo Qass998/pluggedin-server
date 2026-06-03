@@ -1,1 +1,5 @@
 .env
+.vercel
+
+# Local Netlify folder
+.netlify

@@ -234,6 +234,60 @@ def update_client_vapi(
     return response.json()
 
 
+def query_table(base_id: str, table_name: str,
+                filter_formula: str = None,
+                max_records: int = 100,
+                sort_field: str = None,
+                sort_direction: str = "desc") -> list[dict]:
+    """
+    Generic Airtable table query — returns list of field dicts.
+
+    Works with any base + table combination. Field names are
+    auto-discovered from the first record (no hardcoded schema).
+
+    Args:
+        base_id: Airtable base ID (e.g. "appkTn2GRpIGBFwMU")
+        table_name: URL-encoded table name (e.g. "Factures" or "Clients")
+        filter_formula: Airtable formula string (e.g. "{Status}='Overdue'")
+        max_records: Max records to return
+        sort_field: Field name to sort by
+        sort_direction: "asc" or "desc"
+
+    Returns:
+        List of dicts, each being the "fields" portion of a record.
+        Empty list if table is empty or unreachable.
+
+    Example:
+        overdue = query_table(
+            "appkTn2GRpIGBFwMU",
+            "Factures",
+            filter_formula="{Statut}='Impayé'",
+            max_records=50,
+        )
+    """
+    url = f"{BASE_URL}/{base_id}/{table_name}"
+    params: dict = {"maxRecords": max_records}
+
+    if filter_formula:
+        params["filterByFormula"] = filter_formula
+
+    if sort_field:
+        direction = sort_direction if sort_direction in ("asc", "desc") else "desc"
+        params["sort[0][field]"] = sort_field
+        params["sort[0][direction]"] = direction
+
+    try:
+        response = requests.get(url, headers=HEADERS, params=params, timeout=15)
+        if response.status_code == 200:
+            return [r.get("fields", {}) for r in response.json().get("records", [])]
+        else:
+            print(f"[Airtable] query_table error {response.status_code}: {response.text[:200]}")
+            return []
+    except Exception as e:
+        print(f"[Airtable] query_table exception: {e}")
+        return []
+
+
 def log_inbound_call(
     base_id: str,
     client_id: str,

@@ -275,6 +275,110 @@ Alert:  Critical stock risk → red border
 
 ---
 
+## FEW-SHOT EXAMPLES — TARGET OUTPUT QUALITY
+
+These examples show the expected quality level. Use them as reference for every dashboard build.
+
+### Example 1: KPI Card (standard quality)
+
+```html
+<div class="kpi-card blue">
+  <div class="kpi-icon">💧</div>
+  <div class="kpi-label">Production Aujourd'hui</div>
+  <div class="kpi-value">45 230 <span>m³</span></div>
+  <div class="kpi-delta up">▲ 3.2% vs hier</div>
+</div>
+```
+
+What makes this good:
+- One number, one label, one delta — no clutter
+- Color accent bar at top (blue = neutral/info)
+- Icon gives instant visual category recognition
+- Delta gives context ("vs hier" — specific, not vague)
+- Number is large (28px), unit is smaller — hierarchy respected
+
+### Example 2: Progress Bar Row (recovery/distribution)
+
+```html
+<div class="rec-bar-row">
+  <div class="rec-bar-label">Kaloum</div>
+  <div class="rec-bar-track">
+    <div class="rec-bar-fill" style="width:78%;background:var(--success)"></div>
+    <div class="rec-bar-target"></div>
+  </div>
+  <div class="rec-bar-pct good">78%</div>
+</div>
+```
+
+What makes this good:
+- Target line at 80% — instant visual of gap
+- Color coding: green (>70%), amber (50-70%), red (<50%)
+- District name, bar, percentage — three columns, clean scan
+- No numbers inside the bar — no visual noise
+
+### Example 3: Month Production Grid (tile-based, no chart)
+
+```html
+<div class="month-tile" style="border-color:var(--accent)">
+  <div class="month-name" style="color:var(--accent)">Jun</div>
+  <div class="month-val" style="color:var(--accent)">1 284 500</div>
+  <div class="month-bar"><div style="width:99%;background:var(--accent)"></div></div>
+</div>
+<div class="month-tile future">
+  <div class="month-name">Jul</div>
+  <div class="month-val">—</div>
+  <div class="month-bar"><div style="width:0%"></div></div>
+</div>
+```
+
+What makes this good:
+- Current month highlighted with accent border
+- Future months dimmed (opacity:.4) — immediate "what's done vs what's coming"
+- Simple bar shows % of monthly target
+- No Chart.js dependency — pure CSS, works offline, prints clean
+- 6 columns → 2 rows of 6 months = compact, scannable
+
+### Example 4: Anti-patterns — What NOT to build
+
+**BAD: Cluttered KPI card**
+```
+Revenue this month: £45,230.00 (3.2% increase vs previous month, 
+adjusted for seasonal variation, excluding one-time payments)
+```
+→ Too many numbers, too much text. One KPI per card. One delta. Brevity is clarity.
+
+**BAD: Empty chart**
+```
+<canvas id="myChart" width="400" height="200"></canvas>
+<!-- Chart.js initialized on a hidden div → zero dimensions → fails silently -->
+```
+→ We removed Chart.js from SEGGUINÉE because of this. CSS bars and grids never fail silently.
+
+**BAD: All metrics equal weight**
+```
+KPI row with 8 identical-sized cards, no color coding, no hierarchy
+```
+→ The DG's eye should go to the most important number in < 0.5 seconds. One primary, rest secondary.
+
+### Example 5: Alert Banner (urgent attention needed)
+
+```html
+<div class="alert-banner danger">
+  <div class="alert-icon">⚠️</div>
+  <div class="alert-text">
+    <h4>ALERTE — Perte réseau détectée</h4>
+    <p>Production : 45 230 m³ · Distribution : 43 980 m³ · Écart : 1 250 m³/jour (2.8%)</p>
+  </div>
+</div>
+```
+
+What makes this good:
+- Red/amber background — impossible to miss
+- Specific numbers in the alert body (not "water loss detected" — "1 250 m³/jour")
+- Tells the DG exactly what action matters
+
+---
+
 ## STEP 6 — AIRTABLE LIVE REFRESH
 
 For live mode, add auto-refresh at the top of the HTML `<script>`:

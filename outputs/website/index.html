@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PluggedIN — AI Infrastructure for Your Business</title>
+  <meta name="description" content="We build the AI infrastructure that runs your business. Portals, pipelines, inbound handling, outreach — one system, fully operated.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+
+    /* ══════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --bg:        oklch(5.5% 0 0);
+      --s1:        oklch(9%   0 0);
+      --s2:        oklch(12%  0 0);
+      --s3:        oklch(16%  0 0);
+      --bdr:       oklch(19%  0 0);
+      --bdr-soft:  oklch(14%  0 0);
+      --a:         oklch(74% 0.18 65);
+      --a-dim:     oklch(74% 0.18 65 / .09);
+      --a-mid:     oklch(74% 0.18 65 / .3);
+      --a-glow:    oklch(74% 0.18 65 / .15);
+      --t1:        oklch(96% 0 0);
+      --t2:        oklch(60% 0 0);
+      --t3:        oklch(38% 0 0);
+      --fd:        'Syne', system-ui, sans-serif;
+      --fb:        'Inter', system-ui, sans-serif;
+      --r:         8px;
+      --rl:        16px;
+      --rx:        22px;
+    }
+
+    /* ══════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════ */
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--bg);
+      color: var(--t1);
+      font-family: var(--fb);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { text-decoration:none; color:inherit; }
+
+    /* Noise texture */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: .018;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════ */
+    .w   { max-width:1160px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
+    .sec { padding:7rem 0; }
+    .sec-sm { padding:4rem 0; }
+    .dark { background:var(--s1); }
+
+    /* ══════════════════════════════════════════
+       TYPE UTILS
+    ══════════════════════════════════════════ */
+    h1,h2,h3,h4 { font-family:var(--fd); letter-spacing:-.025em; line-height:1.06; }
+    p { text-wrap:pretty; color:var(--t2); }
+
+    .eye {
+      font-family:var(--fd);
+      font-size:.72rem; font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase;
+      color:var(--a);
+    }
+    .h-xl {
+      font-size:clamp(2.8rem, 5.8vw, 5rem);
+      font-weight:800; color:var(--t1);
+    }
+    .h-lg {
+      font-size:clamp(1.9rem, 3.2vw, 2.8rem);
+      font-weight:800; color:var(--t1);
+    }
+    .lead { font-size:1.08rem; line-height:1.76; }
+
+    .grad-text {
+      background: linear-gradient(135deg, var(--t1) 40%, var(--a));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════════ */
+    .r {
+      opacity:0; transform:translateY(24px);
+      transition:opacity .6s cubic-bezier(.16,1,.3,1),
+                  transform .6s cubic-bezier(.16,1,.3,1);
+    }
+    .r.on { opacity:1; transform:none; }
+    .d1{transition-delay:.07s} .d2{transition-delay:.14s}
+    .d3{transition-delay:.21s} .d4{transition-delay:.28s}
+    .d5{transition-delay:.35s} .d6{transition-delay:.42s}
+
+    /* ══════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════ */
+    .btn {
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.72rem 1.65rem; border-radius:var(--r);
+      font-family:var(--fd); font-weight:700; font-size:.88rem;
+      border:1px solid transparent; cursor:pointer; transition:all .2s;
+    }
+    .btn-p  { background:var(--a); color:oklch(7% 0 0); border-color:var(--a); }
+    .btn-p:hover { background:oklch(78% .18 65); transform:translateY(-1px); box-shadow:0 8px 24px var(--a-glow); }
+    .btn-g  { background:transparent; color:var(--t1); border-color:var(--bdr); }
+    .btn-g:hover { border-color:var(--a); color:var(--a); }
+    .btn-lg { padding:1rem 2.2rem; font-size:1rem; border-radius:var(--rl); }
+    .btn-fw { width:100%; justify-content:center; }
+
+    /* ══════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════ */
+    .nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      background:oklch(5.5% 0 0 / .7);
+      backdrop-filter:blur(20px) saturate(160%);
+      -webkit-backdrop-filter:blur(20px) saturate(160%);
+      border-bottom:1px solid var(--bdr-soft);
+    }
+    .nav-in {
+      display:grid; grid-template-columns:1fr auto 1fr;
+      align-items:center; height:60px; padding:0 2rem;
+      max-width:1160px; margin:0 auto;
+    }
+    .logo {
+      font-family:var(--fd); font-weight:800; font-size:1.15rem;
+      letter-spacing:-.03em; color:var(--t1);
+    }
+    .logo span { color:var(--a); }
+    .nav-links { display:flex; gap:2.2rem; list-style:none; }
+    .nav-links a { color:var(--t2); font-size:.87rem; font-weight:500; transition:color .18s; }
+    .nav-links a:hover { color:var(--t1); }
+    .nav-end { display:flex; justify-content:flex-end; }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero {
+      padding:11rem 0 7rem;
+      position:relative; overflow:hidden;
+    }
+
+    /* Radial glow behind headline */
+    .hero::before {
+      content:'';
+      position:absolute; top:-100px; left:50%; transform:translateX(-50%);
+      width:900px; height:600px;
+      background:radial-gradient(ellipse, oklch(74% .18 65 / .055) 0%, transparent 65%);
+      pointer-events:none;
+    }
+
+    /* Subtle grid lines */
+    .hero::after {
+      content:'';
+      position:absolute; inset:0;
+      background-image:
+        linear-gradient(oklch(100% 0 0 / .025) 1px, transparent 1px),
+        linear-gradient(90deg, oklch(100% 0 0 / .025) 1px, transparent 1px);
+      background-size:60px 60px;
+      -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+      mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+      pointer-events:none;
+    }
+
+    .hero-in {
+      display:grid; place-items:center;
+      text-align:center; gap:2.2rem;
+      position:relative; z-index:1;
+    }
+
+    .badge {
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:var(--a-dim); border:1px solid var(--a-mid);
+      border-radius:100px; padding:.3rem 1.1rem;
+      font-family:var(--fd); font-size:.76rem; font-weight:600;
+      color:var(--a); letter-spacing:.04em;
+    }
+    .dot {
+      width:6px; height:6px; border-radius:50%;
+      background:var(--a);
+      animation:blink 2.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+
+    .hero h1 {
+      font-size:clamp(2.9rem, 6.2vw, 5.2rem);
+      font-weight:800; max-width:17ch;
+      letter-spacing:-.035em; line-height:1.03;
+    }
+    .hero-sub {
+      font-size:clamp(1rem, 1.9vw, 1.2rem);
+      color:var(--t2); max-width:52ch; line-height:1.76;
+    }
+    .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+    .hero-proof {
+      display:flex; align-items:center; gap:1rem;
+      font-size:.8rem; color:var(--t3);
+    }
+    .psep { width:1px; height:12px; background:var(--bdr); }
+
+    /* ══════════════════════════════════════════
+       TICKER
+    ══════════════════════════════════════════ */
+    .tkw {
+      border-top:1px solid var(--bdr-soft); border-bottom:1px solid var(--bdr-soft);
+      background:var(--s1); overflow:hidden; padding:.9rem 0; position:relative;
+    }
+    .tkw::before,.tkw::after {
+      content:''; position:absolute; top:0; bottom:0; width:100px; z-index:2; pointer-events:none;
+    }
+    .tkw::before { left:0; background:linear-gradient(to right,var(--s1),transparent); }
+    .tkw::after  { right:0; background:linear-gradient(to left,var(--s1),transparent); }
+    .tk { display:flex; width:max-content; animation:tk 32s linear infinite; }
+    .tki {
+      font-family:var(--fd); font-size:.72rem; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--t3); white-space:nowrap; padding:0 2rem;
+    }
+    .tks { color:var(--a); opacity:.5; }
+    @keyframes tk { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ══════════════════════════════════════════
+       WHAT WE BUILD (intro)
+    ══════════════════════════════════════════ */
+    .intro-grid {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:6rem; align-items:center;
+    }
+    .intro-right {
+      border:1px solid var(--bdr); border-radius:var(--rx);
+      overflow:hidden; background:var(--s2);
+    }
+    .portal-header {
+      padding:1rem 1.5rem;
+      border-bottom:1px solid var(--bdr);
+      display:flex; align-items:center; gap:.75rem;
+      background:var(--s1);
+    }
+    .portal-dots { display:flex; gap:.4rem; }
+    .pd { width:10px; height:10px; border-radius:50%; }
+    .pd1 { background:oklch(55% .2 25); }
+    .pd2 { background:oklch(65% .18 85); }
+    .pd3 { background:oklch(60% .2 145); }
+    .portal-title { font-family:var(--fd); font-size:.8rem; font-weight:600; color:var(--t2); margin-left:.25rem; }
+    .portal-body { padding:1.5rem; display:grid; gap:1rem; }
+    .portal-row {
+      background:var(--s3); border-radius:var(--r);
+      padding:1rem 1.2rem;
+      display:grid; grid-template-columns:auto 1fr auto;
+      align-items:center; gap:1rem;
+    }
+    .pr-dot { width:8px; height:8px; border-radius:50%; background:var(--a); }
+    .pr-dot.green { background:oklch(65% .2 145); }
+    .pr-dot.blue  { background:oklch(65% .15 240); }
+    .pr-label { font-family:var(--fd); font-size:.8rem; font-weight:600; color:var(--t1); }
+    .pr-sub   { font-size:.72rem; color:var(--t3); margin-top:.15rem; }
+    .pr-val   { font-family:var(--fd); font-size:.8rem; font-weight:700; color:var(--a); }
+    .pr-val.green { color:oklch(65% .2 145); }
+    .portal-brief {
+      background:var(--a-dim); border:1px solid var(--a-mid);
+      border-radius:var(--r); padding:1.2rem;
+    }
+    .brief-eye { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--a); margin-bottom:.6rem; font-family:var(--fd); }
+    .brief-line { font-size:.82rem; color:var(--t2); margin-bottom:.3rem; }
+    .brief-line strong { color:var(--t1); }
+
+    /* ══════════════════════════════════════════
+       RECOGNITION (industries)
+    ══════════════════════════════════════════ */
+    .rec-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:1px; background:var(--bdr);
+      border:1px solid var(--bdr); border-radius:var(--rx); overflow:hidden;
+      margin-top:3.5rem;
+    }
+    .rec-card {
+      background:var(--s1); padding:2.2rem;
+      display:grid; gap:.9rem; transition:background .2s;
+    }
+    .rec-card:hover { background:var(--s2); }
+    .rec-ind { font-family:var(--fd); font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--a); }
+    .rec-card h3 { font-size:1.05rem; color:var(--t1); }
+    .rec-card p  { font-size:.9rem; line-height:1.72; }
+
+    /* ══════════════════════════════════════════
+       STATS
+    ══════════════════════════════════════════ */
+    .stats-row {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:1px; background:var(--bdr);
+      border:1px solid var(--bdr); border-radius:var(--rx); overflow:hidden;
+    }
+    .stat {
+      background:var(--s2); padding:2.8rem 2rem;
+      text-align:center; display:grid; gap:.5rem;
+      position:relative; overflow:hidden;
+    }
+    .stat::before {
+      content:''; position:absolute; bottom:-20px; left:50%; transform:translateX(-50%);
+      width:80px; height:40px;
+      background:radial-gradient(ellipse, var(--a-glow) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .stat-n {
+      font-family:var(--fd); font-size:clamp(2rem,3.5vw,2.9rem);
+      font-weight:800; color:var(--a); letter-spacing:-.04em; line-height:1;
+    }
+    .stat-l { font-size:.85rem; color:var(--t2); }
+
+    /* ══════════════════════════════════════════
+       HOW IT WORKS
+    ══════════════════════════════════════════ */
+    .how-hd {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:4rem; align-items:end; margin-bottom:4rem;
+    }
+    .steps {
+      border:1px solid var(--bdr); border-radius:var(--rx); overflow:hidden;
+    }
+    .step {
+      display:grid; grid-template-columns:68px 1fr;
+      border-bottom:1px solid var(--bdr); transition:background .2s;
+    }
+    .step:last-child { border-bottom:none; }
+    .step:hover { background:var(--s2); }
+    .sn {
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--fd); font-weight:800; font-size:1.7rem;
+      color:var(--a); opacity:.22;
+      border-right:1px solid var(--bdr);
+    }
+    .sb { padding:2rem; display:grid; gap:.4rem; }
+    .sb h3 { font-size:1.02rem; color:var(--t1); }
+    .sb p  { font-size:.88rem; line-height:1.72; }
+
+    /* ══════════════════════════════════════════
+       INFRASTRUCTURE (modules)
+    ══════════════════════════════════════════ */
+    .infra-hd { text-align:center; margin-bottom:4rem; display:grid; gap:1.1rem; }
+    .infra-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:1px; background:var(--bdr);
+      border:1px solid var(--bdr); border-radius:var(--rx); overflow:hidden;
+    }
+    .ic {
+      background:var(--s1); padding:2.2rem;
+      display:grid; gap:.85rem; transition:background .2s;
+    }
+    .ic:hover { background:var(--s2); }
+    .ic-tag {
+      display:inline-flex; padding:.2rem .65rem;
+      background:var(--a-dim); border:1px solid var(--a-mid);
+      border-radius:100px;
+      font-family:var(--fd); font-size:.7rem; font-weight:700;
+      color:var(--a); letter-spacing:.06em; text-transform:uppercase;
+      width:fit-content;
+    }
+    .ic h3 { font-size:1.05rem; color:var(--t1); }
+    .ic p  { font-size:.88rem; line-height:1.72; }
+    .ic-price { font-family:var(--fd); font-weight:700; font-size:1.05rem; color:var(--t1); margin-top:.3rem; }
+    .ic-price span { font-size:.78rem; font-weight:400; color:var(--t3); }
+
+    /* ══════════════════════════════════════════
+       PRICING
+    ══════════════════════════════════════════ */
+    .price-hd { text-align:center; margin-bottom:4rem; display:grid; gap:1.1rem; }
+    .price-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; align-items:start; }
+    .pc {
+      background:var(--s2); border:1px solid var(--bdr);
+      border-radius:var(--rx); padding:2.4rem;
+      display:grid; gap:1.8rem; position:relative;
+      transition:border-color .2s, transform .2s;
+    }
+    .pc:hover { border-color:var(--a-mid); transform:translateY(-4px); }
+    .pc-feat {
+      border-color:var(--a-mid);
+      background:oklch(10.5% .015 65);
+    }
+    .pc-feat::before {
+      content:'Most popular';
+      position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+      background:var(--a); color:oklch(7% 0 0);
+      font-family:var(--fd); font-weight:700; font-size:.7rem;
+      padding:.22rem 1rem; border-radius:100px; white-space:nowrap; letter-spacing:.04em;
+    }
+    .pc-name { font-family:var(--fd); font-weight:700; font-size:.95rem; color:var(--t1); }
+    .pc-price { display:flex; align-items:baseline; gap:.2rem; margin-top:.4rem; }
+    .pc-amt { font-family:var(--fd); font-size:2.6rem; font-weight:800; color:var(--t1); letter-spacing:-.04em; line-height:1; }
+    .pc-per { font-size:.88rem; color:var(--t3); }
+    .pc-feats { list-style:none; display:grid; gap:.6rem; }
+    .pc-feats li { display:flex; align-items:start; gap:.6rem; font-size:.87rem; color:var(--t2); }
+    .pc-feats li::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--a); margin-top:.58rem; flex-shrink:0; }
+
+    /* ══════════════════════════════════════════
+       FINAL CTA
+    ══════════════════════════════════════════ */
+    .cta-sec {
+      padding:9rem 0; text-align:center; position:relative; overflow:hidden;
+    }
+    .cta-sec::before {
+      content:''; position:absolute; bottom:-80px; left:50%; transform:translateX(-50%);
+      width:800px; height:500px;
+      background:radial-gradient(ellipse, oklch(74% .18 65 / .065) 0%, transparent 65%);
+      pointer-events:none;
+    }
+    .cta-in { display:grid; gap:2.2rem; place-items:center; position:relative; z-index:1; }
+    .cta-sec h2 { font-size:clamp(2rem,4vw,3.4rem); color:var(--t1); max-width:22ch; }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    .foot {
+      border-top:1px solid var(--bdr-soft);
+      background:var(--s1); padding:3.5rem 0 2.5rem;
+    }
+    .foot-grid {
+      display:grid; grid-template-columns:1.5fr 1fr 1fr;
+      gap:4rem; margin-bottom:3rem;
+    }
+    .foot-brand h3 {
+      font-family:var(--fd); font-size:1.12rem; font-weight:800;
+      color:var(--t1); margin-bottom:.75rem; letter-spacing:-.025em;
+    }
+    .foot-brand p { font-size:.87rem; line-height:1.78; }
+    .foot-col h4 {
+      font-family:var(--fd); font-size:.7rem; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase;
+      color:var(--t1); margin-bottom:1rem;
+    }
+    .foot-col ul { list-style:none; display:grid; gap:.55rem; }
+    .foot-col ul a { color:var(--t3); font-size:.87rem; transition:color .18s; }
+    .foot-col ul a:hover { color:var(--t2); }
+    .foot-btm {
+      border-top:1px solid var(--bdr-soft); padding-top:1.8rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .foot-btm p { font-size:.8rem; color:var(--t3); }
+
+    /* ══════════════════════════════════════════
+       DIVIDER LINE
+    ══════════════════════════════════════════ */
+    .hl { width:100%; height:1px; background:var(--bdr-soft); }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width:960px) {
+      .rec-grid,.infra-grid,.price-grid { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+      .intro-grid,.how-hd { grid-template-columns:1fr; gap:2.5rem; }
+      .foot-grid { grid-template-columns:1fr; gap:2rem; }
+      .nav-links { display:none; }
+      .nav-in { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:560px) {
+      .sec { padding:4.5rem 0; }
+      .hero { padding:8.5rem 0 5rem; }
+      .w { padding:0 1.25rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-in">
+    <a href="#" class="logo">Plugged<span>IN</span></a>
+    <ul class="nav-links">
+      <li><a href="#infra">What we build</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#cta">Get in touch</a></li>
+    </ul>
+    <div class="nav-end">
+      <a href="#" data-cal-namespace="discovery" data-cal-link="qassim-abdulkarim-xsnjdj" data-cal-config='{"layout":"month_view"}' class="btn btn-p">Book a call</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="w">
+    <div class="hero-in">
+
+      <div class="badge r">
+        <div class="dot"></div>
+        AI infrastructure — not chatbots, not software
+      </div>
+
+      <h1 class="r d1">
+        The AI infrastructure<br><span class="grad-text">your business runs on.</span>
+      </h1>
+
+      <p class="hero-sub r d2">
+        We build the operational layer that handles your inbound calls, your pipeline, your outreach, and your morning briefing. Solicitors, recruiters, logistics firms — most of our clients don't know what to call it. They just call it the reason they stopped hiring.
+      </p>
+
+      <div class="hero-actions r d3">
+        <a href="#how" class="btn btn-p btn-lg">See how it works</a>
+        <a href="#infra" class="btn btn-g btn-lg">View the infrastructure</a>
+      </div>
+
+      <div class="hero-proof r d4">
+        <span>Built for owner-led businesses</span>
+        <div class="psep"></div>
+        <span>Live in 7 days</span>
+        <div class="psep"></div>
+        <span>No software to manage</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="tkw">
+  <div class="tk" id="tk">
+    <span class="tki">Legal <span class="tks">·</span></span>
+    <span class="tki">Recruitment <span class="tks">·</span></span>
+    <span class="tki">Logistics <span class="tks">·</span></span>
+    <span class="tki">Construction <span class="tks">·</span></span>
+    <span class="tki">Professional Services <span class="tks">·</span></span>
+    <span class="tki">Healthcare <span class="tks">·</span></span>
+    <span class="tki">Property <span class="tks">·</span></span>
+    <span class="tki">Hospitality <span class="tks">·</span></span>
+    <span class="tki">Import &amp; Export <span class="tks">·</span></span>
+    <span class="tki">Legal <span class="tks">·</span></span>
+    <span class="tki">Recruitment <span class="tks">·</span></span>
+    <span class="tki">Logistics <span class="tks">·</span></span>
+    <span class="tki">Construction <span class="tks">·</span></span>
+    <span class="tki">Professional Services <span class="tks">·</span></span>
+    <span class="tki">Healthcare <span class="tks">·</span></span>
+    <span class="tki">Property <span class="tks">·</span></span>
+    <span class="tki">Hospitality <span class="tks">·</span></span>
+    <span class="tki">Import &amp; Export <span class="tks">·</span></span>
+  </div>
+</div>
+
+<!-- WHAT WE BUILD -->
+<section class="sec">
+  <div class="w">
+    <div class="intro-grid">
+      <div style="display:grid;gap:1.8rem;">
+        <div>
+          <p class="eye r">What we build</p>
+          <h2 class="h-lg r d1" style="margin-top:.75rem;">A portal. A command centre.<br>The whole operation.</h2>
+        </div>
+        <p class="lead r d2">
+          Your business gets its own AI-operated system — a portal that runs your inbound, your outreach, your market intelligence, and your client pipeline. Every morning it briefs you. You decide what to act on. Everything else handles itself.
+        </p>
+        <p class="r d3" style="font-size:.95rem;line-height:1.76;">
+          This isn't a tool you log into. It's infrastructure that runs beneath your business — the way a phone system or CRM does, except it actually works without you.
+        </p>
+      </div>
+
+      <!-- Portal mockup -->
+      <div class="intro-right r d2">
+        <div class="portal-header">
+          <div class="portal-dots">
+            <div class="pd pd1"></div>
+            <div class="pd pd2"></div>
+            <div class="pd pd3"></div>
+          </div>
+          <span class="portal-title">PluggedIN — Morning Briefing</span>
+        </div>
+        <div class="portal-body">
+          <div class="portal-brief">
+            <div class="brief-eye">Today · 07:14</div>
+            <div class="brief-line"><strong>Situation:</strong> 3 new inbound enquiries overnight. Pipeline agent booked 2 discovery calls for Thursday.</div>
+            <div class="brief-line" style="margin-top:.5rem;"><strong>Priority:</strong> Respond to the Henderson &amp; Co referral — high intent, time-sensitive.</div>
+            <div class="brief-line" style="margin-top:.5rem;"><strong>Recommendation:</strong> Approve Tuesday outreach batch (12 contacts ready). Proceed?</div>
+          </div>
+          <div class="portal-row">
+            <div class="pr-dot"></div>
+            <div>
+              <div class="pr-label">Pipeline Agent</div>
+              <div class="pr-sub">14 contacts researched · 2 replies pending</div>
+            </div>
+            <div class="pr-val">Active</div>
+          </div>
+          <div class="portal-row">
+            <div class="pr-dot green"></div>
+            <div>
+              <div class="pr-label">Inbound Agent</div>
+              <div class="pr-sub">3 calls handled last 24h · 100% response rate</div>
+            </div>
+            <div class="pr-val green">Live</div>
+          </div>
+          <div class="portal-row">
+            <div class="pr-dot blue"></div>
+            <div>
+              <div class="pr-label">Intelligence Agent</div>
+              <div class="pr-sub">Competitor update ready · 2 signals flagged</div>
+            </div>
+            <div class="pr-val" style="color:oklch(65% .15 240);">Report ready</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECOGNITION — industries -->
+<section class="sec dark">
+  <div class="w">
+    <p class="eye r">Built for your industry</p>
+    <h2 class="h-lg r d1" style="margin-top:.75rem; max-width:26ch;">If this sounds like your business, it was built for you.</h2>
+
+    <div class="rec-grid">
+      <div class="rec-card r d1">
+        <div class="rec-ind">Legal</div>
+        <h3>Solicitors &amp; law firms</h3>
+        <p>Every inbound call handled. Every enquiry qualified. Client intake automated. Your fee earners spend time on cases, not admin and follow-up calls that go nowhere.</p>
+      </div>
+      <div class="rec-card r d2">
+        <div class="rec-ind">Recruitment</div>
+        <h3>Recruitment agencies</h3>
+        <p>BD that doesn't depend on the director. Pipeline running 24/7. Signals monitored. Outreach sent. Every placement opportunity found before your competition sees it.</p>
+      </div>
+      <div class="rec-card r d3">
+        <div class="rec-ind">Professional Services</div>
+        <h3>Consultancies &amp; services firms</h3>
+        <p>Growth built on something other than referrals and reputation alone. A system that finds your ICP, starts conversations, and books the meeting — while you deliver for existing clients.</p>
+      </div>
+      <div class="rec-card r d4">
+        <div class="rec-ind">Logistics &amp; Transport</div>
+        <h3>Logistics &amp; transport companies</h3>
+        <p>No more lost contracts because you were unreachable after hours. Inbound handled. Quotes followed up. Clients kept warm while the operation runs flat out.</p>
+      </div>
+      <div class="rec-card r d5">
+        <div class="rec-ind">Construction</div>
+        <h3>Construction &amp; trades</h3>
+        <p>Strong word of mouth. No system to compound it. We build the infrastructure that turns your reputation into a pipeline — without you spending another hour on LinkedIn.</p>
+      </div>
+      <div class="rec-card r d6">
+        <div class="rec-ind">Multi-business</div>
+        <h3>Owners of multiple businesses</h3>
+        <p>Every business briefed every morning. One decision session. Every operation running without you. The infrastructure that makes owning multiple businesses actually work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="sec-sm">
+  <div class="w">
+    <div class="stats-row">
+      <div class="stat r">
+        <div class="stat-n" data-target="97" data-suffix="%">0%</div>
+        <div class="stat-l">Inbound response rate, around the clock</div>
+      </div>
+      <div class="stat r d1">
+        <div class="stat-n" data-target="3" data-prefix="£" data-suffix="k+">£0k+</div>
+        <div class="stat-l">Saved monthly vs a full-time BDR</div>
+      </div>
+      <div class="stat r d2">
+        <div class="stat-n" data-target="7" data-suffix=" days">0 days</div>
+        <div class="stat-l">From discovery call to infrastructure live</div>
+      </div>
+      <div class="stat r d3">
+        <div class="stat-n" data-target="10" data-suffix=" modules">0 modules</div>
+        <div class="stat-l">Covering every growth function</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="how">
+  <div class="w">
+    <div class="how-hd">
+      <div style="display:grid;gap:.85rem;">
+        <p class="eye r">How it works</p>
+        <h2 class="h-lg r d1">Deployed in a week.<br>Running itself by week two.</h2>
+      </div>
+      <p class="lead r d2">
+        We don't hand you a platform and a manual. We build it, deploy it, and run it. Your job is to approve what your agents recommend and show up for the clients they book in.
+      </p>
+    </div>
+
+    <div class="steps r">
+      <div class="step">
+        <div class="sn">01</div>
+        <div class="sb">
+          <h3>Discovery — we extract your business brain</h3>
+          <p>One structured 60-minute call. We map your ICP, your sales process, your competitors, your gaps. Your infrastructure needs to know your business better than any hire you've ever made.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn">02</div>
+        <div class="sb">
+          <h3>We build your infrastructure in 7 days</h3>
+          <p>Every module configured, connected, and tested against your real data. Lead research, inbound handling, outreach sequences, CRM logging — all wired together before you see a single result.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn">03</div>
+        <div class="sb">
+          <h3>You get a morning briefing, not a dashboard to manage</h3>
+          <p>Situation. Priority. Recommendation. Proceed? Everything that happened overnight and what should happen next — in 60 seconds. Then get on with running your business.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="sn">04</div>
+        <div class="sb">
+          <h3>The infrastructure gets sharper every month</h3>
+          <p>Your system learns what converts, refines its targeting, improves its outreach. Month three performs nothing like month one. The gap between you and your competitors widens every single week without you doing anything.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFRASTRUCTURE -->
+<section class="sec dark" id="infra">
+  <div class="w">
+    <div class="infra-hd">
+      <p class="eye r">The infrastructure</p>
+      <h2 class="h-lg r d1">One system. Every growth function.</h2>
+      <p class="r d2" style="font-size:1.02rem;color:var(--t2);max-width:52ch;margin:0 auto;">Each module is a piece of your operational infrastructure. Start with the one that solves your biggest problem. Stack them as you scale.</p>
+    </div>
+    <div class="infra-grid">
+      <div class="ic r d1">
+        <div class="ic-tag">Inbound</div>
+        <h3>AI Receptionist</h3>
+        <p>Handles every call, qualifies every lead, books the meeting. Nights, weekends, bank holidays. No enquiry missed. No call going to voicemail.</p>
+      </div>
+      <div class="ic r d2">
+        <div class="ic-tag">Pipeline</div>
+        <h3>AI Pipeline Agent</h3>
+        <p>Finds your ICP daily, monitors buying signals, writes personalised outreach, follows up, books calls. This is what replaces your BDR — and outperforms them.</p>
+      </div>
+      <div class="ic r d3">
+        <div class="ic-tag">Marketing</div>
+        <h3>AI Marketing Agent</h3>
+        <p>Competitor monitoring, content generation, ad creation, multi-platform posting. Your entire marketing function — operating without a marketing team.</p>
+      </div>
+      <div class="ic r d4">
+        <div class="ic-tag">Intelligence</div>
+        <h3>Market Intelligence</h3>
+        <p>Your industry, your competitors, your clients — monitored continuously. Signals surfaced before they become problems or missed opportunities.</p>
+      </div>
+      <div class="ic r d5">
+        <div class="ic-tag">Conversion</div>
+        <h3>Website Conversion Agent</h3>
+        <p>Engages every visitor, qualifies them in real time, books hot leads into your calendar. Warm leads enter a nurture sequence. No visitor lost.</p>
+      </div>
+      <div class="ic r d6">
+        <div class="ic-tag">Data</div>
+        <h3>Data Intelligence Agent</h3>
+        <p>KPI tracking, narrative reports, board-ready packs — generated monthly. You always know exactly where every business stands, before anyone asks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-sec" id="cta">
+  <div class="w">
+    <div class="cta-in">
+      <p class="eye r">One decision away</p>
+      <h2 class="r d1">Your competitors are getting<br>this infrastructure.<br><span class="grad-text">The question is whether you do first.</span></h2>
+      <p class="r d2" style="font-size:1.05rem;color:var(--t2);max-width:48ch;">Book a 30-minute discovery call. We'll show you exactly what your infrastructure looks like and what it will produce in the first 30 days.</p>
+      <div class="hero-actions r d3">
+        <a href="#" data-cal-namespace="discovery" data-cal-link="qassim-abdulkarim-xsnjdj" data-cal-config='{"layout":"month_view"}' class="btn btn-p btn-lg">Book a discovery call</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="w">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <h3>Plugged<span style="color:var(--a)">IN</span></h3>
+        <p>We don't sell software.<br>We deploy outcomes.<br>Your AI team starts Monday.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#infra">What we build</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Industries</h4>
+        <ul>
+          <li><a href="#">Legal</a></li>
+          <li><a href="#">Recruitment</a></li>
+          <li><a href="#">Construction</a></li>
+          <li><a href="#">Logistics</a></li>
+          <li><a href="#">Professional Services</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-btm">
+      <p>&copy; 2026 PluggedIN. All rights reserved.</p>
+      <p>abdulkarimqassim@gmail.com</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Cal.com embed
+  (function(C,A,L){let p=function(a,ar){a.q.push(ar)};let d=C.document;C.Cal=C.Cal||function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true}if(ar[0]===L){const api=function(){p(api,arguments)};const namespace=ar[1];api.q=api.q||[];typeof namespace==="string"?(cal.ns[namespace]=api)&&p(api,ar):p(cal,ar);return}p(cal,ar)};})(window,"https://app.cal.com/embed/embed.js","init");
+  Cal("init","discovery",{origin:"https://cal.com"});
+  Cal.ns["discovery"]("ui",{"theme":"dark","styles":{"branding":{"brandColor":"#d4883a"}},"hideEventTypeDetails":false,"layout":"month_view"});
+
+  // Scroll reveals
+  const ro = new IntersectionObserver(es => {
+    es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); ro.unobserve(e.target); } });
+  }, { threshold:.1, rootMargin:'0px 0px -30px 0px' });
+  document.querySelectorAll('.r').forEach(el => ro.observe(el));
+
+  // Counters
+  function count(el) {
+    const tgt = parseInt(el.dataset.target);
+    const pre = el.dataset.prefix || '';
+    const suf = el.dataset.suffix || '';
+    const t0  = performance.now();
+    (function tick(now) {
+      const p = Math.min((now-t0)/1600, 1);
+      const e = 1 - Math.pow(1-p, 3);
+      el.textContent = pre + Math.round(e*tgt) + suf;
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  const co = new IntersectionObserver(es => {
+    es.forEach(e => { if(e.isIntersecting){ count(e.target); co.unobserve(e.target); } });
+  }, { threshold:.5 });
+  document.querySelectorAll('[data-target]').forEach(el => co.observe(el));
+
+  // Nav on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = scrollY > 20
+      ? 'oklch(5.5% 0 0 / .95)'
+      : 'oklch(5.5% 0 0 / .7)';
+  }, { passive:true });
+
+  // Ticker duplicate
+  const tk = document.getElementById('tk');
+  tk.innerHTML += tk.innerHTML;
+</script>
+</body>
+</html>
