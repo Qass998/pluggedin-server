@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  staticPageGenerationTimeout: 120,
+  experimental: {
+    isrMemoryCacheSize: 0,
+  },
 };
 
 export default nextConfig;
