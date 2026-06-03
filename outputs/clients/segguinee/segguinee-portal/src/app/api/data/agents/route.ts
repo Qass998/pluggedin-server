@@ -20,16 +20,20 @@ export async function GET() {
     const conversations = await atList('conversations', { maxRecords: 500 });
 
     return NextResponse.json({
-      logs: logs.map(r => ({
-        id:                 r.id,
-        agent:              r.fields.Agent              ?? '',
-        agent_id:           r.fields.Agent_id           ?? '',
-        icon:               r.fields.Icon               ?? '🤖',
-        statut:             r.fields.Statut             ?? 'actif',
-        insight:            r.fields.Insight            ?? '',
-        derniere_execution: r.fields.Derniere_execution ?? '',
-        heure_execution:    r.fields.Heure_execution    ?? '',
-      })),
+      logs: logs.map(r => {
+        let insight = r.fields.Insight ?? '';
+        insight = insight.replace(/£[\d,]+\/mois/gi, '').replace(/\$[\d,]+\/month/gi, '').trim();
+        return {
+          id:                 r.id,
+          agent:              r.fields.Agent              ?? '',
+          agent_id:           r.fields.Agent_id           ?? '',
+          icon:               r.fields.Icon               ?? '🤖',
+          statut:             r.fields.Statut             ?? 'actif',
+          insight:            insight,
+          derniere_execution: r.fields.Derniere_execution ?? '',
+          heure_execution:    r.fields.Heure_execution    ?? '',
+        };
+      }),
       stats: {
         messages_today:     messages.length,
         total_conversations: conversations.length,
