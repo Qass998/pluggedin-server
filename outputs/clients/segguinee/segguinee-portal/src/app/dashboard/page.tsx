@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -79,6 +77,8 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 // ╔══════════════════════════════════════════════════════════════════════════╗
 // ║  DASHBOARD                                                              ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
+
+"use client";
 
 function DashboardContent() {
   const router = useRouter();
