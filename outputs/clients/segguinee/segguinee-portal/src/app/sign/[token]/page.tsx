@@ -14,6 +14,8 @@ import type { Metadata } from "next";
 import { atList } from "@/lib/airtable";
 import SignButton from "./SignButton";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Facture SEGGUINÉE",
   robots: "noindex, nofollow",
