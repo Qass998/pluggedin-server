@@ -173,58 +173,50 @@ export default function DashboardPage() {
 // ── AGENTS PANEL ──────────────────────────────────────────────────────────
 
 function AgentsPanel() {
-  const activeAgents = [
-    { icon: "📄", name: "Facturation Agent", desc: "Invoice generation, payment tracking, billing reports" },
-    { icon: "📊", name: "Data Analysis Agent", desc: "Weekly briefing, production metrics, revenue analysis, incident insights" },
-    { icon: "💬", name: "Presence Agent", desc: "24/7 WhatsApp support, customer inquiries, field coordination" },
-  ];
+  const [agents, setAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const availableAgents = [
-    { icon: "🔍", name: "Pipeline Agent", desc: "Find & qualify new customers, research service areas, expansion planning" },
-    { icon: "⚖️", name: "Compliance Agent", desc: "License tracking, regulatory alerts, compliance reports" },
-  ];
+  useEffect(() => {
+    fetch("/api/data/agents")
+      .then(r => r.json())
+      .then(data => {
+        const cleaned = (data.logs || []).map((agent: any) => ({
+          id: agent.id,
+          icon: agent.icon || "🤖",
+          name: agent.agent || agent.Agent || "Agent",
+          desc: agent.insight || "No description",
+        }));
+        setAgents(cleaned);
+      })
+      .catch(e => console.error("Failed to fetch agents:", e))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ color: T.text3 }}>Loading agents...</div>;
 
   return (
     <div>
-      {/* ACTIVE AGENTS */}
       <div style={{ marginBottom: 40 }}>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          Your Active Solutions
+          Active Solutions
         </h3>
         <div style={{ display: "grid", gap: 12 }}>
-          {activeAgents.map((agent, i) => (
-            <div key={i} style={{
-              background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10,
-              padding: 16, display: "flex", gap: 12
-            }}>
-              <div style={{ fontSize: 22, flexShrink: 0 }}>{agent.icon}</div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ fontSize: 13, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
-                <p style={{ fontSize: 12, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
+          {agents.length === 0 ? (
+            <p style={{ color: T.text3 }}>No agents configured yet.</p>
+          ) : (
+            agents.map((agent: any) => (
+              <div key={agent.id} style={{
+                background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10,
+                padding: 16, display: "flex", gap: 12
+              }}>
+                <div style={{ fontSize: 22, flexShrink: 0 }}>{agent.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
+                  <p style={{ fontSize: 12, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* AVAILABLE AGENTS */}
-      <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-          Available to Add
-        </h3>
-        <div style={{ display: "grid", gap: 12 }}>
-          {availableAgents.map((agent, i) => (
-            <div key={i} style={{
-              background: T.surfaceHover, border: `1px solid ${T.border}`, borderRadius: 10,
-              padding: 16, display: "flex", gap: 12, opacity: 0.8
-            }}>
-              <div style={{ fontSize: 22, flexShrink: 0 }}>{agent.icon}</div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ fontSize: 13, fontWeight: 700, color: T.text, margin: 0, marginBottom: 4 }}>{agent.name}</h4>
-                <p style={{ fontSize: 12, color: T.text3, margin: 0, lineHeight: 1.5 }}>{agent.desc}</p>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
