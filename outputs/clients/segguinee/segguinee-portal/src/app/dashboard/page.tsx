@@ -80,7 +80,7 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 // ║  DASHBOARD                                                              ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [authed, setAuthed] = useState(false);
@@ -170,6 +170,14 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardContent />
+    </Suspense>
   );
 }
 
