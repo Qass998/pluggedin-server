@@ -8,5 +8,8 @@
     "startCommand": "npm start",
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 5
+  },
+  "env": {
+    "NIXPACKS_NODE_VERSION": "20"
   }
 }
