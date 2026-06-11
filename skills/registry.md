@@ -50,6 +50,34 @@ When Qassim describes a task, the plan phase:
 | Full output enforcement (no truncation) | pluggedin-design (§13 Full Output Protocol enforced automatically) |
 | Anti-slop audit | pluggedin-design (§12 Quality Gate — 7-category checklist) |
 
+## LEAD GENERATION & SCRAPING (Consolidated v2.0)
+
+> **Restructured June 2026:** 7 scattered skills → 5 unified + consolidated chains.
+> Removed overlaps: apify-ultimate-scraper (merged), web-scraper→lead-enrichment,
+> cold-email+email-sequence→outreach-engine, sales-automator→sales-pipeline.
+> linkedin-automation→linkedin-presence (posting only, clear scope).
+
+| Task | Skills to Load (in order) |
+|------|---------------------------|
+| **DISCOVERY** | |
+| Find bulk leads (LinkedIn, Maps, Instagram, etc) | lead-discovery |
+| Find leads for a client | lead-discovery → lead-qualification |
+| **ENRICHMENT** | |
+| Enrich leads: name, phone, email, decision-maker, signals | lead-enrichment |
+| Deep website scraping (AI-powered) | lead-enrichment (ScrapeGraphAI layer) |
+| Detect buying signals / intent | signal-detection |
+| **QUALIFICATION** | |
+| Score lead fit to ICP | lead-qualification |
+| **OUTREACH** | |
+| Write cold email + sequences (email, LinkedIn, WhatsApp) | outreach-engine |
+| Full outbound campaign (discovery → enrichment → outreach) | lead-discovery → lead-enrichment → lead-qualification → outreach-engine |
+| **CONVERSION** | |
+| Sales pipeline automation (booking, deal tracking, nurture) | sales-pipeline |
+| **PRESENCE** | |
+| LinkedIn posting + profile optimization | linkedin-presence |
+
+---
+
 ## CLIENT ONBOARDING & RESEARCH
 
 | Task | Skills to Load (in order) |
@@ -141,7 +169,14 @@ When Qassim describes a task, the plan phase:
 | Graph codebase | graphify |
 | Skill discovery (find new skills) | skills |
 | Log a mistake | mistake |
-| Deploy to Vercel | (no skill — Bash + Vercel CLI) |
+| Deploy to Vercel | vercel-deployment |
+| Airtable records / schema | airtable-automation |
+| Next.js App Router | nextjs-best-practices → react-nextjs-development |
+| UI slop prevention / audit | baseline-ui |
+| Spatial / glassmorphism UI | antigravity-design-expert |
+| Full-stack feature build | full-stack-orchestration-full-stack-feature → senior-fullstack |
+| Rapid app prototype | app-builder |
+| Data visualisation | canvas-design |
 
 ---
 

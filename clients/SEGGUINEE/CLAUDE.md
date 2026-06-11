@@ -1,172 +1,88 @@
-# SEGGUINÉE Water Utility Portal — Operating System
-## Deployment Phase | June 3, 2026
+# SEGGUINÉE — Client Operating System
+# Updated: 2026-06-06
 
 ---
 
-## STATUS: 🔴 BLOCKED ON GITHUB PUSH
-
-**Current Phase:** 2 of 5 (Push code to GitHub)
-**Blocker:** SSH auth — need to fix GitHub SSH keys
-**Timeline:** 20 min to live portal once unblocked
-**Revenue:** £500/month (retainer) + agents = £1,297/month potential
+## STATUS: LIVE ✅
+Portal live at https://segguinee-portal.vercel.app
+Code: github.com/Qass998/segguinee-portal
+Airtable: appkTn2GRpIGBFwMU
 
 ---
 
-## WHAT IS SEGGUINÉE
+## WHAT SEGGUINÉE IS
 
-Guinea's water utility operator. We're building their complete digital OS:
-- **Portal:** Operator dashboard (Next.js 16 on Railway)
-- **WhatsApp:** Inbound message handling + voice
-- **Invoicing:** Auto-bill + tracking
-- **Data:** Real-time KPI dashboards
+Guinea water utility operator. We built their complete digital operating system:
+- Operator portal (Next.js 16, Vercel)
+- 7 AI agents with direct chat
+- Command bar (natural language → executed actions)
+- Invoice signing system (WhatsApp → e-sign → PDF)
+- Field team coordination
+- Airtable as the data backbone
 
-**Model:** £2,000 setup + £500/month retainer + £797-300/month per agent
-**Client Contact:** Director (authenticated via portal token)
-
----
-
-## DEPLOYMENT PHASES
-
-```
-Phase 1: Dev ✅ COMPLETE     (code ready, all bugs fixed)
-Phase 2: GitHub 🔴 BLOCKED  (push code → need SSH auth)
-Phase 3: Railway ⏳ READY   (set env vars + redeploy)
-Phase 4: Verify ⏳ READY    (test portal loads)
-Phase 5: Agent ⏳ READY     (enable WhatsApp agent → +£797/month)
-```
-
-**Current Blocker:** Phase 2 (GitHub SSH authentication missing)
+Billing: $2,000 setup + $500/month
+First invoice: not yet sent
 
 ---
 
-## QUICK DEPLOY (Once GitHub is Fixed)
+## SESSION START PROTOCOL
+
+1. Read STATUS.md — current state, what's done, what's next
+2. Run graphify query if touching code: `graphify-out/graph.json` already built
+3. Read ACTIVE_SKILLS.md before writing any code
+4. Pull latest: `cd outputs/clients/segguinee/segguinee-portal && git pull origin main`
+
+---
+
+## DEPLOY WORKFLOW
 
 ```bash
-# 1. Push code (1 min)
-cd ~/Documents/AI-Agency/PluggedIN
-git push origin main
+# Work in /tmp clone (cleaner)
+cd /tmp && rm -rf segguinee-portal
+git clone https://github.com/Qass998/segguinee-portal.git
+cd segguinee-portal
 
-# 2. Railway env vars (3 min)
-Go to Railway → Environment → Add:
-  AIRTABLE_TOKEN=[token]
-  AIRTABLE_BASE_SEGGUINEE=[base-id]
-  NODE_ENV=production
-  NIXPACKS_NODE_VERSION=20
-
-# 3. Redeploy (5 min)
-Railway → Deployments → Error → Redeploy → Wait for ✅ Ready
-
-# 4. Test (5 min)
-Open Railway URL → Login → Click Agents IA → See agents (no pricing)
-
-Total: 15 min
+# Make changes, then:
+git add -A && git commit -m "description" && git push origin main
+vercel --prod --yes
 ```
 
 ---
 
-## ARCHITECTURE
+## KEY FILES
 
-```
-Director's WhatsApp
-        ↓
-Railway Portal (Node.js 20)
-        ↓
-    API Routes (/api/data/*)
-        ↓
-   Airtable Base (SEGGUINEE)
-        ↓
-[Conversations | Production | Invoices | Incidents | Agents | etc]
-```
-
-Every tab reads real-time from Airtable.
-Portal authenticates with director's token.
-No pricing shown (selling outcomes, not features).
+| File | What it does |
+|------|-------------|
+| src/app/dashboard-client.tsx | Entire portal UI — all panels, command bar, agent chat |
+| src/app/api/command/route.ts | AI command engine — interprets + executes director instructions |
+| src/app/api/data/invoices/route.ts | Invoice CRUD + WhatsApp send |
+| src/app/api/invoices/sign/route.ts | Invoice signing — marks paid, notifies director |
+| src/app/sign/[token]/page.tsx | Client-facing signing page |
+| src/app/sign/[token]/SignButton.tsx | Sign + download PDF button |
+| src/lib/airtable.ts | All Airtable reads/writes — TABLES dict maps names to IDs |
+| src/lib/whatsapp.ts | WhatsApp send via Meta Cloud API |
 
 ---
 
-## WHAT'S COMPLETE
+## CRITICAL BUGS ALREADY FIXED
 
-✅ Authentication (cookie-based login)
-✅ Sidebar navigation (7 tabs)
-✅ Agents IA panel (no pricing display)
-✅ API strips pricing via regex
-✅ Dark theme UI (PluggedIN design)
-✅ Mobile responsive
-✅ Component architecture (Suspense boundaries fixed)
-✅ Node.js 20 configured (package.json, .nvmrc, railway.json)
-✅ All code ready for production
+1. **singleSelect returns object** — Airtable singleSelect fields return `{name, color}` not a string. All status comparisons use `sel()` helper in command/route.ts
+2. **Inter banned** — use DM Sans + JetBrains Mono (Inter = AI fingerprint)
+3. **invoices created via command had no Sign_token** — fixed, token generated in CREATE_INVOICE action
+4. **Agent chat returned UNKNOWN for conversational questions** — CHAT action added, agent responds in character
 
 ---
 
-## WHAT'S PENDING
+## AGENTS
 
-⏳ Push to GitHub (blocked by SSH)
-⏳ Deploy to Railway (ready to execute)
-⏳ Verify portal loads (ready to execute)
-⏳ Activate WhatsApp agent (£797/month)
-⏳ Activate Invoicing agent (£300/month)
-⏳ Activate Data agent (£200/month)
+All 7 agents in Airtable tblHXVwNrq1bhY6Qn. agent_id field maps to AGENT_META in dashboard-client.tsx for capability display. New agents need both an Airtable record AND a AGENT_META entry.
 
 ---
 
-## ROOT CAUSE OF 7-DEPLOY CIRCLE
+## SKILLS TO USE
 
-**Problem:** Not guessing, not following one plan
-**Solution:** This document (one source of truth)
-
-Every decision documented:
-- Why Railway not Vercel? (£5/month vs Vercel)
-- Why no setup fee immediately? (need case studies first)
-- Why agents hidden? (sell outcomes, not features)
-- Why Node 20 required? (Next.js 16 hard requirement)
-
----
-
-## FILES & LOCATIONS
-
-| File | Location | Purpose |
-|------|----------|---------|
-| This file | clients/SEGGUINEE/CLAUDE.md | Operating system |
-| STATUS.md | clients/SEGGUINEE/STATUS.md | Current progress |
-| QUICK_START.md | clients/SEGGUINEE/QUICK_START.md | Deploy in 20 min |
-| DEPLOYMENT_CHECKLIST.md | clients/SEGGUINEE/docs/ | Phase-by-phase guide |
-| BLOCKERS.md | clients/SEGGUINEE/deploy/ | Issues + fixes |
-| Portal code | outputs/clients/segguinee/segguinee-portal/ | Next.js app |
-| Deployment config | outputs/clients/segguinee/segguinee-portal/railway.json | Railway setup |
-
----
-
-## NEXT STEP
-
-**Qassim:**
-1. Fix GitHub SSH auth (generate key + add to GitHub)
-2. Run: `git push origin main`
-3. Verify on GitHub: see latest commits in main branch
-
-**Claude:** Standing by to push → deploy → verify
-
----
-
-## COMMAND SUMMARY
-
-```bash
-# DEPLOY (phase 2-4)
-cd ~/Documents/AI-Agency/PluggedIN && git push origin main
-# Then in Railway dashboard: Redeploy
-# Then test portal loads
-
-# LOGS
-# Railway → Logs tab (watch build)
-
-# DEV
-cd outputs/clients/segguinee/segguinee-portal && npm run dev
-# Go to http://localhost:3000/login
-```
-
----
-
-**Owner:** Qassim Abdulkarim
-**Built by:** Claude Code
-**Diagnosed by:** Agent (root cause: Node 18 vs 20 mismatch)
-**Last Updated:** June 3, 2026
-**Status:** Ready to deploy (blocked on GitHub auth)
+Visual changes → pluggedin-design first (DM Sans not Inter, Swiss Rational school)
+Any deploy → vercel-deployment skill
+Airtable work → airtable-automation skill
+Next.js patterns → nextjs-best-practices skill
+Before deploy → code-review-and-quality skill

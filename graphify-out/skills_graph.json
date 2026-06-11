@@ -1,0 +1,653 @@
+{
+  "nodes": [
+    {
+      "id": "pluggedin_design",
+      "label": "pluggedin-design",
+      "category": "Visual & UI",
+      "triggers": [
+        "any UI",
+        "dashboard",
+        "portal",
+        "HTML",
+        "CSS",
+        "design",
+        "visual",
+        "layout",
+        "component",
+        "typography",
+        "color",
+        "redesign"
+      ],
+      "produces": "Premium visual output \u2014 font, color, spacing, motion, quality gate",
+      "file": "skills/pluggedin-design/SKILL.md",
+      "priority": "ALWAYS FIRST for any visual task",
+      "file_type": "document",
+      "source_file": "skills/pluggedin-design/SKILL.md"
+    },
+    {
+      "id": "dashboard",
+      "label": "dashboard",
+      "category": "Visual & UI",
+      "triggers": [
+        "build dashboard",
+        "demo dashboard",
+        "KPI tracker",
+        "client demo",
+        "module dashboard"
+      ],
+      "produces": "Standalone HTML dashboard with real/demo Airtable data",
+      "file": "skills/dashboard/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/dashboard/SKILL.md"
+    },
+    {
+      "id": "client_portal",
+      "label": "client-portal",
+      "category": "Visual & UI",
+      "triggers": [
+        "client portal",
+        "softr portal",
+        "SME portal",
+        "business portal"
+      ],
+      "produces": "Full agentic portal with industry templates, agent panels, Remotion briefings",
+      "file": "skills/client-portal/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/client-portal/SKILL.md"
+    },
+    {
+      "id": "redesign_skill",
+      "label": "redesign-skill",
+      "category": "Visual & UI",
+      "triggers": [
+        "redesign",
+        "upgrade UI",
+        "improve design",
+        "fix UI",
+        "looks cheap",
+        "looks AI"
+      ],
+      "produces": "Audit of existing UI + premium redesign",
+      "file": "skills/redesign-skill/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/redesign-skill/SKILL.md"
+    },
+    {
+      "id": "antigravity_design",
+      "label": "antigravity-design-expert",
+      "category": "Visual & UI",
+      "triggers": [
+        "glassmorphism",
+        "spatial UI",
+        "floating cards",
+        "3D CSS",
+        "GSAP animations",
+        "motion UI",
+        "immersive",
+        "premium landing"
+      ],
+      "produces": "Spatial, weightless UI with GSAP + 3D CSS transforms",
+      "file": "skills/antigravity-design-expert/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/antigravity-design-expert/SKILL.md"
+    },
+    {
+      "id": "baseline_ui",
+      "label": "baseline-ui",
+      "category": "Visual & UI",
+      "triggers": [
+        "UI audit",
+        "prevent slop",
+        "check UI",
+        "anti-pattern",
+        "accessibility check",
+        "Tailwind review"
+      ],
+      "produces": "Violations list + concrete fixes for AI-slop patterns",
+      "file": "skills/baseline-ui/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/baseline-ui/SKILL.md"
+    },
+    {
+      "id": "soft_skill",
+      "label": "soft-skill",
+      "category": "Visual & UI",
+      "triggers": [
+        "high-end agency",
+        "expensive feel",
+        "luxury UI",
+        "Awwwards",
+        "premium CSS",
+        "soft shadows"
+      ],
+      "produces": "Premium font/spacing/shadow/card/animation system",
+      "file": "skills/soft-skill/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/soft-skill/SKILL.md"
+    },
+    {
+      "id": "huashu_design",
+      "label": "huashu-design",
+      "category": "Visual & UI",
+      "triggers": [
+        "hi-fi prototype",
+        "HTML demo",
+        "interactive mockup",
+        "design exploration",
+        "app prototype",
+        "iOS mockup",
+        "motion demo"
+      ],
+      "produces": "High-fidelity HTML prototypes with animations and interactions",
+      "file": "skills/huashu-design/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/huashu-design/SKILL.md"
+    },
+    {
+      "id": "ui_ux_pro_max",
+      "label": "ui-ux-pro-max",
+      "category": "Visual & UI",
+      "triggers": [
+        "brand identity",
+        "logo",
+        "CIP",
+        "banner",
+        "icon design",
+        "social media image",
+        "design system tokens"
+      ],
+      "produces": "Brand identity, logos, banners, icons, social images",
+      "file": "skills/ui-ux-pro-max/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/ui-ux-pro-max/SKILL.md"
+    },
+    {
+      "id": "ui_styling",
+      "label": "ui-styling",
+      "category": "Visual & UI",
+      "triggers": [
+        "shadcn",
+        "radix UI",
+        "tailwind components",
+        "dark mode",
+        "accessible components",
+        "dialog",
+        "dropdown",
+        "form"
+      ],
+      "produces": "Production UI with shadcn/ui + Tailwind + accessibility",
+      "file": "skills/ui-styling/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/ui-styling/SKILL.md"
+    },
+    {
+      "id": "canvas_design",
+      "label": "canvas-design",
+      "category": "Visual & UI",
+      "triggers": [
+        "data visualisation",
+        "charts",
+        "canvas",
+        "visual design philosophy",
+        "aesthetic movement"
+      ],
+      "produces": "Visual design files and data viz components",
+      "file": "skills/canvas-design/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/canvas-design/SKILL.md"
+    },
+    {
+      "id": "open_design",
+      "label": "open-design",
+      "category": "Visual & UI",
+      "triggers": [
+        "inline SVG charts",
+        "data-od-id",
+        "dashboard builder without library"
+      ],
+      "produces": "Pure HTML/CSS dashboard with inline SVG charts",
+      "file": "skills/open-design/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/open-design/SKILL.md"
+    },
+    {
+      "id": "taste_skill",
+      "label": "taste-skill",
+      "category": "Visual & UI",
+      "triggers": [
+        "override AI bias",
+        "metric-based UI rules",
+        "CSS hardware acceleration",
+        "strict component architecture"
+      ],
+      "produces": "Anti-default UI \u2014 enforces real design metrics",
+      "file": "skills/taste-skill/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/taste-skill/SKILL.md"
+    },
+    {
+      "id": "senior_fullstack",
+      "label": "senior-fullstack",
+      "category": "Engineering",
+      "triggers": [
+        "architecture decision",
+        "system design",
+        "fullstack build",
+        "tech stack",
+        "scalability",
+        "complex feature"
+      ],
+      "produces": "Senior-level architecture + implementation plan",
+      "file": "skills/senior-fullstack/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/senior-fullstack/SKILL.md"
+    },
+    {
+      "id": "react_nextjs",
+      "label": "react-nextjs-development",
+      "category": "Engineering",
+      "triggers": [
+        "React component",
+        "Next.js",
+        "App Router",
+        "Server Component",
+        "Client Component",
+        "TypeScript",
+        "Tailwind"
+      ],
+      "produces": "Production React/Next.js code with App Router patterns",
+      "file": "skills/react-nextjs-development/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/react-nextjs-development/SKILL.md"
+    },
+    {
+      "id": "nextjs_best_practices",
+      "label": "nextjs-best-practices",
+      "category": "Engineering",
+      "triggers": [
+        "Next.js",
+        "App Router",
+        "Server Components",
+        "data fetching",
+        "dynamic route",
+        "static page",
+        "ISR"
+      ],
+      "produces": "Correct Next.js patterns \u2014 avoids common mistakes",
+      "file": "skills/nextjs-best-practices/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/nextjs-best-practices/SKILL.md"
+    },
+    {
+      "id": "full_stack_orch",
+      "label": "full-stack-orchestration",
+      "category": "Engineering",
+      "triggers": [
+        "full feature build",
+        "end-to-end feature",
+        "frontend + backend",
+        "orchestrate build",
+        "full stack task"
+      ],
+      "produces": "Coordinated frontend + backend + DB feature delivery",
+      "file": "skills/full-stack-orchestration-full-stack-feature/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/full-stack-orchestration-full-stack-feature/SKILL.md"
+    },
+    {
+      "id": "frontend_ui_eng",
+      "label": "frontend-ui-engineering",
+      "category": "Engineering",
+      "triggers": [
+        "production UI",
+        "component build",
+        "layout implementation",
+        "state management",
+        "accessibility"
+      ],
+      "produces": "Production-quality frontend code",
+      "file": "skills/frontend-ui-engineering/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/frontend-ui-engineering/SKILL.md"
+    },
+    {
+      "id": "app_builder",
+      "label": "app-builder",
+      "category": "Engineering",
+      "triggers": [
+        "build app",
+        "create application",
+        "new project",
+        "MVP",
+        "prototype",
+        "from scratch"
+      ],
+      "produces": "Full-stack app from natural language \u2014 stack selection + build",
+      "file": "skills/app-builder/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/app-builder/SKILL.md"
+    },
+    {
+      "id": "css_animations",
+      "label": "css-animations",
+      "category": "Engineering",
+      "triggers": [
+        "CSS keyframes",
+        "animation-delay",
+        "animation-fill-mode",
+        "CSS-only motion",
+        "HyperFrames"
+      ],
+      "produces": "CSS animation patterns for deterministic playback",
+      "file": "skills/css-animations/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/css-animations/SKILL.md"
+    },
+    {
+      "id": "gsap",
+      "label": "gsap",
+      "category": "Engineering",
+      "triggers": [
+        "GSAP",
+        "gsap.to",
+        "gsap.timeline",
+        "ScrollTrigger",
+        "stagger",
+        "tween",
+        "animation performance"
+      ],
+      "produces": "GSAP animation code with timeline, easing, stagger",
+      "file": "skills/gsap/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/gsap/SKILL.md"
+    },
+    {
+      "id": "code_review",
+      "label": "code-review-and-quality",
+      "category": "Quality",
+      "triggers": [
+        "code review",
+        "review this",
+        "quality check",
+        "before merge",
+        "assess code",
+        "five-axis review"
+      ],
+      "produces": "Multi-axis review: correctness, readability, architecture, security, performance",
+      "file": "skills/code-review-and-quality/SKILL.md",
+      "priority": "Run before every deploy",
+      "file_type": "document",
+      "source_file": "skills/code-review-and-quality/SKILL.md"
+    },
+    {
+      "id": "security_hardening",
+      "label": "security-and-hardening",
+      "category": "Quality",
+      "triggers": [
+        "auth",
+        "authentication",
+        "user input",
+        "session",
+        "SQL",
+        "XSS",
+        "injection",
+        "API keys",
+        "security",
+        "hardening"
+      ],
+      "produces": "Vulnerability assessment + hardened code",
+      "file": "skills/security-and-hardening/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/security-and-hardening/SKILL.md"
+    },
+    {
+      "id": "planning",
+      "label": "planning-and-task-breakdown",
+      "category": "Quality",
+      "triggers": [
+        "plan this",
+        "break down",
+        "estimate scope",
+        "too large",
+        "parallel work",
+        "task list"
+      ],
+      "produces": "Ordered task list with estimates and parallelisation",
+      "file": "skills/planning-and-task-breakdown/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/planning-and-task-breakdown/SKILL.md"
+    },
+    {
+      "id": "output_skill",
+      "label": "output-skill",
+      "category": "Quality",
+      "triggers": [
+        "full output",
+        "no truncation",
+        "complete code",
+        "don't cut off",
+        "generate everything"
+      ],
+      "produces": "Enforces complete unabridged output \u2014 no placeholders",
+      "file": "skills/output-skill/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/output-skill/SKILL.md"
+    },
+    {
+      "id": "vercel_deployment",
+      "label": "vercel-deployment",
+      "category": "Deployment",
+      "triggers": [
+        "deploy",
+        "vercel",
+        "production",
+        "env vars",
+        "edge function",
+        "serverless",
+        "preview",
+        "domain",
+        "CORS",
+        "timeout"
+      ],
+      "produces": "Correct Vercel config + deployment patterns",
+      "file": "skills/vercel-deployment/SKILL.md",
+      "priority": "READ BEFORE every Vercel deploy",
+      "file_type": "document",
+      "source_file": "skills/vercel-deployment/SKILL.md"
+    },
+    {
+      "id": "airtable_auto",
+      "label": "airtable-automation",
+      "category": "Data",
+      "triggers": [
+        "airtable",
+        "create record",
+        "list records",
+        "filter formula",
+        "airtable schema",
+        "update field",
+        "batch records"
+      ],
+      "produces": "Airtable operation patterns \u2014 pagination, formulas, batch limits",
+      "file": "skills/airtable-automation/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/airtable-automation/SKILL.md"
+    },
+    {
+      "id": "graphify",
+      "label": "graphify",
+      "category": "Intelligence",
+      "triggers": [
+        "map codebase",
+        "knowledge graph",
+        "what connects",
+        "dependency map",
+        "understand repo",
+        "graph the project",
+        "codebase memory"
+      ],
+      "produces": "Persistent knowledge graph + HTML viz + Obsidian vault",
+      "file": "skills/graphify/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/graphify/SKILL.md"
+    },
+    {
+      "id": "open_outreach",
+      "label": "open-outreach",
+      "category": "Outreach",
+      "triggers": [
+        "outreach pipeline",
+        "email sequence",
+        "LinkedIn outreach",
+        "cold outreach",
+        "follow up"
+      ],
+      "produces": "Outreach pipeline patterns",
+      "file": "skills/open-outreach/SKILL.md",
+      "priority": "",
+      "file_type": "document",
+      "source_file": "skills/open-outreach/SKILL.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pluggedin_design",
+      "target": "baseline_ui",
+      "relation": "loads_before",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "pluggedin_design",
+      "target": "antigravity_design",
+      "relation": "loads_before",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "dashboard",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "client_portal",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "redesign_skill",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "antigravity_design",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "soft_skill",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "open_design",
+      "target": "pluggedin_design",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "react_nextjs",
+      "target": "nextjs_best_practices",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "full_stack_orch",
+      "target": "senior_fullstack",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "full_stack_orch",
+      "target": "nextjs_best_practices",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "app_builder",
+      "target": "senior_fullstack",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "code_review",
+      "target": "security_hardening",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    },
+    {
+      "source": "vercel_deployment",
+      "target": "nextjs_best_practices",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

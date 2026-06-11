@@ -197,6 +197,10 @@ REQUIRE EXPLICIT GO:
 
 ### SKILL AUTO-LOAD RULES
 
+**STEP 0 — MANDATORY:** Before any task, read `graphify-out/ACTIVE_SKILLS.md`.
+Scan the TRIGGER column. If the task matches → read that SKILL.md before writing any code.
+Skills marked ⚡ are non-negotiable. No exceptions.
+
 Before executing any task, agent checks if a SKILL.md applies.
 
 **pluggedin-design/SKILL.md is the UNIFIED DESIGN AUTHORITY (v4.0).**
@@ -217,6 +221,16 @@ reads this ONE file. No more multi-skill chains for visual tasks.
 | Security / auth / data handling | skills/security-and-hardening/SKILL.md |
 | Output enforcement (no placeholders) | skills/pluggedin-design/SKILL.md (§13 enforces full output) |
 | Understanding codebase structure | skills/graphify/SKILL.md |
+| Vercel deploy / env vars / API routes | skills/vercel-deployment/SKILL.md |
+| Airtable records / schema / formulas | skills/airtable-automation/SKILL.md |
+| Next.js App Router patterns | skills/nextjs-best-practices/SKILL.md |
+| UI baseline / anti-slop enforcement | skills/baseline-ui/SKILL.md |
+| Spatial / glassmorphism / motion UI | skills/antigravity-design-expert/SKILL.md |
+| Full-stack feature orchestration | skills/full-stack-orchestration-full-stack-feature/SKILL.md |
+| React + Next.js development patterns | skills/react-nextjs-development/SKILL.md |
+| Senior fullstack architecture | skills/senior-fullstack/SKILL.md |
+| App building / rapid prototyping | skills/app-builder/SKILL.md |
+| Canvas / data visualisation design | skills/canvas-design/SKILL.md |
 | Word documents | anthropic-skills:docx |
 | Presentations | anthropic-skills:pptx |
 | Spreadsheets | anthropic-skills:xlsx |

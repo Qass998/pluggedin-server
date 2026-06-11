@@ -2,14 +2,15 @@
   "$schema": "https://railway.app/schema.json",
   "build": {
     "builder": "nixpacks",
-    "buildCommand": "cd outputs/clients/segguinee/segguinee-portal && npm install && npm run build"
+    "buildCommand": "cd backend && npm install"
   },
   "deploy": {
-    "startCommand": "cd outputs/clients/segguinee/segguinee-portal && npm start",
+    "startCommand": "cd backend && npm start",
     "restartPolicyType": "on_failure",
     "restartPolicyMaxRetries": 5
   },
   "env": {
-    "NIXPACKS_NODE_VERSION": "20"
+    "NIXPACKS_NODE_VERSION": "20",
+    "PORT": "3000"
   }
 }

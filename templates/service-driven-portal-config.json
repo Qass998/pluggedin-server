@@ -1,0 +1,273 @@
+{
+  "portal_name": "SEGGUINÉE Operations Portal",
+  "client_id": "segguinee-001",
+  "version": "2.0",
+  "architecture": "Service-driven (config-based, no hardcoding)",
+
+  "description": "This config makes the portal modular. Services are loaded from services/SERVICES.md. Add/remove services by editing this file — no code changes needed.",
+
+  "selected_services": [
+    "presence-agent",
+    "pipeline-agent",
+    "intelligence-agent"
+  ],
+
+  "service_overrides": {
+    "presence-agent": {
+      "name": "Chef de Cabinet",
+      "french_name": "Chef de Cabinet (Receptionist)",
+      "description": "VAPI voice agent + WhatsApp inbound. 24/7 availability.",
+      "price_monthly": 797,
+      "icon": "📞"
+    },
+    "pipeline-agent": {
+      "name": "Directeur du Développement",
+      "french_name": "Directeur du Développement (Sales)",
+      "description": "Lead discovery, enrichment, outreach, booking. Grows revenue.",
+      "price_monthly": 997,
+      "icon": "📈"
+    },
+    "intelligence-agent": {
+      "name": "Analyste Stratégique",
+      "french_name": "Analyste Stratégique (Intelligence)",
+      "description": "Market signals, competitor monitoring, weekly briefing.",
+      "price_monthly": 697,
+      "icon": "🔍"
+    }
+  },
+
+  "airtable_config": {
+    "base_id": "appkTn2GRpIGBFwMU",
+    "tables": {
+      "leads": "tblGlReoTNWfYnXIG",
+      "pipeline": "tblGlReoTNWfYnXIG",
+      "outreach": "tblGlReoTNWfYnXIG",
+      "intelligence": "tblGlReoTNWfYnXIG",
+      "conversations": "tblPfNxS1NI1PltHQ",
+      "agents": "tblHXVwNrq1bhY6Qn"
+    }
+  },
+
+  "integrations": {
+    "apify": {
+      "enabled": true,
+      "env_var": "APIFY_API_TOKEN"
+    },
+    "vibe_prospecting": {
+      "enabled": true,
+      "type": "mcp",
+      "env_var": "VIBE_API_KEY"
+    },
+    "cal_com": {
+      "enabled": true,
+      "calendar_url": "https://cal.com/your-company"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "env_vars": ["WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_ACCESS_TOKEN"]
+    },
+    "vapi": {
+      "enabled": true,
+      "env_var": "VAPI_API_KEY"
+    },
+    "openai": {
+      "enabled": true,
+      "env_var": "OPENAI_API_KEY"
+    }
+  },
+
+  "dashboard_layout": {
+    "header": {
+      "title": "SEGGUINÉE Portail Opérateur",
+      "subtitle": "Système d'exploitation complet"
+    },
+    "tabs": [
+      {
+        "id": "overview",
+        "label": "Vue d'ensemble",
+        "panels": [
+          {
+            "type": "kpi_strip",
+            "metrics": ["leads_discovered", "pipeline_value", "meetings_booked", "decisions_makers_reached"]
+          },
+          {
+            "type": "service_cards",
+            "services": "all",
+            "layout": "grid",
+            "columns": 3
+          },
+          {
+            "type": "activity_feed",
+            "max_items": 20,
+            "sources": ["all_services"]
+          }
+        ]
+      },
+      {
+        "id": "leads",
+        "label": "Prospects",
+        "service": "pipeline-agent",
+        "panels": [
+          {
+            "type": "leads_table",
+            "columns": ["name", "company", "decision_maker_score", "accuracy_score", "signals", "status"]
+          },
+          {
+            "type": "discovery_sources",
+            "chart_type": "pie",
+            "description": "Where leads came from (LinkedIn, Maps, etc)"
+          },
+          {
+            "type": "enrichment_quality",
+            "chart_type": "bar",
+            "description": "Accuracy scores distribution"
+          }
+        ]
+      },
+      {
+        "id": "outreach",
+        "label": "Campagnes",
+        "service": "pipeline-agent",
+        "panels": [
+          {
+            "type": "outreach_metrics",
+            "metrics": ["sent", "opened", "clicked", "responded", "conversion_rate"]
+          },
+          {
+            "type": "sequence_tracker",
+            "columns": ["lead", "email_1_status", "linkedin_1_status", "email_2_status", "next_touch"]
+          },
+          {
+            "type": "channel_performance",
+            "chart_type": "bar",
+            "channels": ["email", "linkedin", "whatsapp"]
+          }
+        ]
+      },
+      {
+        "id": "pipeline",
+        "label": "Pipeline",
+        "service": "pipeline-agent",
+        "panels": [
+          {
+            "type": "pipeline_by_stage",
+            "chart_type": "funnel",
+            "stages": ["interest", "booked", "completed", "proposal", "nurture", "won", "closed"]
+          },
+          {
+            "type": "pipeline_value",
+            "metric": "weighted_pipeline_value",
+            "currency": "USD"
+          },
+          {
+            "type": "deals_table",
+            "columns": ["company", "value", "stage", "close_date", "next_action"]
+          }
+        ]
+      },
+      {
+        "id": "presence",
+        "label": "Réceptionniste",
+        "service": "presence-agent",
+        "panels": [
+          {
+            "type": "inbound_log",
+            "max_items": 50,
+            "columns": ["time", "type", "from", "message", "qualified", "action"]
+          },
+          {
+            "type": "qualified_leads",
+            "metric": "hot_warm_cold_split",
+            "chart_type": "donut"
+          },
+          {
+            "type": "meetings_booked",
+            "metric": "count_this_week"
+          }
+        ]
+      },
+      {
+        "id": "intelligence",
+        "label": "Renseignements",
+        "service": "intelligence-agent",
+        "panels": [
+          {
+            "type": "competitor_activity",
+            "max_items": 10,
+            "description": "Recent competitor moves"
+          },
+          {
+            "type": "market_signals",
+            "signal_types": ["hiring", "funding", "news", "tech_changes"],
+            "max_items": 15
+          },
+          {
+            "type": "briefing_archive",
+            "layout": "list",
+            "max_items": 12
+          }
+        ]
+      }
+    ]
+  },
+
+  "command_bar_enabled": true,
+  "command_bar_config": {
+    "instructions": "Type natural language commands. AI executes and logs to Airtable.",
+    "supported_actions": [
+      "CREATE_LEAD",
+      "UPDATE_LEAD_STATUS",
+      "CREATE_OUTREACH_SEQUENCE",
+      "BOOK_MEETING",
+      "LOG_CALL",
+      "SEND_WHATSAPP",
+      "GENERATE_REPORT",
+      "DAILY_BRIEFING"
+    ]
+  },
+
+  "agent_cards_config": {
+    "layout": "horizontal_strip",
+    "show_chat": true,
+    "show_metrics": true,
+    "show_capabilities": true,
+    "auto_refresh_seconds": 300
+  },
+
+  "auth_config": {
+    "type": "pin_based",
+    "pin_env_var": "SEGGUINEE_AUTH_PIN",
+    "session_duration_hours": 24,
+    "cookie_name": "segguinee_auth"
+  },
+
+  "design_tokens": {
+    "font_primary": "DM Sans",
+    "font_mono": "JetBrains Mono",
+    "color_scheme": "dark",
+    "bg_primary": "#07090f",
+    "bg_surface": "#0c1018",
+    "accent_color": "#3b82f6",
+    "language": "fr-FR"
+  },
+
+  "environment_variables_required": [
+    "AIRTABLE_TOKEN",
+    "SEGGUINEE_AIRTABLE_BASE",
+    "OPENAI_API_KEY",
+    "APIFY_API_TOKEN",
+    "WHATSAPP_PHONE_NUMBER_ID",
+    "WHATSAPP_ACCESS_TOKEN",
+    "WHATSAPP_VERIFY_TOKEN",
+    "VAPI_API_KEY",
+    "VIBE_API_KEY",
+    "SEGGUINEE_AUTH_PIN",
+    "SEGGUINEE_DIRECTOR_PHONE"
+  ],
+
+  "notes": {
+    "architecture": "This config is loaded by the portal at runtime. Services are not hardcoded. To add a new service: 1. Add to selected_services array. 2. Portal auto-loads it from services/SERVICES.md. 3. Add config overrides if needed (e.g., French names).",
+    "customization": "Portal code is generic and reads from this config. Changes here = instant portal changes (no code redeploy).",
+    "scalability": "This template works for any client. Copy, update service selections + Airtable base ID, deploy new portal."
+  }
+}

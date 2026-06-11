@@ -1,0 +1,1037 @@
+{
+  "nodes": [
+    {
+      "id": "code_quality_analyzer",
+      "label": "code_quality_analyzer.py",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer",
+      "label": "CodeQualityAnalyzer",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "code_quality_analyzer_py_str",
+      "label": "str",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "code_quality_analyzer_py_bool",
+      "label": "bool",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer_validate_target",
+      "label": ".validate_target()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer_analyze",
+      "label": ".analyze()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "code_quality_analyzer_codequalityanalyzer_generate_report",
+      "label": ".generate_report()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L61"
+    },
+    {
+      "id": "code_quality_analyzer_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L71"
+    },
+    {
+      "id": "code_quality_analyzer_rationale_15",
+      "label": "Main class for code quality analyzer functionality",
+      "file_type": "rationale",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "code_quality_analyzer_rationale_23",
+      "label": "Execute the main functionality",
+      "file_type": "rationale",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "code_quality_analyzer_rationale_40",
+      "label": "Validate the target path exists and is accessible",
+      "file_type": "rationale",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "code_quality_analyzer_rationale_48",
+      "label": "Perform the main analysis or operation",
+      "file_type": "rationale",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L48"
+    },
+    {
+      "id": "code_quality_analyzer_rationale_62",
+      "label": "Generate and display the report",
+      "file_type": "rationale",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L62"
+    },
+    {
+      "id": "fullstack_scaffolder",
+      "label": "fullstack_scaffolder.py",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder",
+      "label": "FullstackScaffolder",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "fullstack_scaffolder_py_str",
+      "label": "str",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "fullstack_scaffolder_py_bool",
+      "label": "bool",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder_validate_target",
+      "label": ".validate_target()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder_analyze",
+      "label": ".analyze()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "fullstack_scaffolder_fullstackscaffolder_generate_report",
+      "label": ".generate_report()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L61"
+    },
+    {
+      "id": "fullstack_scaffolder_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L71"
+    },
+    {
+      "id": "fullstack_scaffolder_rationale_15",
+      "label": "Main class for fullstack scaffolder functionality",
+      "file_type": "rationale",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "fullstack_scaffolder_rationale_23",
+      "label": "Execute the main functionality",
+      "file_type": "rationale",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "fullstack_scaffolder_rationale_40",
+      "label": "Validate the target path exists and is accessible",
+      "file_type": "rationale",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "fullstack_scaffolder_rationale_48",
+      "label": "Perform the main analysis or operation",
+      "file_type": "rationale",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L48"
+    },
+    {
+      "id": "fullstack_scaffolder_rationale_62",
+      "label": "Generate and display the report",
+      "file_type": "rationale",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L62"
+    },
+    {
+      "id": "project_scaffolder",
+      "label": "project_scaffolder.py",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder",
+      "label": "ProjectScaffolder",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "project_scaffolder_py_str",
+      "label": "str",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "project_scaffolder_py_bool",
+      "label": "bool",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder_validate_target",
+      "label": ".validate_target()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder_analyze",
+      "label": ".analyze()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "project_scaffolder_projectscaffolder_generate_report",
+      "label": ".generate_report()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L61"
+    },
+    {
+      "id": "project_scaffolder_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L71"
+    },
+    {
+      "id": "project_scaffolder_rationale_15",
+      "label": "Main class for project scaffolder functionality",
+      "file_type": "rationale",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "project_scaffolder_rationale_23",
+      "label": "Execute the main functionality",
+      "file_type": "rationale",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "project_scaffolder_rationale_40",
+      "label": "Validate the target path exists and is accessible",
+      "file_type": "rationale",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "project_scaffolder_rationale_48",
+      "label": "Perform the main analysis or operation",
+      "file_type": "rationale",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L48"
+    },
+    {
+      "id": "project_scaffolder_rationale_62",
+      "label": "Generate and display the report",
+      "file_type": "rationale",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L62"
+    }
+  ],
+  "edges": [
+    {
+      "source": "code_quality_analyzer",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer_init",
+      "target": "code_quality_analyzer_py_str",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer_init",
+      "target": "code_quality_analyzer_py_bool",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer_validate_target",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer_analyze",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer",
+      "target": "code_quality_analyzer_codequalityanalyzer_generate_report",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer",
+      "target": "code_quality_analyzer_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer_run",
+      "target": "code_quality_analyzer_codequalityanalyzer_validate_target",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer_run",
+      "target": "code_quality_analyzer_codequalityanalyzer_analyze",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_codequalityanalyzer_run",
+      "target": "code_quality_analyzer_codequalityanalyzer_generate_report",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_main",
+      "target": "code_quality_analyzer_codequalityanalyzer",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_main",
+      "target": "code_quality_analyzer_codequalityanalyzer_run",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_rationale_15",
+      "target": "code_quality_analyzer_codequalityanalyzer",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_rationale_23",
+      "target": "code_quality_analyzer_codequalityanalyzer_run",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_rationale_40",
+      "target": "code_quality_analyzer_codequalityanalyzer_validate_target",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_rationale_48",
+      "target": "code_quality_analyzer_codequalityanalyzer_analyze",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "code_quality_analyzer_rationale_62",
+      "target": "code_quality_analyzer_codequalityanalyzer_generate_report",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "code_quality_analyzer.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder_init",
+      "target": "fullstack_scaffolder_py_str",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder_init",
+      "target": "fullstack_scaffolder_py_bool",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder_validate_target",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder_analyze",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder",
+      "target": "fullstack_scaffolder_fullstackscaffolder_generate_report",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder",
+      "target": "fullstack_scaffolder_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder_run",
+      "target": "fullstack_scaffolder_fullstackscaffolder_validate_target",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder_run",
+      "target": "fullstack_scaffolder_fullstackscaffolder_analyze",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_fullstackscaffolder_run",
+      "target": "fullstack_scaffolder_fullstackscaffolder_generate_report",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_main",
+      "target": "fullstack_scaffolder_fullstackscaffolder",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_main",
+      "target": "fullstack_scaffolder_fullstackscaffolder_run",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_rationale_15",
+      "target": "fullstack_scaffolder_fullstackscaffolder",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_rationale_23",
+      "target": "fullstack_scaffolder_fullstackscaffolder_run",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_rationale_40",
+      "target": "fullstack_scaffolder_fullstackscaffolder_validate_target",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_rationale_48",
+      "target": "fullstack_scaffolder_fullstackscaffolder_analyze",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "fullstack_scaffolder_rationale_62",
+      "target": "fullstack_scaffolder_fullstackscaffolder_generate_report",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fullstack_scaffolder.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "project_scaffolder_projectscaffolder",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder",
+      "target": "project_scaffolder_projectscaffolder_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder_init",
+      "target": "project_scaffolder_py_str",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder_init",
+      "target": "project_scaffolder_py_bool",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder",
+      "target": "project_scaffolder_projectscaffolder_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder",
+      "target": "project_scaffolder_projectscaffolder_validate_target",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder",
+      "target": "project_scaffolder_projectscaffolder_analyze",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder",
+      "target": "project_scaffolder_projectscaffolder_generate_report",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder",
+      "target": "project_scaffolder_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder_run",
+      "target": "project_scaffolder_projectscaffolder_validate_target",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder_run",
+      "target": "project_scaffolder_projectscaffolder_analyze",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_projectscaffolder_run",
+      "target": "project_scaffolder_projectscaffolder_generate_report",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_main",
+      "target": "project_scaffolder_projectscaffolder",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_main",
+      "target": "project_scaffolder_projectscaffolder_run",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_rationale_15",
+      "target": "project_scaffolder_projectscaffolder",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_rationale_23",
+      "target": "project_scaffolder_projectscaffolder_run",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_rationale_40",
+      "target": "project_scaffolder_projectscaffolder_validate_target",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_rationale_48",
+      "target": "project_scaffolder_projectscaffolder_analyze",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "project_scaffolder_rationale_62",
+      "target": "project_scaffolder_projectscaffolder_generate_report",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "project_scaffolder.py",
+      "source_location": "L62",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

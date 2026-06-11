@@ -1,0 +1,414 @@
+{
+  "leads": [
+    {
+      "id": "lead_001",
+      "name": "James Chen",
+      "company": "Sterling Solicitors",
+      "title": "Managing Partner",
+      "email": "james@sterlinglaw.uk",
+      "phone": "+44 20 7123 4567",
+      "website": "www.sterlinglaw.uk",
+      "niche": "Legal",
+      "location": "London, UK",
+      "signalScore": 92,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.8,
+        "reviewCount": 127,
+        "reviews": [
+          "Excellent service, very professional",
+          "Highly experienced team",
+          "Best solicitors in the area"
+        ],
+        "hours": "Mon-Fri 9:00-17:00"
+      },
+      "instagram": {
+        "handle": "@sterlinglaw",
+        "followers": 2400,
+        "followersGrowth": "+15%",
+        "engagementRate": 3.2,
+        "recentPosts": 8,
+        "avgLikes": 120,
+        "bio": "Award-winning law firm specialising in commercial law | London 🏛️"
+      },
+      "companySize": "15-25 employees",
+      "yearFounded": 2008,
+      "recentNews": "Hired 2 new associates in Q2 2026"
+    },
+    {
+      "id": "lead_002",
+      "name": "Maria Rodriguez",
+      "company": "SolarTech Solutions",
+      "title": "CEO",
+      "email": "maria@solartechsolutions.com",
+      "phone": "+44 1234 567890",
+      "website": "www.solartechsolutions.com",
+      "niche": "Solar",
+      "location": "Manchester, UK",
+      "signalScore": 88,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": false
+      },
+      "googleMaps": {
+        "rating": 4.6,
+        "reviewCount": 89,
+        "reviews": [
+          "Professional installation",
+          "Great customer support",
+          "Highly recommend"
+        ],
+        "hours": "Mon-Fri 8:00-18:00"
+      },
+      "instagram": {
+        "handle": "@solartechuk",
+        "followers": 5200,
+        "followersGrowth": "+32%",
+        "engagementRate": 4.1,
+        "recentPosts": 14,
+        "avgLikes": 310,
+        "bio": "Solar installations & maintenance | Fast-growing renewable energy 🌞 Hiring now!"
+      },
+      "companySize": "25-50 employees",
+      "yearFounded": 2015,
+      "recentNews": "Secured £2M Series A funding"
+    },
+    {
+      "id": "lead_003",
+      "name": "David Murphy",
+      "company": "EliteRoof UK",
+      "title": "Operations Director",
+      "email": "david@eliteroof.co.uk",
+      "phone": "+44 121 456 7890",
+      "website": "www.eliteroof.co.uk",
+      "niche": "Roofing",
+      "location": "Birmingham, UK",
+      "signalScore": 76,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": false,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.5,
+        "reviewCount": 156,
+        "reviews": [
+          "Fast and professional service",
+          "Great quality workmanship",
+          "Good value for money"
+        ],
+        "hours": "Mon-Fri 7:00-17:00"
+      },
+      "instagram": {
+        "handle": "@eliteroof",
+        "followers": 1800,
+        "followersGrowth": "+8%",
+        "engagementRate": 2.1,
+        "recentPosts": 6,
+        "avgLikes": 95,
+        "bio": "Professional roofing services | 15+ years experience 🏠"
+      },
+      "companySize": "10-15 employees",
+      "yearFounded": 2008,
+      "recentNews": "Expanded to 3 new locations"
+    },
+    {
+      "id": "lead_004",
+      "name": "Sarah Thompson",
+      "company": "ClimatePro HVAC",
+      "title": "Managing Director",
+      "email": "sarah@climateprohvac.uk",
+      "phone": "+44 161 234 5678",
+      "website": "www.climateprohvac.uk",
+      "niche": "HVAC",
+      "location": "Manchester, UK",
+      "signalScore": 82,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.7,
+        "reviewCount": 203,
+        "reviews": [
+          "Emergency response was excellent",
+          "Very professional team",
+          "Fixed our system quickly"
+        ],
+        "hours": "Mon-Sun 7:00-21:00"
+      },
+      "instagram": {
+        "handle": "@climateprohvac",
+        "followers": 3100,
+        "followersGrowth": "+18%",
+        "engagementRate": 3.8,
+        "recentPosts": 11,
+        "avgLikes": 215,
+        "bio": "24/7 HVAC Services | Installation • Repair • Maintenance | Now hiring! 🌡️"
+      },
+      "companySize": "20-35 employees",
+      "yearFounded": 2010,
+      "recentNews": "Just launched emergency response app"
+    },
+    {
+      "id": "lead_005",
+      "name": "Tom Walsh",
+      "company": "ProPlumb Services",
+      "title": "Owner",
+      "email": "tom@proplumb.uk",
+      "phone": "+44 191 567 8901",
+      "website": "www.proplumb.uk",
+      "niche": "Plumbing",
+      "location": "Newcastle, UK",
+      "signalScore": 85,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.9,
+        "reviewCount": 312,
+        "reviews": [
+          "Fastest response time ever",
+          "Friendly and professional",
+          "Brilliant service, fair pricing"
+        ],
+        "hours": "24/7 Emergency"
+      },
+      "instagram": {
+        "handle": "@proplumbuk",
+        "followers": 4600,
+        "followersGrowth": "+22%",
+        "engagementRate": 4.3,
+        "recentPosts": 13,
+        "avgLikes": 280,
+        "bio": "Emergency plumbing 24/7 | Fast response | Friendly team 💧"
+      },
+      "companySize": "12-18 employees",
+      "yearFounded": 2012,
+      "recentNews": "Expanded emergency fleet"
+    },
+    {
+      "id": "lead_006",
+      "name": "Rachel Green",
+      "company": "GreenScape Landscaping",
+      "title": "Business Manager",
+      "email": "rachel@greenscape.co.uk",
+      "phone": "+44 1275 123 4567",
+      "website": "www.greenscape.co.uk",
+      "niche": "Landscaping",
+      "location": "Bristol, UK",
+      "signalScore": 64,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": false,
+        "budgetIndicators": false,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.6,
+        "reviewCount": 78,
+        "reviews": [
+          "Beautiful work",
+          "Attention to detail",
+          "Worth every penny"
+        ],
+        "hours": "Mon-Fri 8:00-17:00"
+      },
+      "instagram": {
+        "handle": "@greenscape_uk",
+        "followers": 2100,
+        "followersGrowth": "+12%",
+        "engagementRate": 2.8,
+        "recentPosts": 9,
+        "avgLikes": 140,
+        "bio": "Premium landscaping & garden design 🌿 Bristol & surrounding areas"
+      },
+      "companySize": "8-12 employees",
+      "yearFounded": 2014,
+      "recentNews": "Won Best Local Business award"
+    },
+    {
+      "id": "lead_007",
+      "name": "Mark Peterson",
+      "company": "PestStop Services",
+      "title": "Regional Manager",
+      "email": "mark@peststop.uk",
+      "phone": "+44 121 789 0123",
+      "website": "www.peststop.uk",
+      "niche": "Pest Control",
+      "location": "Birmingham, UK",
+      "signalScore": 79,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": false
+      },
+      "googleMaps": {
+        "rating": 4.7,
+        "reviewCount": 189,
+        "reviews": [
+          "Thorough and professional",
+          "Got rid of the problem completely",
+          "Highly recommend"
+        ],
+        "hours": "Mon-Sat 8:00-18:00"
+      },
+      "instagram": {
+        "handle": "@peststopuk",
+        "followers": 1950,
+        "followersGrowth": "+16%",
+        "engagementRate": 3.2,
+        "recentPosts": 7,
+        "avgLikes": 155,
+        "bio": "Professional pest control | Fast response | Eco-friendly solutions 🐛"
+      },
+      "companySize": "15-22 employees",
+      "yearFounded": 2009,
+      "recentNews": "Opened new regional office"
+    },
+    {
+      "id": "lead_008",
+      "name": "Emma Clarke",
+      "company": "CleanEasy Services",
+      "title": "Founder",
+      "email": "emma@cleaneasy.uk",
+      "phone": "+44 20 1234 5678",
+      "website": "www.cleaneasy.uk",
+      "niche": "Cleaning",
+      "location": "London, UK",
+      "signalScore": 71,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": false,
+        "growthMentions": true,
+        "painPointLanguage": false
+      },
+      "googleMaps": {
+        "rating": 4.5,
+        "reviewCount": 245,
+        "reviews": [
+          "Very thorough",
+          "Reliable and professional",
+          "Great attention to detail"
+        ],
+        "hours": "Mon-Fri 8:00-18:00"
+      },
+      "instagram": {
+        "handle": "@cleaneasyuk",
+        "followers": 3400,
+        "followersGrowth": "+28%",
+        "engagementRate": 3.6,
+        "recentPosts": 12,
+        "avgLikes": 180,
+        "bio": "Professional cleaning • Offices • Homes • Commercial 🧹 Hiring now!"
+      },
+      "companySize": "18-30 employees",
+      "yearFounded": 2016,
+      "recentNews": "Featured in local business magazine"
+    },
+    {
+      "id": "lead_009",
+      "name": "Kevin O'Brien",
+      "company": "ElectriXpert",
+      "title": "Chief Electrician",
+      "email": "kevin@electrixpert.uk",
+      "phone": "+44 1633 567 8901",
+      "website": "www.electrixpert.uk",
+      "niche": "Electrical",
+      "location": "Newport, UK",
+      "signalScore": 81,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.8,
+        "reviewCount": 134,
+        "reviews": [
+          "Fixed the problem immediately",
+          "Professional and friendly",
+          "Fair pricing"
+        ],
+        "hours": "24/7 Emergency"
+      },
+      "instagram": {
+        "handle": "@electrixpert",
+        "followers": 2700,
+        "followersGrowth": "+19%",
+        "engagementRate": 3.5,
+        "recentPosts": 10,
+        "avgLikes": 165,
+        "bio": "Emergency electrical • Repairs • Installation 24/7 ⚡ Hiring qualified techs!"
+      },
+      "companySize": "14-20 employees",
+      "yearFounded": 2011,
+      "recentNews": "ISO 9001 certified"
+    },
+    {
+      "id": "lead_010",
+      "name": "Dr. Amelia Knight",
+      "company": "Bright Dental Practice",
+      "title": "Principal Dentist",
+      "email": "amelia@brightdental.uk",
+      "phone": "+44 1865 234 5678",
+      "website": "www.brightdental.uk",
+      "niche": "Healthcare",
+      "location": "Oxford, UK",
+      "signalScore": 87,
+      "signals": {
+        "decisionMaker": true,
+        "hiringActive": true,
+        "budgetIndicators": true,
+        "growthMentions": true,
+        "painPointLanguage": true
+      },
+      "googleMaps": {
+        "rating": 4.9,
+        "reviewCount": 267,
+        "reviews": [
+          "Best dentist I've been to",
+          "Staff are amazing",
+          "Modern facilities"
+        ],
+        "hours": "Mon-Fri 8:30-17:30, Sat 9:00-13:00"
+      },
+      "instagram": {
+        "handle": "@brightdental",
+        "followers": 4100,
+        "followersGrowth": "+25%",
+        "engagementRate": 4.4,
+        "recentPosts": 15,
+        "avgLikes": 320,
+        "bio": "Award-winning dental practice | Modern cosmetic & general dentistry 🦷"
+      },
+      "companySize": "8-12 employees",
+      "yearFounded": 2007,
+      "recentNews": "Voted best dental practice in Oxford"
+    }
+  ]
+}

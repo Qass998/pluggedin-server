@@ -6,19 +6,19 @@
 <title>PluggedIN OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <style>
 /* ─── Reset ─────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:        oklch(6% 0 0);
-  --surface:   oklch(10% 0 0);
-  --card:      oklch(12% 0 0);
-  --card2:     oklch(14% 0 0);
-  --card3:     oklch(16% 0 0);
-  --border:    oklch(20% 0 0);
-  --border2:   oklch(24% 0 0);
+  --bg:        #07090f;
+  --surface:   #0c1018;
+  --card:      #111622;
+  --card2:     #161d2b;
+  --card3:     #1b2335;
+  --border:    #1e2d42;
+  --border2:   #26384f;
   --accent:    oklch(74% 0.18 65);
   --accent2:   oklch(78% 0.16 70);
   --accent-glow:  oklch(74% 0.18 65 / 0.10);
@@ -32,13 +32,13 @@
   --blue:      oklch(65% 0.18 260);
   --blue-dim:  oklch(65% 0.18 260 / 0.12);
   --pink:      oklch(70% 0.2 340);
-  --text:      oklch(95% 0 0);
-  --text2:     oklch(65% 0 0);
-  --muted:     oklch(38% 0 0);
+  --text:      #e2eaf6;
+  --text2:     #8899b4;
+  --muted:     #3d4f68;
   --sidebar:   240px;
   --topbar:    62px;
 }
-html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 h1,h2,h3,.brand-name,.hero-mrr,.modal-title,.kpi-value,.rev-card-val{font-family:'Syne',sans-serif;}
 button{cursor:pointer;border:none;background:none;color:inherit;font:inherit;}
 input,select{font:inherit;color:var(--text);}
@@ -953,6 +953,26 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:7px;
 .agent-drawer-footer{
   padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;
 }
+.prog-dot{
+  width:10px;height:10px;border-radius:50%;transition:background .3s,box-shadow .3s;
+}
+.prog-dot.pending{background:var(--border2);}
+.prog-dot.active{background:var(--accent);box-shadow:0 0 0 4px var(--accent-glow);}
+.prog-dot.done{background:var(--green);}
+
+/* ─── Entrance Animations ──────────────────── */
+.entrance{
+  opacity:0;transform:translateY(12px);
+  transition: opacity 600ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1);
+}
+.entrance.visible{
+  opacity:1;transform:translateY(0);
+}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.35;}}
+.pulse{animation:pulse-dot 2s infinite;}
+.btn{transition:transform 150ms cubic-bezier(0.32,0.72,0,1),background 150ms,border-color 150ms;}
+.btn:hover:not(:disabled){transform:translateY(-1px);}
+.btn:active:not(:disabled){transform:translateY(0);}
 
 </style>
 </head>
@@ -1244,6 +1264,12 @@ _scheduleCheck();
     <div class="nav-item" id="nav-leads" onclick="nav('leads')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Find Leads
+    </div>
+
+    <div class="nav-item" id="nav-videos" onclick="nav('videos')">
+      <span class="nav-icon">▶</span>
+      Video Engine
+      <span class="nav-badge" id="video-count" style="background:var(--blue);color:#fff;">0</span>
     </div>
 
     <div class="nav-section">Analytics</div>
@@ -1623,7 +1649,7 @@ function render(){
   if(agencyBadge) agencyBadge.style.display='inline';
 
   const views={dashboard:viewDashboard,businesses:viewBusinesses,agents:viewAgents,
-               leads:viewLeads,revenue:viewRevenue,briefings:viewBriefings,
+               leads:viewLeads,videos:viewVideos,revenue:viewRevenue,briefings:viewBriefings,
                command:viewCommand,agency:viewAgency,results:viewResults,settings:viewSettings,
                demo:viewDemo, scan:viewScan, team:viewTeam, 'biz-detail':viewBizDetail};
   document.getElementById('content').innerHTML=(views[state.view]||viewDashboard)();
@@ -2252,124 +2278,625 @@ function openAgentChatByModule(num){
 }
 
 /* ═══════════════════════════════════════════════════
-   VIEW: LEADS
+   VIEW: LEADS — DISCOVERY ENGINE
 ═══════════════════════════════════════════════════ */
 let _leadsData = [];
 let _leadsLoading = false;
+let _leadsEventSource = null;
 
-async function loadLeads(){
-  if(_leadsLoading) return;
-  _leadsLoading = true;
-  const btn = document.getElementById('leads-scan-btn');
-  if(btn){ btn.disabled = true; btn.textContent = 'Scanning...'; }
+async function runDiscovery() {
+  const niche   = document.getElementById('disc-niche')?.value;
+  const country = document.getElementById('disc-country')?.value?.trim();
+  const limit   = document.getElementById('disc-limit')?.value || '50';
+
+  if (!niche) {
+    showToast('Enter a niche first', 'warn');
+    return;
+  }
+
+  document.getElementById('leads-progress')?.style.setProperty('display', 'block');
+  document.getElementById('leads-results-section')?.style.setProperty('display', 'none');
+  const btn = document.getElementById('disc-run-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
 
   try {
-    const res = await fetch(API+'/results/leads?limit=50');
-    const data = res.ok ? await res.json() : {records:[]};
-    const apiLeads = (data.records||[]).map(r => ({
-      name:     r.Company || r.Name || r['Business Name'] || 'Unknown',
-      location: r.Location || r.City || '',
-      industry: r.Industry || r.Vertical || 'General',
-      score:    r['ICP Score'] || r.Score || Math.floor(60 + Math.random()*30),
-      modules:  [1,2],
-      source:   'pipeline',
+    // Use demo endpoint for testing
+    const res = await fetch(`${API}/leads/demo?niche=${encodeURIComponent(niche)}&country=${encodeURIComponent(country || 'UK')}`);
+    const data = await res.json();
+
+    document.getElementById('leads-progress')?.style.setProperty('display', 'none');
+    document.getElementById('leads-results-section')?.style.setProperty('display', 'block');
+
+    _leadsData = (data.leads || []).map(r => ({
+      id:        r.id || '',
+      name:      r.name || 'Unknown',
+      company:   r.company || 'Unknown',
+      title:     r.title || '',
+      location:  r.location || '',
+      email:     r.email || '',
+      phone:     r.phone || '',
+      website:   r.website || '',
+      niche:     r.niche || niche,
+      score:     r.signalScore || 75,
+      signals:   r.signals || {}
     }));
 
-    const demos = [
-      {name:'Bella Roma Restaurant',  location:'Manchester', industry:'Restaurant',  score:87, modules:[1,9],  source:'demo'},
-      {name:'Sterling Solicitors',    location:'Birmingham', industry:'Legal',       score:82, modules:[1,2],  source:'demo'},
-      {name:'Peak Construction Ltd',  location:'Sheffield',  industry:'Construction',score:79, modules:[1,4],  source:'demo'},
-      {name:'SwiftCargo Logistics',   location:'Leeds',      industry:'Logistics',   score:74, modules:[1,2,8],source:'demo'},
-      {name:'Sunrise Care Home',      location:'Bristol',    industry:'Healthcare',  score:71, modules:[1,6],  source:'demo'},
-    ];
+    if (btn) { btn.disabled = false; btn.textContent = '▶ Run Discovery'; }
+    renderLeadCards();
+    showToast(`Found ${_leadsData.length} leads (demo mode)`, 'success');
+  } catch (error) {
+    console.error('Discovery error:', error);
+    document.getElementById('leads-progress')?.style.setProperty('display', 'none');
+    if (btn) { btn.disabled = false; btn.textContent = '▶ Run Discovery'; }
+    showToast('Discovery failed: ' + error.message, 'error');
+  }
 
-    _leadsData = apiLeads.length > 0 ? apiLeads : demos;
+}
+
+function updateDiscoveryProgress(data) {
+  const stages = ['discovering', 'enriching', 'saving'];
+  const stageIdx = stages.indexOf(data.stage);
+
+  stages.forEach((s, i) => {
+    const dot = document.getElementById(`prog-${s}`);
+    if (!dot) return;
+    if (i < stageIdx) {
+      dot.className = 'prog-dot done';
+    } else if (i === stageIdx) {
+      dot.className = 'prog-dot active';
+    } else {
+      dot.className = 'prog-dot pending';
+    }
+  });
+
+  const bar = document.getElementById('prog-bar');
+  if (bar) bar.style.width = (data.progress || 0) + '%';
+
+  const label = document.getElementById('prog-label');
+  if (label) label.textContent = data.message || '';
+}
+
+async function loadDiscoveredLeads() {
+  try {
+    const res = await fetch(API + '/leads');
+    const data = res.ok ? await res.json() : { leads: [] };
+
+    _leadsData = (data.leads || []).map(r => ({
+      name:     r.company || r.name || r['Company'] || 'Unknown',
+      title:    r.title || r['Title'] || '',
+      location: r.location || r['Location'] || '',
+      industry: r.niche || r['Industry'] || 'General',
+      email:    r.email || r['Email'] || '',
+      phone:    r.phone || r['Phone'] || '',
+      score:    Math.round((r['Decision Maker Score'] || 0.7) * 100),
+      source:   r.source || r['Source'] || 'Discovery',
+      modules:  [1, 2],
+      airtableId: r.id || ''
+    }));
+
+    document.getElementById('leads-progress')?.style.setProperty('display', 'none');
+    document.getElementById('leads-results-section')?.style.setProperty('display', 'block');
+
+    const btn = document.getElementById('disc-run-btn');
+    if (btn) { btn.disabled = false; btn.textContent = '▶ Run Discovery'; }
+
     renderLeadCards();
     const countEl = document.getElementById('leads-count');
-    if(countEl) countEl.textContent = `${_leadsData.length} prospects · sorted by ICP score`;
+    if (countEl) countEl.textContent = `${_leadsData.length} leads found · sorted by ICP score`;
+
   } catch(e) {
     console.error('[Leads]', e);
-  } finally {
-    _leadsLoading = false;
-    if(btn){ btn.disabled = false; btn.textContent = '▶ Run ICP Scan'; }
   }
 }
 
 function renderLeadCards(){
   const el = document.getElementById('leads-list');
   if(!el) return;
+
   const filter = document.getElementById('leads-filter-industry')?.value || '';
-  const list = filter && filter !== 'All industries'
+  const list = (filter && filter !== 'All industries')
     ? _leadsData.filter(l => l.industry.toLowerCase().includes(filter.toLowerCase()))
     : _leadsData;
-  if(!list.length){
-    el.innerHTML = '<div class="empty"><div style="font-size:32px;margin-bottom:12px;">—</div><div>No leads yet. Run an ICP scan to find prospects.</div></div>';
+
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div style="font-size:32px;margin-bottom:12px;">—</div><div>No leads yet. Run a discovery scan to find prospects.</div></div>';
     return;
   }
-  el.innerHTML = list.map(l=>`
+
+  el.innerHTML = list.map(l => {
+    const scoreColor = l.score >= 85 ? 'var(--green)' : l.score >= 70 ? 'var(--accent)' : 'var(--text2)';
+    return `
     <div class="lead-card">
-      <div style="flex:1;min-width:0;">
+      <div style="flex:1;min-width:0;cursor:pointer;" onclick="loadLeadDetail('${l.id}')">
         <div class="lead-name">${l.name}</div>
-        <div class="lead-meta">${l.industry}${l.location ? ' · '+l.location : ''}${l.source==='pipeline'?'<span style="color:var(--green);margin-left:6px;font-size:10px;">● LIVE</span>':''}</div>
-        <div class="lead-pills">
-          ${(l.modules||[1,2]).map(m=>`<span class="mpill ${PILL_CLASS[MODULES[m]?.os]||'acquisition'}">M${m}: ${MODULES[m]?.name||''}</span>`).join('')}
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">${l.company}</div>
+        ${l.title ? `<div style="font-size:11px;color:var(--accent);margin-bottom:4px;">${l.title}</div>` : ''}
+        <div class="lead-meta">
+          ${l.niche}${l.location ? ' · ' + l.location : ''}
         </div>
+        ${l.email ? `<div style="font-size:11px;color:var(--text2);margin-top:4px;">✉ ${l.email}</div>` : ''}
       </div>
       <div class="lead-right">
-        <div class="lead-score-ring">${l.score}</div>
-        <div class="lead-score-label">ICP Score</div>
+        <div class="lead-score-ring" style="color:${scoreColor};border-color:${scoreColor};">${l.score}</div>
+        <div class="lead-score-label">Signal<br>Score</div>
         <button class="btn btn-primary btn-sm" style="margin-top:8px;"
-          onclick="addLead('${l.name.replace(/'/g,"\\'")}','${l.industry}')">+ Onboard</button>
+          onclick="loadLeadDetail('${l.id}')">View →</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+  setTimeout(initEntranceObserver, 50);
 }
 
-function viewLeads(){
-  setTimeout(loadLeads, 50);
-  const initial = _leadsData.length ? _leadsData : [
-    {name:'Bella Roma Restaurant',  location:'Manchester', industry:'Restaurant',  score:87, modules:[1,9]},
-    {name:'Sterling Solicitors',    location:'Birmingham', industry:'Legal',       score:82, modules:[1,2]},
-    {name:'Peak Construction Ltd',  location:'Sheffield',  industry:'Construction',score:79, modules:[1,4]},
-    {name:'SwiftCargo Logistics',   location:'Leeds',      industry:'Logistics',   score:74, modules:[1,2,8]},
-    {name:'Sunrise Care Home',      location:'Bristol',    industry:'Healthcare',  score:71, modules:[1,6]},
-  ];
-  return`
-  <div class="panel">
-    <div class="panel-hdr">
-      <div class="panel-title">ICP Lead Finder</div>
-      <button id="leads-scan-btn" class="btn btn-primary btn-sm" onclick="loadLeads()">▶ Run ICP Scan</button>
+// Load and show lead detail panel
+async function loadLeadDetail(leadId) {
+  const panel = document.getElementById('lead-detail-panel');
+  const overlay = document.getElementById('lead-detail-overlay');
+
+  if (!panel || !overlay) return;
+
+  // Show loading state
+  panel.innerHTML = '<div style="padding:40px;text-align:center;">Loading lead details...</div>';
+  overlay.style.display = 'block';
+  panel.style.display = 'block';
+
+  try {
+    const res = await fetch(`${API}/leads/demo/${leadId}`);
+    const lead = await res.json();
+
+    if (!res.ok) throw new Error(lead.error || 'Failed to load lead');
+
+    renderLeadDetailPanel(lead);
+  } catch (error) {
+    panel.innerHTML = `<div style="padding:40px;color:var(--red);">Error: ${error.message}</div>`;
+  }
+}
+
+function renderLeadDetailPanel(lead) {
+  const panel = document.getElementById('lead-detail-panel');
+  if (!panel) return;
+
+  const scoreColor = lead.signalScore >= 85 ? 'var(--green)' : lead.signalScore >= 70 ? 'var(--accent)' : 'var(--text2)';
+
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:16px;">
+      <div>
+        <h2 style="margin-bottom:6px;">${lead.name}</h2>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:6px;">${lead.company}</div>
+        <div style="font-size:12px;color:var(--muted);">${lead.title || 'Contact'} · ${lead.location}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="width:60px;height:60px;border-radius:50%;border:3px solid ${scoreColor};display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:${scoreColor};">${lead.signalScore}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center;">Signal<br>Score</div>
+      </div>
+      <button onclick="closeLeadDetail()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);">✕</button>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-      <select id="leads-filter-industry" class="fselect" style="width:200px;" onchange="renderLeadCards()">
-        <option>All industries</option>
-        <option>Legal</option><option>Restaurant</option>
-        <option>Construction</option><option>Logistics</option><option>Healthcare</option>
-      </select>
-      <select class="fselect" style="width:160px;">
-        <option>All locations</option>
-        <option>London</option><option>Manchester</option>
-        <option>Birmingham</option><option>Sheffield</option>
-      </select>
+
+    <div style="display:flex;gap:12px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;">
+      <button class="tab-btn active" onclick="switchLeadTab('company')" data-tab="company">Company</button>
+      <button class="tab-btn" onclick="switchLeadTab('social')" data-tab="social">Social</button>
+      <button class="tab-btn" onclick="switchLeadTab('decision')" data-tab="decision">Decision-Maker</button>
+      <button class="tab-btn" onclick="switchLeadTab('approach')" data-tab="approach">Approach</button>
     </div>
-    <div id="leads-count" style="font-size:12px;color:var(--text2);margin-bottom:16px;">${initial.length} prospects · sorted by ICP score</div>
-    <div id="leads-list">
-      ${initial.map(l=>`
-        <div class="lead-card">
-          <div style="flex:1;min-width:0;">
-            <div class="lead-name">${l.name}</div>
-            <div class="lead-meta">${l.industry} · ${l.location}</div>
-            <div class="lead-pills">
-              ${(l.modules||[]).map(m=>`<span class="mpill ${PILL_CLASS[MODULES[m]?.os]||'acquisition'}">M${m}: ${MODULES[m]?.name||''}</span>`).join('')}
+
+    <div id="tab-company" class="lead-tab active">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Rating & Reviews</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:18px;color:var(--yellow);">⭐ ${lead.googleMaps.rating}</span>
+          <span style="color:var(--text2);">${lead.googleMaps.reviewCount} reviews</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;">
+          ${lead.googleMaps.reviews.map(r => `• ${r}`).join('<br>')}
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Business Info</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.8;">
+          <div>📍 ${lead.location}</div>
+          <div>🕐 ${lead.googleMaps.hours}</div>
+          <div>👥 ${lead.companySize}</div>
+          <div>📅 Founded ${lead.yearFounded}</div>
+          <div style="color:var(--green);margin-top:8px;">✓ ${lead.recentNews}</div>
+        </div>
+      </div>
+      <div>
+        <a href="${lead.website}" target="_blank" style="color:var(--blue);text-decoration:underline;">Visit website →</a>
+      </div>
+    </div>
+
+    <div id="tab-social" class="lead-tab" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Instagram Profile</div>
+        <div style="background:var(--card);padding:16px;border-radius:8px;margin-bottom:16px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:8px;">${lead.instagram.handle}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+            <div>
+              <div style="color:var(--text2);">Followers</div>
+              <div style="font-size:18px;font-weight:700;color:var(--accent);">${lead.instagram.followers.toLocaleString()}</div>
+              <div style="font-size:11px;color:var(--green);">↑ ${lead.instagram.followersGrowth}</div>
+            </div>
+            <div>
+              <div style="color:var(--text2);">Engagement</div>
+              <div style="font-size:18px;font-weight:700;color:var(--accent);">${lead.instagram.engagementRate}%</div>
+              <div style="font-size:11px;">Avg ${lead.instagram.avgLikes} likes</div>
             </div>
           </div>
-          <div class="lead-right">
-            <div class="lead-score-ring">${l.score}</div>
-            <div class="lead-score-label">ICP Score</div>
-            <button class="btn btn-primary btn-sm" style="margin-top:8px;"
-              onclick="addLead('${l.name.replace(/'/g,"\\'")}','${l.industry}')">+ Onboard</button>
-          </div>
-        </div>`).join('')}
+        </div>
+        <div style="font-size:12px;color:var(--text);margin-bottom:12px;font-style:italic;">"${lead.instagram.bio}"</div>
+        <div style="font-size:11px;color:var(--text2);">
+          <strong>${lead.instagram.recentPosts}</strong> recent posts · Active and engaged audience
+        </div>
+      </div>
     </div>
+
+    <div id="tab-decision" class="lead-tab" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Profile</div>
+        <div style="background:var(--card);padding:16px;border-radius:8px;">
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;color:var(--text2);">Name</div>
+            <div style="font-size:14px;font-weight:600;">${lead.name}</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;color:var(--text2);">Title</div>
+            <div style="font-size:14px;font-weight:600;">${lead.title}</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text2);">Seniority</div>
+            <div style="font-size:14px;font-weight:600;color:var(--green);">🔴 Decision Maker</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Signals</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          ${Object.entries(lead.signals || {}).map(([k, v]) => `
+            <div style="background:var(--card);padding:12px;border-radius:6px;border-left:3px solid ${v ? 'var(--green)' : 'var(--muted)'};">
+              <div style="font-size:11px;color:var(--text2);text-transform:capitalize;">${k.replace(/([A-Z])/g, ' $1')}</div>
+              <div style="font-size:12px;color:${v ? 'var(--green)' : 'var(--text2)'};">${v ? '✓ Yes' : '○ No'}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-approach" class="lead-tab" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Priority Tier</div>
+        <div style="background:var(--accent-glow);padding:16px;border-radius:8px;border-left:4px solid var(--accent);margin-bottom:16px;">
+          <div style="font-size:14px;font-weight:600;color:var(--accent);">${lead.recommendedApproach.tier}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:8px;">${lead.recommendedApproach.angle}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Best Channel</div>
+        <div style="background:var(--card);padding:12px;border-radius:6px;margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:600;">${lead.recommendedApproach.channel}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Opening Script</div>
+        <div style="background:var(--card);padding:16px;border-radius:6px;border-left:3px solid var(--blue);font-size:12px;line-height:1.6;">
+          "${lead.recommendedApproach.script}"
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Next Action</div>
+        <div style="background:var(--green-dim);padding:12px;border-radius:6px;border-left:3px solid var(--green);color:var(--green);">
+          <strong>${lead.recommendedApproach.nextAction}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+      <button class="btn btn-primary" onclick="generateVideoForLead('${lead.id}', '${lead.name.replace(/'/g, "\\'")}', '${lead.company.replace(/'/g, "\\'")}', '${lead.niche}')">
+        ▶ Generate Video
+      </button>
+      <button class="btn btn-secondary" onclick="draftEmailForLead('${lead.id}')">
+        ✉ Draft Email
+      </button>
+      <button class="btn btn-secondary" onclick="generateCallScript('${lead.id}')">
+        ☎ Call Script
+      </button>
+    </div>
+  `;
+}
+
+function switchLeadTab(tabName) {
+  // Hide all tabs
+  document.querySelectorAll('.lead-tab').forEach(t => t.style.display = 'none');
+  // Deactivate all buttons
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  // Show selected tab
+  const tab = document.getElementById('tab-' + tabName);
+  if (tab) tab.style.display = 'block';
+  // Activate button
+  event.target.classList.add('active');
+}
+
+function closeLeadDetail() {
+  document.getElementById('lead-detail-panel').style.display = 'none';
+  document.getElementById('lead-detail-overlay').style.display = 'none';
+}
+
+function generateVideoForLead(leadId, name, company, niche) {
+  document.getElementById('vid-name').value = name;
+  document.getElementById('vid-company').value = company;
+  document.getElementById('vid-niche').value = niche;
+  closeLeadDetail();
+  nav('videos');
+}
+
+function draftEmailForLead(leadId) {
+  showToast('Email drafting feature coming soon', 'info');
+}
+
+function generateCallScript(leadId) {
+  showToast('Call script feature coming soon', 'info');
+}
+
+async function generateProspectVideo() {
+  const name = document.getElementById('vid-name')?.value?.trim();
+  const company = document.getElementById('vid-company')?.value?.trim();
+  const title = document.getElementById('vid-title')?.value?.trim();
+  const niche = document.getElementById('vid-niche')?.value || 'General';
+  const angle = document.getElementById('vid-angle')?.value?.trim();
+  const voiceover = document.getElementById('vid-voiceover')?.checked !== false;
+
+  if (!name || !company) {
+    alert('Prospect name and company are required');
+    return;
+  }
+
+  const btn = document.getElementById('vid-gen-btn');
+  const status = document.getElementById('vid-status');
+
+  btn.disabled = true;
+  status.style.display = 'block';
+  status.textContent = 'Generating script...';
+
+  try {
+    const res = await fetch(API + '/content/generate-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prospectName: name,
+        company,
+        title,
+        niche,
+        engagementAngle: angle,
+        generateVoiceover: voiceover,
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Generation failed');
+
+    status.textContent = `✓ Video created! Opening...`;
+    setTimeout(() => {
+      window.open(data.videoUrl, '_blank');
+      loadVideoLibrary();
+      document.getElementById('vid-name').value = '';
+      document.getElementById('vid-company').value = '';
+      document.getElementById('vid-title').value = '';
+      document.getElementById('vid-angle').value = '';
+      status.style.display = 'none';
+    }, 500);
+  } catch(e) {
+    status.textContent = '✗ ' + (e.message || 'Generation failed');
+    console.error('[VideoGen]', e);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function loadVideoLibrary() {
+  try {
+    const res = await fetch(API + '/videos');
+    const data = res.ok ? await res.json() : { videos: [], total: 0 };
+    const videos = data.videos || [];
+
+    const libEl = document.getElementById('video-library');
+    if (!libEl) return;
+
+    const countEl = document.getElementById('video-lib-count');
+    if (countEl) countEl.textContent = videos.length + ' video' + (videos.length !== 1 ? 's' : '');
+
+    const badgeEl = document.getElementById('video-count');
+    if (badgeEl) badgeEl.textContent = videos.length;
+
+    if (videos.length === 0) {
+      libEl.innerHTML = '<div class="empty" style="grid-column:1/-1;"><div style="font-size:32px;margin-bottom:12px;">🎬</div><div>Generate your first prospect video above.</div></div>';
+      return;
+    }
+
+    libEl.innerHTML = videos.map(v => `
+      <div class="entrance card" style="background:var(--card2);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="flex:1;padding:16px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);opacity:.15;min-height:140px;"></div>
+        <div style="padding:12px 16px;border-top:1px solid var(--border);">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;word-break:break-word;">${v.videoId.replace(/^v_\d+_/, '').replace(/-/g, ' ')}</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">${new Date(v.createdAt).toLocaleString()}</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:12px;">${v.fileSizeKB} KB</div>
+          <a href="${v.url}" target="_blank" class="btn btn-primary btn-sm" style="width:100%;text-align:center;display:block;">▶ Open Video</a>
+        </div>
+      </div>`).join('');
+    setTimeout(initEntranceObserver, 50);
+  } catch(e) {
+    console.error('[VideoLib]', e);
+  }
+}
+
+function initEntranceObserver() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.entrance:not(.visible)').forEach(el => obs.observe(el));
+}
+
+function viewLeads() {
+  setTimeout(loadDiscoveredLeads, 100);
+
+  return `
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- Discovery Form -->
+    <div class="panel">
+      <div class="panel-hdr" style="margin-bottom:16px;">
+        <div>
+          <div class="panel-title">Lead Discovery Engine</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px;">Find qualified prospects in any niche and country</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Industry / Niche</div>
+          <input id="disc-niche" class="fselect" type="text" placeholder="e.g. Legal, SaaS, Restaurant"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Country</div>
+          <input id="disc-country" class="fselect" type="text" placeholder="e.g. UK, US, Ireland" value="UK"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Number of Leads</div>
+          <input id="disc-limit" class="fselect" type="number" placeholder="e.g. 100, 500, 1000" value="100" min="1"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <button id="disc-run-btn" class="btn btn-primary" onclick="runDiscovery()" style="height:38px;white-space:nowrap;">
+          ▶ Run Discovery
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Panel (hidden until run) -->
+    <div id="leads-progress" class="panel" style="display:none;">
+      <div class="panel-title" style="margin-bottom:16px;">Running Discovery...</div>
+      <div style="display:flex;align-items:center;gap:24px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="prog-discovering" class="prog-dot pending"></div>
+          <span style="font-size:12px;color:var(--text2);">Discovering</span>
+        </div>
+        <div style="width:24px;height:1px;background:var(--border);"></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="prog-enriching" class="prog-dot pending"></div>
+          <span style="font-size:12px;color:var(--text2);">Enriching</span>
+        </div>
+        <div style="width:24px;height:1px;background:var(--border);"></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="prog-saving" class="prog-dot pending"></div>
+          <span style="font-size:12px;color:var(--text2);">Saving</span>
+        </div>
+      </div>
+      <div style="background:var(--card2);border-radius:4px;height:6px;overflow:hidden;margin-bottom:10px;">
+        <div id="prog-bar" style="height:100%;width:0%;background:var(--accent);border-radius:4px;transition:width .4s ease;"></div>
+      </div>
+      <div id="prog-label" style="font-size:12px;color:var(--text2);">Connecting...</div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="leads-results-section" class="panel">
+      <div class="panel-hdr">
+        <div id="leads-count" style="font-size:12px;color:var(--text2);">
+          ${_leadsData.length ? _leadsData.length + ' leads · sorted by ICP score' : 'Run a discovery scan to find prospects'}
+        </div>
+        <div style="display:flex;gap:8px;">
+          <select id="leads-filter-industry" class="fselect" style="width:180px;" onchange="renderLeadCards()">
+            <option>All industries</option>
+            <option>Legal</option><option>Restaurant</option>
+            <option>Construction</option><option>Logistics</option><option>Healthcare</option>
+          </select>
+        </div>
+      </div>
+      <div id="leads-list" style="margin-top:16px;">
+        ${_leadsData.length
+          ? ''
+          : '<div class="empty"><div style="font-size:32px;margin-bottom:12px;">🔍</div><div>Set your niche and country above, then click Run Discovery.</div></div>'
+        }
+      </div>
+    </div>
+
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   VIEW: VIDEOS
+═══════════════════════════════════════════════════ */
+function viewVideos() {
+  setTimeout(() => { loadVideoLibrary(); initEntranceObserver(); }, 100);
+
+  return `
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- Video Generation Form -->
+    <div class="panel">
+      <div class="panel-hdr" style="margin-bottom:16px;">
+        <div>
+          <div class="panel-title">Generate Prospect Videos</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px;">Create personalized video outreach with AI voiceover</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Prospect Name</div>
+          <input id="vid-name" class="fselect" type="text" placeholder="e.g. James Chen"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Company</div>
+          <input id="vid-company" class="fselect" type="text" placeholder="e.g. Acme Corp"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Title</div>
+          <input id="vid-title" class="fselect" type="text" placeholder="e.g. Managing Director"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Niche</div>
+          <select id="vid-niche" class="fselect" style="width:100%;background:var(--card2);">
+            <option value="General">General</option>
+            <option value="Legal">Legal</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Construction">Construction</option>
+            <option value="SaaS">SaaS</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Engagement Angle</div>
+          <input id="vid-angle" class="fselect" type="text" placeholder="e.g. How AI can automate your intake process"
+            style="width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;" />
+        </div>
+        <div style="grid-column:1/-1;display:flex;align-items:center;gap:12px;">
+          <input id="vid-voiceover" type="checkbox" checked style="width:18px;height:18px;cursor:pointer;" />
+          <label for="vid-voiceover" style="font-size:13px;cursor:pointer;">Generate AI voiceover using ElevenLabs</label>
+        </div>
+      </div>
+      <div id="vid-status" style="font-size:12px;color:var(--text2);margin-bottom:12px;display:none;"></div>
+      <button id="vid-gen-btn" class="btn btn-primary" onclick="generateProspectVideo()" style="width:100%;height:40px;">
+        ▶ Generate Video
+      </button>
+    </div>
+
+    <!-- Video Library -->
+    <div class="panel">
+      <div class="panel-hdr" style="margin-bottom:16px;">
+        <div>
+          <div class="panel-title">Video Library</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px;" id="video-lib-count">No videos yet</div>
+        </div>
+      </div>
+      <div id="video-library" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">
+        <div class="empty" style="grid-column:1/-1;"><div style="font-size:32px;margin-bottom:12px;">🎬</div><div>Generate your first prospect video above.</div></div>
+      </div>
+    </div>
+
   </div>`;
 }
 
@@ -5834,5 +6361,30 @@ document.querySelectorAll('button').forEach(function(btn){if(btn.textContent.inc
   </div>
 </div>
 <!-- BIZ_WIZARD_HTML_V2 -->
+
+<!-- Lead Detail Panel -->
+<div id="lead-detail-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:99;"></div>
+<div id="lead-detail-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:700px;max-height:85vh;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;overflow-y:auto;z-index:100;"></div>
+
+<style>
+#lead-detail-panel {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: slideUp 300ms cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translate(-50%,calc(-50% + 20px)); }
+  to { opacity:1; transform:translate(-50%,-50%); }
+}
+.lead-tab { display:none; }
+.lead-tab.active { display:block; }
+.tab-btn {
+  background:none; border:none; color:var(--text2); font-size:13px; font-weight:500;
+  padding:8px 12px; cursor:pointer; transition: color 200ms;
+  border-bottom:2px solid transparent;
+}
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+</style>
+
 </body>
 </html>
