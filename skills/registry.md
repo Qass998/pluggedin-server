@@ -91,6 +91,8 @@ When Qassim describes a task, the plan phase:
 | Competitor research | competitor-intel → competitive-pricing-intel |
 | Competitor ads / marketing | competitor-ad-intelligence → ad-angle-miner → trending-ad-hook-spotter |
 | Industry scan | industry-scanner → signal-scanner |
+| Analyze YouTube/public video tutorial or product walkthrough | watch |
+| Research a GHL implementation from video | watch (extract pattern) → verify against current official GHL docs before adoption |
 
 ## OUTREACH & PIPELINE
 
@@ -168,6 +170,7 @@ When Qassim describes a task, the plan phase:
 | Update memory / log | (no skill — internal protocol) |
 | Graph codebase | graphify |
 | Skill discovery (find new skills) | skills |
+| Watch/analyze video as research evidence | watch |
 | Log a mistake | mistake |
 | Deploy to Vercel | vercel-deployment |
 | Airtable records / schema | airtable-automation |
