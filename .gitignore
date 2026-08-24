@@ -3,3 +3,7 @@
 
 # Local Netlify folder
 .netlify
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
