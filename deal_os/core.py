@@ -218,7 +218,7 @@ class AcceptanceFixtureProvider:
 
 
 BUYER_SIGNAL = Signal(
-    "signal-freshdi-2026-05-25-avocado-uae", "agri_food", "demand",
+    "68adf669-f5c4-5b81-bf9c-2b1ba5f8d0c6", "agri_food", "demand",
     "UAE wholesale buyer requests 10 MT organic avocado", "Dubai, UAE",
     "https://freshdi.com/request/Avocado-LjC1Qh",
     Requirement("Avocado", "10 MT", "Dubai, UAE", ("CIF", "CPT", "T/T"), ("organic", "unripe", "export quality")),

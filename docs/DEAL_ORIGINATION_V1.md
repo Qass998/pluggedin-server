@@ -47,4 +47,4 @@ The score threshold and acceptance assertions are locked during a run. Contactin
 
 ## Production next slice
 
-Implement the Postgres repository, authenticated internal endpoints, source queue with terms/robots compliance, content snapshots/hashes, idempotency, and one browser/search adapter per desk. Preserve rejected candidates in append-only run logs and measure source yield against the locked funnel.
+The first Railway production slice now includes the Postgres repository, authenticated internal endpoints, communication ledger, Postgres job queue, worker, and cron-safe enqueue command. Next: add source queues with terms/robots compliance, content snapshots/hashes, idempotency keys, and one live browser/search adapter per desk. Preserve rejected candidates in append-only run logs and measure source yield against the locked funnel.
