@@ -1,16 +1,9 @@
 {
-  "$schema": "https://railway.app/schema.json",
-  "build": {
-    "builder": "nixpacks",
-    "buildCommand": "cd backend && npm install"
-  },
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {"builder":"NIXPACKS","buildCommand":"pip install -r requirements.txt"},
   "deploy": {
-    "startCommand": "cd backend && npm start",
-    "restartPolicyType": "on_failure",
-    "restartPolicyMaxRetries": 5
-  },
-  "env": {
-    "NIXPACKS_NODE_VERSION": "20",
-    "PORT": "3000"
+    "startCommand":"python -m deal_os.migrate && uvicorn api.deal_server:app --host 0.0.0.0 --port $PORT",
+    "healthcheckPath":"/health","healthcheckTimeout":120,
+    "restartPolicyType":"ON_FAILURE","restartPolicyMaxRetries":5
   }
 }
